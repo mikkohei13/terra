@@ -1,0 +1,31 @@
+
+# This file defines which files will not be deployed to Cloud Run
+
+cache/*
+
+export/
+import/
+test*
+
+.env
+service-account-key.json
+.git
+.gitignore
+.dockerignore
+docker-compose.yml
+readme.md
+LICENSE
+MIGRATION-SUMMARY.md
+THIRD-PARTY-LICENSES.md
+.cursor/
+.cursorignore
+.cursorindexingignore
+example.env
+Makefile
+*.md
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+

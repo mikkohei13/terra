@@ -1,0 +1,25 @@
+
+
+services:
+  web:
+    build: ./
+    image: havistin2-gunicorn:latest
+    volumes:
+      - ./app:/havistin2/app
+    ports:
+      - "80:80"
+    env_file:
+      - .env
+    environment:
+      - FLASK_DEBUG=1
+      - PYTHONUNBUFFERED=TRUE
+    entrypoint: >
+      gunicorn 
+      --chdir /havistin2/app main:app -w 1 
+      --threads 1 -b 0.0.0.0:80
+      --timeout 120 
+      --reload
+      --reload-extra-file /havistin2/app/templates/base.html
+      --reload-extra-file /havistin2/app/templates/index.html
+    # Note that the extra-files have to exist, otherwise dockec-compose will complain "Error: File ... does not exists."
+  

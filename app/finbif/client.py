@@ -103,9 +103,9 @@ def post_json(
 
 
 def fetch_person(person_token: str) -> dict[str, Any]:
-    status, body = get("/person", person_token=person_token)
+    status, body = get("/person", person_token=person_token, accept_language="en")
     if status != 200 or not isinstance(body, dict):
-        message = "Henkilötietojen haku epäonnistui."
+        message = "Could not load the person profile."
         error_code = None
         if isinstance(body, dict):
             message = str(body.get("message") or message)
@@ -113,7 +113,7 @@ def fetch_person(person_token: str) -> dict[str, Any]:
         raise FinbifError(message, status_code=status, error_code=error_code, details=body)
     if body.get("errorCode"):
         raise FinbifError(
-            str(body.get("message") or "Kirjautuminen epäonnistui."),
+            str(body.get("message") or "Login failed."),
             status_code=status,
             error_code=body.get("errorCode"),
             details=body,

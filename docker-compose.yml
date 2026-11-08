@@ -5,20 +5,19 @@ services:
     volumes:
       - ./app:/terra/app
     ports:
-      - "80:80"
+      - "85:85"
     env_file:
       - .env
     environment:
       - FLASK_DEBUG=1
       - PYTHONUNBUFFERED=TRUE
+      - SESSION_COOKIE_SECURE=0
     entrypoint: >
       gunicorn
       --chdir /terra/app main:app -w 1
-      --threads 1 -b 0.0.0.0:80
+      --threads 1 -b 0.0.0.0:85
       --timeout 120
       --reload
       --reload-extra-file /terra/app/templates/base.html
       --reload-extra-file /terra/app/templates/index.html
-      --reload-extra-file /terra/app/templates/login.html
-      --reload-extra-file /terra/app/templates/observe.html
-      --reload-extra-file /terra/app/templates/result.html
+      --reload-extra-file /terra/app/templates/simple.html

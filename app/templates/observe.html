@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Terra — Uusi havainto{% endblock %}
+
+{% block content %}
+<section>
+    <h1>Uusi havainto</h1>
+
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+
+    <form method="post" action="{{ url_for('observe') }}" class="stack-form" id="observe-form">
+        <label for="taxon">Laji</label>
+        <input
+            id="taxon"
+            name="taxon"
+            type="text"
+            autocomplete="off"
+            required
+            value="{{ form.taxon or '' }}"
+        >
+        <input id="taxon_id" name="taxon_id" type="hidden" value="{{ form.taxon_id or '' }}">
+        <ul id="taxon-results" class="taxon-results" hidden></ul>
+
+        <label for="date">Päivämäärä</label>
+        <input
+            id="date"
+            name="date"
+            type="date"
+            required
+            value="{{ form.date or '' }}"
+        >
+
+        <label for="latitude">Leveysaste</label>
+        <input
+            id="latitude"
+            name="latitude"
+            type="text"
+            inputmode="decimal"
+            required
+            value="{{ form.latitude or '' }}"
+        >
+
+        <label for="longitude">Pituusaste</label>
+        <input
+            id="longitude"
+            name="longitude"
+            type="text"
+            inputmode="decimal"
+            required
+            value="{{ form.longitude or '' }}"
+        >
+
+        <button type="button" id="use-location" class="secondary">Käytä nykyistä sijaintia</button>
+        <button type="submit">Lähetä FinBIFiin</button>
+    </form>
+</section>
+{% endblock %}

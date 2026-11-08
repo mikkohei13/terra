@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Terra — Etusivu{% endblock %}
+
+{% block content %}
+<section>
+    <h1>Terra</h1>
+    <p>Kirjaa luontohavaintoja ja lähetä ne FinBIFiin.</p>
+
+    {% if not logged_in %}
+        <p><a class="button" href="{{ url_for('login') }}">Kirjaudu sisään</a></p>
+    {% else %}
+        <p>
+            <a class="button" href="{{ url_for('observe') }}">Uusi havainto</a>
+        </p>
+
+        <h2>Viimeisimmät havaintosi</h2>
+        {% if fetch_error %}
+            <p class="error">{{ fetch_error }}</p>
+        {% elif observations is none or observations|length == 0 %}
+            <p>Ei näytettäviä havaintoja.</p>
+        {% else %}
+            <ul class="obs-list">
+                {% for obs in observations %}
+                    <li class="obs-item">
+                        <strong>{{ obs.name }}</strong>
+                        {% if obs.scientific_name and obs.scientific_name != obs.name %}
+                            <span class="muted">{{ obs.scientific_name }}</span>
+                        {% endif %}
+                        <div class="obs-meta">
+                            <span>{{ obs.date }}</span>
+                            {% if obs.lat is not none and obs.lon is not none %}
+                                <span>{{ "%.5f"|format(obs.lat) }}, {{ "%.5f"|format(obs.lon) }}</span>
+                            {% endif %}
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endif %}
+</section>
+{% endblock %}

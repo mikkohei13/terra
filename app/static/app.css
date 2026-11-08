@@ -1,0 +1,221 @@
+:root {
+    color-scheme: light dark;
+    --bg: #f6f7f4;
+    --fg: #1a1f16;
+    --muted: #5c6658;
+    --card: #ffffff;
+    --accent: #2f6b3a;
+    --accent-fg: #ffffff;
+    --border: #d5dcd0;
+    --error: #9b1c1c;
+    --error-bg: #fdecec;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #121510;
+        --fg: #eef2ea;
+        --muted: #a3aea0;
+        --card: #1c211a;
+        --accent: #6cbc78;
+        --accent-fg: #102014;
+        --border: #323a2f;
+        --error: #ffb4b4;
+        --error-bg: #3a1a1a;
+    }
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.45;
+}
+
+.site-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--card);
+}
+
+.brand {
+    font-weight: 700;
+    text-decoration: none;
+    color: var(--fg);
+}
+
+nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+nav a {
+    color: var(--accent);
+}
+
+.user-name {
+    color: var(--muted);
+    font-size: 0.95rem;
+}
+
+.container {
+    max-width: 40rem;
+    margin: 0 auto;
+    padding: 1.25rem 1rem 3rem;
+}
+
+.stack-form {
+    display: grid;
+    gap: 0.55rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1rem;
+}
+
+.stack-form label {
+    font-weight: 600;
+    margin-top: 0.35rem;
+}
+
+.stack-form input[type="text"],
+.stack-form input[type="password"],
+.stack-form input[type="date"] {
+    width: 100%;
+    padding: 0.65rem 0.7rem;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    background: transparent;
+    color: var(--fg);
+    font-size: 1rem;
+}
+
+button,
+.button {
+    display: inline-block;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.7rem 1rem;
+    background: var(--accent);
+    color: var(--accent-fg);
+    font: inherit;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    text-align: center;
+}
+
+button.secondary {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+}
+
+.inline-form {
+    display: inline;
+    margin: 0;
+}
+
+.inline-form button {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.9rem;
+}
+
+.error {
+    background: var(--error-bg);
+    color: var(--error);
+    padding: 0.75rem 0.9rem;
+    border-radius: 0.5rem;
+}
+
+.flash-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem;
+}
+
+.flash-error {
+    background: var(--error-bg);
+    color: var(--error);
+    padding: 0.7rem 0.9rem;
+    border-radius: 0.5rem;
+}
+
+.obs-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.65rem;
+}
+
+.obs-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 0.65rem;
+    padding: 0.8rem 0.9rem;
+}
+
+.obs-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    color: var(--muted);
+    font-size: 0.92rem;
+    margin-top: 0.25rem;
+}
+
+.muted {
+    color: var(--muted);
+    margin-left: 0.35rem;
+}
+
+.taxon-results {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    background: var(--card);
+    max-height: 14rem;
+    overflow: auto;
+}
+
+.taxon-results li button {
+    width: 100%;
+    background: transparent;
+    color: var(--fg);
+    text-align: left;
+    border-radius: 0;
+    font-weight: 500;
+    border-bottom: 1px solid var(--border);
+}
+
+.taxon-results li:last-child button {
+    border-bottom: none;
+}
+
+.details {
+    white-space: pre-wrap;
+    overflow-x: auto;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    font-size: 0.85rem;
+}
+
+code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}

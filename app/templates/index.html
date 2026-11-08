@@ -3,11 +3,54 @@
 
 {% block content %}
 <section>
-    <h1>Terra</h1>
-
     {% if logged_in %}
-        <p>Signed in as {{ person_name }}.</p>
+    <div id="app">
+        <p id="status" class="status" role="status" hidden></p>
+
+        <div id="view-start">
+            <h1>New session</h1>
+            <p>The session starts at your current location. Every observation in it uses that point.</p>
+            <button type="button" id="start-session" class="primary-action">Start session</button>
+            <div id="start-error" class="error" role="alert" hidden></div>
+        </div>
+
+        <div id="view-session" hidden>
+            <h1>Session</h1>
+            <p id="session-meta"></p>
+            <form id="observe-form" class="stack-form">
+                <label for="taxon">Species</label>
+                <input
+                    id="taxon"
+                    name="taxon"
+                    type="text"
+                    maxlength="300"
+                    autocomplete="off"
+                    autocapitalize="off"
+                    spellcheck="false"
+                    enterkeyhint="done"
+                    placeholder="Finnish or scientific name"
+                    required
+                >
+                <button type="submit" class="primary-action">Save observation</button>
+            </form>
+            <ul id="observation-list" class="obs-list"></ul>
+            <div class="session-actions">
+                <button type="button" id="end-session" class="primary-action">End session</button>
+                <button type="button" id="discard-session" class="secondary">Discard session</button>
+            </div>
+            <div id="session-error" class="error" role="alert" hidden></div>
+        </div>
+
+        <div id="view-done" hidden>
+            <h1>Submitted</h1>
+            <p id="done-detail"></p>
+            <p>Further edits are done on laji.fi.</p>
+            <button type="button" id="another-session" class="primary-action">Start another session</button>
+        </div>
+        <script type="module" src="{{ url_for('static', filename='js/app.js') }}"></script>
+    </div>
     {% elif show_token_form %}
+        <h1>Terra</h1>
         <p>Local login. Paste a FinBIF person token.</p>
         <form method="post" action="{{ url_for('login') }}" class="stack-form">
             <label for="personToken">Person token</label>
@@ -21,6 +64,7 @@
             <button type="submit">Log in</button>
         </form>
     {% else %}
+        <h1>Terra</h1>
         <p><a class="button" href="{{ havistin_url }}">Log in via Havistin</a></p>
     {% endif %}
 </section>

@@ -1,118 +1,137 @@
-"""Build FinBIF Vihko store-documents from observation data.
+"""Build a FinBIF Vihko document from one field session.
 
-Extend Observation and _build_unit when richer observation fields are needed.
+A session has one location. Each observation is a species name and a time.
+Count, notes, wildness, taxon id, and a route can be added in _build_unit later.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Any, Optional
+import re
+from datetime import datetime
+from typing import Any
 
 import config
 
-
-@dataclass
-class Observation:
-    taxon_id: str
-    taxon_name: str
-    date: str
-    latitude: float
-    longitude: float
-    count: int = 1
-    notes: str = ""
-    # Extension hooks for later fields (confidence, facts, images, etc.)
-    extras: dict[str, Any] = field(default_factory=dict)
+_STAMP = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$")
+_MAX_OBSERVATIONS = 300
+_MAX_TAXON_LENGTH = 300
 
 
-def _gathering_geometry(observations: list[Observation]) -> dict[str, Any]:
-    coords = [(obs.longitude, obs.latitude) for obs in observations]
-    if not coords:
-        raise ValueError("Ei koordinaatteja geometriaa varten.")
-
-    first = coords[0]
-    if all(c == first for c in coords):
-        return {"type": "Point", "coordinates": [first[0], first[1]]}
-
-    lngs = [c[0] for c in coords]
-    lats = [c[1] for c in coords]
-    min_lng, max_lng = min(lngs), max(lngs)
-    min_lat, max_lat = min(lats), max(lats)
-    if min_lng == max_lng and min_lat == max_lat:
-        return {"type": "Point", "coordinates": [min_lng, min_lat]}
-
-    ring = [
-        [min_lng, min_lat],
-        [max_lng, min_lat],
-        [max_lng, max_lat],
-        [min_lng, max_lat],
-        [min_lng, min_lat],
-    ]
-    return {"type": "Polygon", "coordinates": [ring]}
+def _stamp(value: Any, label: str) -> str:
+    text = str(value or "").strip()
+    if not _STAMP.fullmatch(text):
+        raise ValueError(f"{label} must be in the form YYYY-MM-DDTHH:mm.")
+    try:
+        datetime.strptime(text, "%Y-%m-%dT%H:%M")
+    except ValueError:
+        raise ValueError(f"{label} is not a real date.") from None
+    return text
 
 
-def _taxon_qname(taxon_id: str) -> str:
-    tid = taxon_id.strip()
-    if tid.startswith("http://tun.fi/"):
-        return tid.replace("http://tun.fi/", "")
-    return tid
+def _coordinate(value: Any, label: str, low: float, high: float) -> float:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ValueError(f"{label} is missing.")
+    number = float(value)
+    if number != number or number in (float("inf"), float("-inf")):
+        raise ValueError(f"{label} is missing.")
+    if not low <= number <= high:
+        raise ValueError(f"{label} is out of range.")
+    return round(number, 6)
 
 
-def _build_unit(obs: Observation) -> dict[str, Any]:
-    """Map one Observation to a FinBIF store-unit. Extend here for new fields."""
-    count = max(1, int(obs.count or 1))
-    unit: dict[str, Any] = {
-        "count": str(count),
-        "identifications": [{"taxon": obs.taxon_name}],
-        "unitFact": {
-            "autocompleteSelectedTaxonID": _taxon_qname(obs.taxon_id),
-        },
+def _point(latitude: float, longitude: float) -> dict[str, Any]:
+    # GeoJSON order is longitude, latitude.
+    return {"type": "Point", "coordinates": [longitude, latitude]}
+
+
+def _build_unit(obs: dict[str, Any], latitude: float, longitude: float) -> dict[str, Any]:
+    return {
+        "identifications": [{"taxon": obs["taxon"]}],
         "unitGathering": {
-            "geometry": {
-                "type": "Point",
-                "coordinates": [obs.longitude, obs.latitude],
-            },
-            "dateBegin": obs.date,
+            "geometry": _point(latitude, longitude),
+            "dateBegin": obs["at"],
         },
         "taxonConfidence": "MY.taxonConfidenceSure",
         "recordBasis": "MY.recordBasisHumanObservation",
     }
-    notes = (obs.notes or "").strip()
-    if notes:
-        unit["notes"] = notes
-    return unit
+
+
+def parse_submission(body: dict[str, Any]) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """Validate the JSON body from the phone. Raises ValueError with a short message."""
+    raw_session = body.get("session")
+    raw_observations = body.get("observations")
+    if not isinstance(raw_session, dict):
+        raise ValueError("Session data is missing.")
+    if not isinstance(raw_observations, list):
+        raise ValueError("Observations must be a list.")
+    if not raw_observations:
+        raise ValueError("Add at least one observation before ending the session.")
+    if len(raw_observations) > _MAX_OBSERVATIONS:
+        raise ValueError(f"A session can contain at most {_MAX_OBSERVATIONS} observations.")
+
+    session = {
+        "startedAt": _stamp(raw_session.get("startedAt"), "Session start"),
+        "endedAt": _stamp(raw_session.get("endedAt"), "Session end"),
+        "lat": _coordinate(raw_session.get("lat"), "Latitude", -90, 90),
+        "lon": _coordinate(raw_session.get("lon"), "Longitude", -180, 180),
+    }
+    if session["endedAt"] < session["startedAt"]:
+        session["endedAt"] = session["startedAt"]
+
+    indexed: list[tuple[int, dict[str, Any]]] = []
+    for index, raw in enumerate(raw_observations):
+        if not isinstance(raw, dict):
+            raise ValueError("An observation is missing its species name.")
+        taxon = str(raw.get("taxon") or "").strip()
+        if not taxon:
+            raise ValueError("Each observation needs a species name.")
+        if len(taxon) > _MAX_TAXON_LENGTH:
+            raise ValueError("A species name is too long.")
+        seq = raw.get("seq")
+        if not isinstance(seq, int):
+            seq = index
+        indexed.append(
+            (
+                index,
+                {
+                    "seq": seq,
+                    "taxon": taxon,
+                    "at": _stamp(raw.get("at"), "Observation time"),
+                },
+            )
+        )
+
+    indexed.sort(key=lambda item: (item[1]["seq"], item[0]))
+    observations = [item[1] for item in indexed]
+    return session, observations
 
 
 def build_document(
-    observations: list[Observation],
+    session: dict[str, Any],
+    observations: list[dict[str, Any]],
     observer_id: str,
-    *,
-    collection_id: Optional[str] = None,
-    form_id: Optional[str] = None,
 ) -> dict[str, Any]:
-    """
-    Build one Vihko store-document: one gathering, one unit per observation.
-    """
-    if not observations:
-        raise ValueError("Ei havaintoja dokumenttiin.")
+    """One document, one gathering, one unit per observation."""
     observer_id = (observer_id or "").strip()
     if not observer_id:
-        raise ValueError("Havainnoijan tunniste puuttuu.")
+        raise ValueError("Observer id is missing.")
+    if not observations:
+        raise ValueError("Add at least one observation before ending the session.")
 
-    dates = [obs.date for obs in observations if obs.date]
-    date_begin = dates[0] if dates else ""
-
+    latitude = session["lat"]
+    longitude = session["lon"]
     gathering = {
-        "geometry": _gathering_geometry(observations),
-        "units": [_build_unit(obs) for obs in observations],
+        "geometry": _point(latitude, longitude),
+        "units": [_build_unit(obs, latitude, longitude) for obs in observations],
     }
-
     return {
-        "collectionID": collection_id or config.VIHKO_COLLECTION_ID,
-        "formID": form_id or config.VIHKO_FORM_ID,
+        "collectionID": config.VIHKO_COLLECTION_ID,
+        "formID": config.VIHKO_FORM_ID,
         "keywords": ["new"],
         "secureLevel": "MX.secureLevelNone",
         "gatheringEvent": {
-            "dateBegin": date_begin,
+            "dateBegin": session["startedAt"],
+            "dateEnd": session["endedAt"],
             "leg": [observer_id],
             "legPublic": True,
         },

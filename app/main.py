@@ -4,10 +4,11 @@ from __future__ import annotations
 
 from functools import wraps
 
-from flask import Flask, flash, redirect, render_template, request, session, url_for
+from flask import Flask, flash, jsonify, redirect, render_template, request, session, url_for
 
 import config
 from finbif.client import FinbifError, fetch_person
+from finbif.submit import submit_session
 
 app = Flask(__name__)
 app.secret_key = config.FLASK_SECRET_KEY
@@ -53,6 +54,20 @@ def _person_token_from_request() -> str:
     return (request.values.get("personToken") or "").strip()
 
 
+def _person_token_rejected(exc: FinbifError) -> bool:
+    code = (exc.error_code or "").upper()
+    if "PERSON_TOKEN" in code:
+        return True
+    return "login is not valid" in (exc.message or "").lower()
+
+
+def _error_status(exc: FinbifError) -> int:
+    code = exc.status_code or 502
+    if 400 <= code <= 599:
+        return code
+    return 502
+
+
 def _establish_session(person_token: str) -> None:
     person = fetch_person(person_token)
     person_id = (person.get("id") or "").strip()
@@ -95,6 +110,38 @@ def login():
         return redirect(url_for("index"), code=303)
 
     return redirect(url_for("index"), code=303)
+
+
+@app.route("/api/sessions/submit", methods=["POST"])
+def submit_session_route():
+    """Build one FinBIF document from the phone's session and submit it."""
+    person_token = session.get("person_token")
+    observer_id = session.get("person_id")
+    if not person_token or not observer_id:
+        return jsonify({"message": "Log in to continue.", "loginRequired": True}), 401
+
+    body = request.get_json(silent=True)
+    if not isinstance(body, dict):
+        return jsonify({"message": "The submission was empty."}), 400
+
+    try:
+        result = submit_session(body, person_token=person_token, observer_id=observer_id)
+    except ValueError as exc:
+        return jsonify({"message": str(exc)}), 400
+    except FinbifError as exc:
+        if _person_token_rejected(exc):
+            session.clear()
+            return jsonify({"message": exc.message, "loginRequired": True}), 401
+        app.logger.warning("FinBIF submit failed: %s %s", exc.status_code, exc.error_code)
+        payload = {"message": exc.message or "Submit failed."}
+        if exc.details:
+            payload["details"] = exc.details
+        return jsonify(payload), _error_status(exc)
+    except Exception:
+        app.logger.exception("Session submit failed")
+        return jsonify({"message": "Submit failed."}), 502
+
+    return jsonify({"documentId": result.get("document_id")})
 
 
 @app.route("/logout", methods=["POST"])

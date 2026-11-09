@@ -1,4 +1,4 @@
-// Field session UI. Location is read once, when the session starts.
+// Field session UI. The map shows where the user is. A tap places the observation.
 
 import * as api from "./api.js";
 import * as db from "./db.js";
@@ -11,6 +11,7 @@ const viewDone = document.getElementById("view-done");
 const statusLine = document.getElementById("status");
 const startButton = document.getElementById("start-session");
 const observeForm = document.getElementById("observe-form");
+const observeDialog = document.getElementById("observe-dialog");
 const taxonInput = document.getElementById("taxon");
 const sessionMeta = document.getElementById("session-meta");
 const observationList = document.getElementById("observation-list");
@@ -18,8 +19,20 @@ const endButton = document.getElementById("end-session");
 const discardButton = document.getElementById("discard-session");
 const doneDetail = document.getElementById("done-detail");
 const anotherButton = document.getElementById("another-session");
+const addObsButton = document.getElementById("add-obs");
+const cancelPinButton = document.getElementById("cancel-pin");
+const closeObserveButton = document.getElementById("close-observe");
+const pinActions = document.getElementById("pin-actions");
 
 let busy = false;
+let map = null;
+let userMarker = null;
+let draftMarker = null;
+let savedLayer = null;
+let watchId = null;
+let watchToken = 0;
+let mapSessionKey = null;
+let mapSettled = false;
 
 function $(id) {
     return document.getElementById(id);
@@ -29,6 +42,9 @@ function show(view) {
     viewStart.hidden = view !== "start";
     viewSession.hidden = view !== "session";
     viewDone.hidden = view !== "done";
+    if (view !== "session") {
+        stopWatching();
+    }
     if (!busy) {
         statusLine.hidden = true;
         statusLine.textContent = "";
@@ -103,6 +119,12 @@ function round6(n) {
     return Math.round(n * 1e6) / 1e6;
 }
 
+function nextFrame() {
+    return new Promise((resolve) => {
+        requestAnimationFrame(() => resolve());
+    });
+}
+
 function sessionIsUsable(session) {
     return Boolean(
         session
@@ -138,6 +160,161 @@ function positionMessage(error) {
     return (error && error.message) || "Could not read the location.";
 }
 
+function pinIcon() {
+    // L.icon does not prefix Leaflet's own image folder. Icon.Default does,
+    // which turned these paths into unpkg URLs.
+    return L.icon({
+        iconUrl: "/static/images/marker-icon.png",
+        iconRetinaUrl: "/static/images/marker-icon.png",
+        shadowUrl: "/static/images/marker-shadow.png",
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        shadowSize: [41, 41],
+    });
+}
+
+function ensureMap(lat, lon) {
+    if (map) {
+        return;
+    }
+    if (typeof L === "undefined") {
+        throw new Error("The map failed to load. Check the network and try again.");
+    }
+    map = L.map("map");
+    // The page policy is no-referrer so a person token cannot leak. OSM still
+    // requires a Referer that identifies the site, so each tile sends the origin only.
+    // The browser caches these image requests; the URL has no cache-busting.
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        referrerPolicy: "origin",
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    }).addTo(map);
+    savedLayer = L.layerGroup().addTo(map);
+    map.setView([lat, lon], 16);
+    const settleMap = () => {
+        mapSettled = true;
+    };
+    map.on("dragstart", settleMap);
+    map.on("mousedown", settleMap);
+    map.on("touchstart", settleMap);
+    map.on("click", (event) => {
+        if (busy || observeDialog.open) {
+            return;
+        }
+        placePin(event.latlng.lat, event.latlng.lng);
+    });
+    showUser(lat, lon);
+}
+
+function showUser(lat, lon) {
+    if (!map) {
+        return;
+    }
+    if (!userMarker) {
+        userMarker = L.circleMarker([lat, lon], {
+            radius: 9,
+            color: "#ffffff",
+            weight: 3,
+            fillColor: "#2563eb",
+            fillOpacity: 1,
+        }).addTo(map);
+        userMarker.bindTooltip("You", { direction: "top" });
+    } else {
+        userMarker.setLatLng([lat, lon]);
+    }
+    userMarker.bringToFront();
+}
+
+function placePin(lat, lon) {
+    if (!map) {
+        return;
+    }
+    if (!draftMarker) {
+        draftMarker = L.marker([lat, lon], { icon: pinIcon(), draggable: true, autoPan: true }).addTo(map);
+        draftMarker.on("dragstart", () => {
+            mapSettled = true;
+        });
+    } else {
+        draftMarker.setLatLng([lat, lon]);
+    }
+    pinActions.hidden = false;
+}
+
+function clearPin() {
+    if (draftMarker) {
+        draftMarker.remove();
+        draftMarker = null;
+    }
+    pinActions.hidden = true;
+    taxonInput.value = "";
+    hideProblem("observe-error");
+    if (observeDialog.open) {
+        observeDialog.close();
+    }
+}
+
+function draftPoint() {
+    if (!draftMarker) {
+        return null;
+    }
+    const latLng = draftMarker.getLatLng();
+    return { lat: round6(latLng.lat), lon: round6(latLng.lng) };
+}
+
+function renderObservationMarkers(observations) {
+    if (!savedLayer) {
+        return;
+    }
+    savedLayer.clearLayers();
+    for (const obs of observations) {
+        if (typeof obs.lat !== "number" || typeof obs.lon !== "number") {
+            continue;
+        }
+        const marker = L.circleMarker([obs.lat, obs.lon], {
+            radius: 8,
+            color: "#14532d",
+            weight: 2,
+            fillColor: "#2f6b3a",
+            fillOpacity: 0.95,
+        });
+        marker.bindTooltip(obs.taxon || "Observation", { direction: "top" });
+        marker.addTo(savedLayer);
+    }
+    if (userMarker) {
+        userMarker.bringToFront();
+    }
+}
+
+function startWatching() {
+    if (!map || watchId !== null || !navigator.geolocation || document.hidden) {
+        return;
+    }
+    const token = ++watchToken;
+    watchId = navigator.geolocation.watchPosition(
+        (position) => {
+            if (token !== watchToken || !map) {
+                return;
+            }
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            showUser(lat, lon);
+            if (!mapSettled) {
+                map.panTo([lat, lon]);
+            }
+        },
+        () => {},
+        { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 },
+    );
+}
+
+function stopWatching() {
+    watchToken += 1;
+    if (watchId !== null && navigator.geolocation) {
+        navigator.geolocation.clearWatch(watchId);
+    }
+    watchId = null;
+}
+
 function renderObservations(observations) {
     observationList.replaceChildren();
     if (observations.length === 0) {
@@ -157,7 +334,11 @@ function renderObservations(observations) {
 
         const meta = document.createElement("div");
         meta.className = "obs-meta";
-        meta.textContent = formatStamp(obs.at);
+        const bits = [formatStamp(obs.at)];
+        if (typeof obs.lat === "number" && typeof obs.lon === "number") {
+            bits.push(formatPoint(obs.lat, obs.lon));
+        }
+        meta.textContent = bits.join(" · ");
 
         const remove = document.createElement("button");
         remove.type = "button";
@@ -172,13 +353,49 @@ function renderObservations(observations) {
     }
 }
 
-async function renderSession() {
+async function renderSession({ recenter = false } = {}) {
     const session = await db.getSession();
+    if (!sessionIsUsable(session)) {
+        stopWatching();
+        show("start");
+        return;
+    }
     const observations = await db.listObservations();
     const countLabel = observations.length === 1 ? "1 observation" : `${observations.length} observations`;
-    sessionMeta.textContent = `Started ${formatStamp(session.startedAt)}. Location ${formatPoint(session.lat, session.lon)}. ${countLabel}.`;
+    sessionMeta.textContent = `Started ${formatStamp(session.startedAt)} at ${formatPoint(session.lat, session.lon)}. ${countLabel}.`;
     renderObservations(observations);
     show("session");
+    await nextFrame();
+    const isNewSession = mapSessionKey !== session.startedAt;
+    try {
+        ensureMap(session.lat, session.lon);
+    } catch (error) {
+        showProblem("session-error", {
+            message: error.message || "The map failed to load.",
+        });
+        return;
+    }
+    map.invalidateSize();
+    if (recenter || isNewSession) {
+        mapSessionKey = session.startedAt;
+        mapSettled = false;
+        clearPin();
+        map.setView([session.lat, session.lon], 16);
+        showUser(session.lat, session.lon);
+    }
+    renderObservationMarkers(observations);
+    startWatching();
+}
+
+function openObserve() {
+    if (busy || !draftMarker) {
+        return;
+    }
+    hideProblem("observe-error");
+    if (!observeDialog.open) {
+        observeDialog.showModal();
+    }
+    taxonInput.focus();
 }
 
 async function startSession() {
@@ -197,9 +414,7 @@ async function startSession() {
         await db.clearSession();
         await db.saveSession(session);
         hideProblem("session-error");
-        taxonInput.value = "";
-        await renderSession();
-        taxonInput.focus();
+        await renderSession({ recenter: true });
     } catch (error) {
         showProblem("start-error", { message: positionMessage(error) });
     } finally {
@@ -211,30 +426,37 @@ async function saveObservation() {
     if (busy) {
         return;
     }
+    const point = draftPoint();
+    if (!point) {
+        clearPin();
+        return;
+    }
     const taxon = taxonInput.value.trim();
     if (!taxon) {
         taxonInput.value = "";
         taxonInput.focus();
         return;
     }
-    hideProblem("session-error");
+    hideProblem("observe-error");
     setBusy(true, "Saving…");
     try {
         const existing = await db.listObservations();
         const seq = existing.reduce((max, obs) => Math.max(max, obs.seq || 0), 0) + 1;
+        // More fields (count, notes, wildness, taxon id) belong on this object.
         await db.addObservation({
             id: crypto.randomUUID(),
             seq,
             taxon,
             at: localStamp(),
+            lat: point.lat,
+            lon: point.lon,
         });
-        taxonInput.value = "";
+        clearPin();
         await renderSession();
     } catch (error) {
-        showProblem("session-error", { message: error.message || "Could not save the observation." });
+        showProblem("observe-error", { message: error.message || "Could not save the observation." });
     } finally {
         setBusy(false);
-        taxonInput.focus();
     }
 }
 
@@ -293,11 +515,18 @@ async function endSession() {
                 lat: session.lat,
                 lon: session.lon,
             },
-            observations.map((obs) => ({
-                seq: obs.seq,
-                taxon: obs.taxon,
-                at: obs.at,
-            })),
+            observations.map((obs) => {
+                const row = {
+                    seq: obs.seq,
+                    taxon: obs.taxon,
+                    at: obs.at,
+                };
+                if (typeof obs.lat === "number" && typeof obs.lon === "number") {
+                    row.lat = obs.lat;
+                    row.lon = obs.lon;
+                }
+                return row;
+            }),
         );
         await db.clearSession();
         doneDetail.textContent = result.documentId
@@ -321,7 +550,7 @@ async function discardSession() {
     try {
         await db.clearSession();
         hideProblem("start-error");
-        taxonInput.value = "";
+        clearPin();
         show("start");
     } catch (error) {
         showProblem("session-error", { message: error.message || "Could not discard the session." });
@@ -344,7 +573,7 @@ async function boot() {
             show("start");
             return;
         }
-        await renderSession();
+        await renderSession({ recenter: true });
     } catch (error) {
         show("start");
         showProblem("start-error", {
@@ -360,6 +589,18 @@ observeForm.addEventListener("submit", (event) => {
     event.preventDefault();
     saveObservation();
 });
+addObsButton.addEventListener("click", () => {
+    openObserve();
+});
+cancelPinButton.addEventListener("click", () => {
+    if (busy) {
+        return;
+    }
+    clearPin();
+});
+closeObserveButton.addEventListener("click", () => {
+    observeDialog.close();
+});
 endButton.addEventListener("click", () => {
     endSession();
 });
@@ -369,6 +610,15 @@ discardButton.addEventListener("click", () => {
 anotherButton.addEventListener("click", () => {
     hideProblem("start-error");
     show("start");
+});
+document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+        stopWatching();
+        return;
+    }
+    if (!viewSession.hidden) {
+        startWatching();
+    }
 });
 
 boot();

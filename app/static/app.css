@@ -114,6 +114,7 @@ button,
     text-decoration: none;
     cursor: pointer;
     text-align: center;
+    touch-action: manipulation;
 }
 
 button.secondary {
@@ -290,4 +291,80 @@ button:disabled {
 
 .error button {
     margin-top: 0.75rem;
+}
+
+.map-wrap {
+    position: relative;
+}
+
+#map {
+    height: min(62dvh, 36rem);
+    min-height: 18rem;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    background: #d5dcd0;
+}
+
+#map,
+#map * {
+    box-sizing: content-box;
+}
+
+.leaflet-container img {
+    max-width: none !important;
+    max-height: none !important;
+}
+
+#map .leaflet-control-zoom a {
+    width: 2.25rem;
+    height: 2.25rem;
+    line-height: 2.25rem;
+    font-size: 1.15rem;
+}
+
+.pin-actions {
+    position: absolute;
+    z-index: 650;
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 1.6rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+.pin-actions button {
+    width: 100%;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+.pin-actions .secondary {
+    background: var(--card);
+}
+
+#observe-dialog {
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 0;
+    background: var(--card);
+    color: var(--fg);
+    width: min(32rem, calc(100vw - 2rem));
+}
+
+#observe-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.55);
+}
+
+#observe-dialog .stack-form {
+    border: none;
+    background: transparent;
+}
+
+#observe-dialog h2 {
+    margin: 0;
+    font-size: 1.35rem;
+}
+
+#observe-dialog button {
+    width: 100%;
 }

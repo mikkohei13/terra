@@ -9,30 +9,21 @@
 
         <div id="view-start">
             <h1>New session</h1>
-            <p>The session starts at your current location. Every observation in it uses that point.</p>
+            <p>The session starts at your current location. On the map, tap where each observation is.</p>
             <button type="button" id="start-session" class="primary-action">Start session</button>
             <div id="start-error" class="error" role="alert" hidden></div>
         </div>
 
         <div id="view-session" hidden>
             <h1>Session</h1>
+            <div class="map-wrap">
+                <div id="map" role="application" aria-label="Map. Tap to place an observation."></div>
+                <div id="pin-actions" class="pin-actions" hidden>
+                    <button type="button" id="add-obs" class="primary-action">Add obs</button>
+                    <button type="button" id="cancel-pin" class="secondary">Cancel</button>
+                </div>
+            </div>
             <p id="session-meta"></p>
-            <form id="observe-form" class="stack-form">
-                <label for="taxon">Species</label>
-                <input
-                    id="taxon"
-                    name="taxon"
-                    type="text"
-                    maxlength="300"
-                    autocomplete="off"
-                    autocapitalize="off"
-                    spellcheck="false"
-                    enterkeyhint="done"
-                    placeholder="Finnish or scientific name"
-                    required
-                >
-                <button type="submit" class="primary-action">Save observation</button>
-            </form>
             <ul id="observation-list" class="obs-list"></ul>
             <div class="session-actions">
                 <button type="button" id="end-session" class="primary-action">End session</button>
@@ -47,6 +38,40 @@
             <p>Further edits are done on laji.fi.</p>
             <button type="button" id="another-session" class="primary-action">Start another session</button>
         </div>
+
+        <dialog id="observe-dialog" aria-labelledby="observe-title">
+            <form id="observe-form" class="stack-form">
+                <h2 id="observe-title">Observation</h2>
+                <label for="taxon">Species</label>
+                <input
+                    id="taxon"
+                    name="taxon"
+                    type="text"
+                    maxlength="300"
+                    autocomplete="off"
+                    autocapitalize="off"
+                    spellcheck="false"
+                    enterkeyhint="done"
+                    placeholder="Finnish or scientific name"
+                    required
+                >
+                <div id="observe-error" class="error" role="alert" hidden></div>
+                <button type="submit" class="primary-action">Save</button>
+                <button type="button" id="close-observe" class="secondary">Close</button>
+            </form>
+        </dialog>
+
+        <link
+            rel="stylesheet"
+            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+            integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+            crossorigin=""
+        >
+        <script
+            src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""
+        ></script>
         <script type="module" src="{{ url_for('static', filename='js/app.js') }}"></script>
     </div>
     {% elif show_token_form %}

@@ -1,7 +1,10 @@
 """Build a FinBIF Vihko document from one field session.
 
-A session has one location. Each observation is a species name and a time.
-Count, notes, wildness, taxon id, and a route can be added in _build_unit later.
+The gathering is the session's starting point. Each observation is a species
+name, a time, and its own point. Older observations without a point use the
+session point.
+
+Count, notes, wildness, and taxon id can be added in _build_unit later.
 """
 
 from __future__ import annotations
@@ -44,11 +47,27 @@ def _point(latitude: float, longitude: float) -> dict[str, Any]:
     return {"type": "Point", "coordinates": [longitude, latitude]}
 
 
-def _build_unit(obs: dict[str, Any], latitude: float, longitude: float) -> dict[str, Any]:
+def _observation_point(
+    raw: dict[str, Any],
+    session_lat: float,
+    session_lon: float,
+) -> tuple[float, float]:
+    """Pin coordinates, or the session point when the observation has none."""
+    has_lat = raw.get("lat") is not None
+    has_lon = raw.get("lon") is not None
+    if not has_lat and not has_lon:
+        return session_lat, session_lon
+    return (
+        _coordinate(raw.get("lat"), "Observation latitude", -90, 90),
+        _coordinate(raw.get("lon"), "Observation longitude", -180, 180),
+    )
+
+
+def _build_unit(obs: dict[str, Any]) -> dict[str, Any]:
     return {
         "identifications": [{"taxon": obs["taxon"]}],
         "unitGathering": {
-            "geometry": _point(latitude, longitude),
+            "geometry": _point(obs["lat"], obs["lon"]),
             "dateBegin": obs["at"],
         },
         "taxonConfidence": "MY.taxonConfidenceSure",
@@ -90,6 +109,7 @@ def parse_submission(body: dict[str, Any]) -> tuple[dict[str, Any], list[dict[st
         seq = raw.get("seq")
         if not isinstance(seq, int):
             seq = index
+        latitude, longitude = _observation_point(raw, session["lat"], session["lon"])
         indexed.append(
             (
                 index,
@@ -97,6 +117,8 @@ def parse_submission(body: dict[str, Any]) -> tuple[dict[str, Any], list[dict[st
                     "seq": seq,
                     "taxon": taxon,
                     "at": _stamp(raw.get("at"), "Observation time"),
+                    "lat": latitude,
+                    "lon": longitude,
                 },
             )
         )
@@ -118,11 +140,9 @@ def build_document(
     if not observations:
         raise ValueError("Add at least one observation before ending the session.")
 
-    latitude = session["lat"]
-    longitude = session["lon"]
     gathering = {
-        "geometry": _point(latitude, longitude),
-        "units": [_build_unit(obs, latitude, longitude) for obs in observations],
+        "geometry": _point(session["lat"], session["lon"]),
+        "units": [_build_unit(obs) for obs in observations],
     }
     return {
         "collectionID": config.VIHKO_COLLECTION_ID,

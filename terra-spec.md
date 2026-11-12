@@ -36,7 +36,7 @@ Geolocation needs HTTPS. Cloud Run provides it, and localhost works on desktop, 
 ## Authentication
 
 - The user logs in through Havistin2, which links to Terra and passes the FinBIF person token to `/login`. The Havistin2 side is built separately; Terra only implements `/login`.
-- `/login` accepts `personToken` as a POST form field (preferred) or a GET parameter. On GET, redirect immediately afterwards so the token doesn't stay in the URL or browser history.
+- `/login` accepts `personToken` only as a POST form field. A query parameter is ignored, so the token cannot end up in request logs or browser history.
 - On login, call FinBIF `/person` to validate the token and get the user's person ID (`MA.xxx`). Store the token and person ID in the Flask session.
 - If FinBIF rejects the token later (expired or invalid), clear the session and show a "Log in via Havistin2" link. Unsubmitted local data must survive this.
 - **Logout clears only Terra's Flask session.** Do NOT revoke the token at FinBIF the way Havistin2's logout does: the token is shared, so revoking it would also log the user out of Havistin2.

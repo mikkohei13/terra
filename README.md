@@ -10,13 +10,13 @@ See terra-spec.md for specifications for the prototype.
 
 The app runs on Google Cloud Run, and the Makefile contains the deployment script. Required env vars are `FINBIF_API_TOKEN` and `FLASK_SECRET_KEY`.
 
+## Login
+
+Havistin posts the FinBIF person token to `POST /login` as `personToken`. Terra checks it with FinBIF `GET /person` and stores the token, person id, and name in a signed cookie (`HttpOnly`, `SameSite=Lax`, `Secure` on Cloud Run). The access token stays in `FINBIF_API_TOKEN` on the server. A GET, or a token in the query string, is ignored so it cannot be written to request logs. `POST /logout` clears the cookie only and does not revoke the token, because Havistin uses the same one. Logged-out visitors are linked to Havistin (`HAVISTIN_URL`).
+
+Local Compose binds port 85 to `127.0.0.1` and sets `DEV_LOGIN=1`. Opening `http://127.0.0.1:85/dev/login` signs in with `DEV_PERSON_TOKEN` from `.env.dev`, which is not deployed. The route stays closed for any other host.
+
 ## Technical Overview
-
-Authentication is via a separate Havistin app, which posts the FinBIF person token to `/login` as `personToken`. GET works too; Terra then redirects to `/` so the token leaves the URL. Terra checks the token with FinBIF `GET /person` and stores the token, person id, and name in a signed cookie. The access token stays in `FINBIF_API_TOKEN` on the server.
-
-`POST /logout` clears that cookie only. It does not revoke the person token, because Havistin uses the same one.
-
-Logged-out visitors are linked to Havistin (`HAVISTIN_URL`).
 
 One observation session is active at a time, stored in IndexedDB on the phone until it is submitted. Starting a session reads the location once. The session screen is a Leaflet map of that position; a blue dot follows the user until the map is touched. Tap the map to place or move a pin. Add obs opens a dialog for the species name, and Cancel removes the pin. An observation is a species name, a time, and the pin's coordinates. Logout leaves this local data in place.
 

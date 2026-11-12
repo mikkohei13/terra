@@ -5,13 +5,15 @@ services:
     volumes:
       - ./app:/terra/app
     ports:
-      - "85:85"
+      - "127.0.0.1:85:85"
     env_file:
       - .env
+      - .env.dev
     environment:
       - FLASK_DEBUG=1
       - PYTHONUNBUFFERED=TRUE
       - SESSION_COOKIE_SECURE=0
+      - DEV_LOGIN=1
     entrypoint: >
       gunicorn
       --chdir /terra/app main:app -w 1

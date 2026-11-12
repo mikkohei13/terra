@@ -14,6 +14,15 @@ SESSION_COOKIE_SECURE = os.environ.get("SESSION_COOKIE_SECURE", "").strip().lowe
     "yes",
 }
 
+# Local /dev/login. Compose sets the flag. The token lives in .env.dev, which
+# is not deployed; .env is.
+DEV_LOGIN = os.environ.get("DEV_LOGIN", "").strip().lower() in {
+    "1",
+    "true",
+    "yes",
+}
+DEV_PERSON_TOKEN = os.environ.get("DEV_PERSON_TOKEN", "").strip()
+
 # Information system identifier for laji-auth (person tokens must be issued for this target).
 LAJI_AUTH_TARGET = "KE.781"
 

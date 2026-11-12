@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from functools import wraps
 
-from flask import Flask, flash, jsonify, redirect, render_template, request, session, url_for
+from flask import Flask, abort, flash, jsonify, redirect, render_template, request, session, url_for
 
 import config
 from finbif.client import FinbifError, fetch_person
@@ -19,7 +19,7 @@ app.config["SESSION_COOKIE_SECURE"] = config.SESSION_COOKIE_SECURE
 
 @app.after_request
 def _referrer_policy(response):
-    # Keeps a person token in /login?personToken=... from leaking via Referer.
+    # Keeps a person token from leaking via Referer if one ever appears in a URL.
     response.headers["Referrer-Policy"] = "no-referrer"
     return response
 
@@ -46,7 +46,8 @@ def login_required(view):
 
 
 def _person_token_from_request() -> str:
-    return (request.values.get("personToken") or "").strip()
+    # Form body only. A query parameter is stored in the Cloud Run request log.
+    return (request.form.get("personToken") or "").strip()
 
 
 def _person_token_rejected(exc: FinbifError) -> bool:
@@ -79,17 +80,52 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/login", methods=["GET", "POST"])
+@app.route("/login", methods=["POST"])
 def login():
     """Accept a person token from Havistin and start a Terra session.
 
-    POST form field personToken is the normal path. GET is accepted too,
-    then redirected so the token does not remain in the address bar.
+    The token is the POST form field personToken. GET is rejected so the
+    token cannot be written to the Cloud Run request log.
     """
     person_token = _person_token_from_request()
     if not person_token:
         if request.method == "POST":
             flash("Person token is missing.", "error")
+        return redirect(url_for("index"), code=303)
+
+    try:
+        _establish_session(person_token)
+    except FinbifError as exc:
+        flash(exc.message, "error")
+        return redirect(url_for("index"), code=303)
+    except Exception:
+        flash("Login failed.", "error")
+        return redirect(url_for("index"), code=303)
+
+    return redirect(url_for("index"), code=303)
+
+
+def _dev_login_open() -> bool:
+    """True only for local Compose. The same .env file is deployed to Cloud Run."""
+    if not config.DEV_LOGIN:
+        return False
+    host = request.host.split(":", 1)[0].lower()
+    return host in ("localhost", "127.0.0.1")
+
+
+@app.route("/dev/login", methods=["GET"])
+def dev_login():
+    """Start a session from DEV_PERSON_TOKEN so a local browser can skip Havistin.
+
+    The token stays on the server. A non-local host is rejected even if the
+    flag is set, because .env is what Cloud Run receives.
+    """
+    if not _dev_login_open():
+        abort(404)
+
+    person_token = config.DEV_PERSON_TOKEN
+    if not person_token:
+        flash("Dev person token is missing.", "error")
         return redirect(url_for("index"), code=303)
 
     try:

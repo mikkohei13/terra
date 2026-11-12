@@ -5,6 +5,7 @@ LOCAL_NOTES.md
 
 service-account-key.json
 .env
+.env.dev
 .DS_Store
 .cursor/
 
@@ -106,6 +107,7 @@ celerybeat.pid
 
 # Environments
 .env
+.env.dev
 .venv
 env/
 venv/

@@ -34,11 +34,6 @@ def inject_user():
     }
 
 
-def _request_is_localhost() -> bool:
-    host = request.host.split(":", 1)[0].lower()
-    return host in ("localhost", "127.0.0.1")
-
-
 def login_required(view):
     @wraps(view)
     def wrapped(*args, **kwargs):
@@ -81,10 +76,7 @@ def _establish_session(person_token: str) -> None:
 
 @app.route("/")
 def index():
-    return render_template(
-        "index.html",
-        show_token_form=_request_is_localhost() and not session.get("person_token"),
-    )
+    return render_template("index.html")
 
 
 @app.route("/login", methods=["GET", "POST"])

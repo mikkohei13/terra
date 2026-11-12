@@ -4,7 +4,7 @@ FLASK_SECRET_KEY = os.environ["FLASK_SECRET_KEY"]
 FINBIF_API_TOKEN = os.environ["FINBIF_API_TOKEN"]
 FINBIF_API_BASE = os.environ.get("FINBIF_API_BASE", "https://api.laji.fi").rstrip("/")
 
-# Logged-out visitors on a public host are sent here. Localhost shows a token field instead.
+# Logged-out visitors are sent here.
 HAVISTIN_URL = os.environ.get("HAVISTIN_URL", "https://havistin.biomi.org").rstrip("/")
 
 # On for Cloud Run (set in the image). Local Docker Compose turns it off.

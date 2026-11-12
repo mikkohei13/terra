@@ -57,6 +57,7 @@ Only one session is active at a time. The active session and its observations ar
 - **Area:** a bounding box with 50 km sides (±25 km) centred on the session's starting point.
 - **Time:** day of year ±14 days from today, in each of the last 20 years.
   - Pitfall: near New Year the day-of-year window wraps around (e.g. Dec 25 – Jan 22). Verify how the API handles that; if needed, run two queries and merge the results.
+- Example parameters: time=2006-01-01%2F&collectionIdNot=HR.48&coordinates=59.878092:60.445266:24.037182:25.297034:WGS84:1&season=1028%2F1125
 - **Grouping and order:** aggregate by the exact taxon recorded (no merging of subspecies into species), across all taxon groups. Order by number of records, descending, and keep the first 100.
 - For each taxon, keep its ID, Finnish name, scientific name, and record count. Records with no taxon link are skipped.
 - The query can take several seconds. Run it once per session and store the result with the session in IndexedDB.

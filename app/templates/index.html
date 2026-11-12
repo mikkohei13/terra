@@ -74,20 +74,6 @@
         ></script>
         <script type="module" src="{{ url_for('static', filename='js/app.js') }}"></script>
     </div>
-    {% elif show_token_form %}
-        <h1>Terra</h1>
-        <p>Local login. Paste a FinBIF person token.</p>
-        <form method="post" action="{{ url_for('login') }}" class="stack-form">
-            <label for="personToken">Person token</label>
-            <input
-                id="personToken"
-                name="personToken"
-                type="password"
-                autocomplete="off"
-                required
-            >
-            <button type="submit">Log in</button>
-        </form>
     {% else %}
         <h1>Terra</h1>
         <p><a class="button" href="{{ havistin_url }}">Log in via Havistin</a></p>

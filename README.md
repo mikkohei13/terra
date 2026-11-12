@@ -16,7 +16,7 @@ Authentication is via a separate Havistin app, which posts the FinBIF person tok
 
 `POST /logout` clears that cookie only. It does not revoke the person token, because Havistin uses the same one.
 
-On localhost the front page has a token field. Elsewhere it links to Havistin (`HAVISTIN_URL`).
+Logged-out visitors are linked to Havistin (`HAVISTIN_URL`).
 
 One observation session is active at a time, stored in IndexedDB on the phone until it is submitted. Starting a session reads the location once. The session screen is a Leaflet map of that position; a blue dot follows the user until the map is touched. Tap the map to place or move a pin. Add obs opens a dialog for the species name, and Cancel removes the pin. An observation is a species name, a time, and the pin's coordinates. Logout leaves this local data in place.
 

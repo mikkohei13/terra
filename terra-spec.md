@@ -77,11 +77,12 @@ A point is added only if both of these are true:
 - it is at least 100 m from every existing route point
 - at least 5 minutes have passed since the last added point
 
-While the app is visible, the map can show the user's live position (`watchPosition`). Stop watching when the page is hidden. Live positions don't go into the route unless the rules above allow it.
+While the app is visible, the map can show the user's live position (`watchPosition`). Stop watching when the page is hidden. Move the You marker about every 5 seconds (first fix immediately when the watch starts). Live positions don't go into the route unless the rules above allow it.
 
 ### Map view (main view)
 
 - The map shows the user's position and a marker for each observation. The route is not drawn.
+- Follow starts on when the session map opens. A Start following / Stop following control toggles it. While follow is on, recenter with `panTo` only when the You marker is outside the visible map (keep the current zoom). Panning or zooming turns follow off; placing or dragging a pin does not. Saving or deleting an observation must not turn follow back on.
 - A large "Observe" button opens the observation entry view.
 - Tapping an observation marker opens that observation for editing.
 - The view also links to the list view, "End session", and "Discard session".

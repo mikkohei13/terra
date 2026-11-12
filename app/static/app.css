@@ -322,6 +322,18 @@ button:disabled {
     font-size: 1.15rem;
 }
 
+.follow-toggle {
+    position: absolute;
+    z-index: 650;
+    top: 0.75rem;
+    right: 0.75rem;
+    padding: 0.7rem 0.9rem;
+    background: var(--card);
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
 .pin-actions {
     position: absolute;
     z-index: 650;

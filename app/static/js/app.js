@@ -23,6 +23,9 @@ const addObsButton = document.getElementById("add-obs");
 const cancelPinButton = document.getElementById("cancel-pin");
 const closeObserveButton = document.getElementById("close-observe");
 const pinActions = document.getElementById("pin-actions");
+const followToggle = document.getElementById("follow-toggle");
+
+const USER_MARKER_INTERVAL_MS = 5000;
 
 let busy = false;
 let map = null;
@@ -32,7 +35,8 @@ let savedLayer = null;
 let watchId = null;
 let watchToken = 0;
 let mapSessionKey = null;
-let mapSettled = false;
+let following = true;
+let lastUserMarkerAt = 0;
 
 function $(id) {
     return document.getElementById(id);
@@ -173,6 +177,26 @@ function pinIcon() {
     });
 }
 
+function syncFollowButton() {
+    followToggle.textContent = following ? "Stop following" : "Start following";
+    followToggle.setAttribute("aria-pressed", following ? "true" : "false");
+}
+
+function setFollowing(on) {
+    following = on;
+    syncFollowButton();
+}
+
+function maybeCenterOnUser() {
+    if (!following || !map || !userMarker) {
+        return;
+    }
+    const latLng = userMarker.getLatLng();
+    if (!map.getBounds().contains(latLng)) {
+        map.panTo(latLng);
+    }
+}
+
 function ensureMap(lat, lon) {
     if (map) {
         return;
@@ -191,12 +215,12 @@ function ensureMap(lat, lon) {
     }).addTo(map);
     savedLayer = L.layerGroup().addTo(map);
     map.setView([lat, lon], 16);
-    const settleMap = () => {
-        mapSettled = true;
-    };
-    map.on("dragstart", settleMap);
-    map.on("mousedown", settleMap);
-    map.on("touchstart", settleMap);
+    map.on("dragstart", () => {
+        setFollowing(false);
+    });
+    map.on("zoomstart", () => {
+        setFollowing(false);
+    });
     map.on("click", (event) => {
         if (busy || observeDialog.open) {
             return;
@@ -231,9 +255,6 @@ function placePin(lat, lon) {
     }
     if (!draftMarker) {
         draftMarker = L.marker([lat, lon], { icon: pinIcon(), draggable: true, autoPan: true }).addTo(map);
-        draftMarker.on("dragstart", () => {
-            mapSettled = true;
-        });
     } else {
         draftMarker.setLatLng([lat, lon]);
     }
@@ -290,17 +311,21 @@ function startWatching() {
         return;
     }
     const token = ++watchToken;
+    lastUserMarkerAt = 0;
     watchId = navigator.geolocation.watchPosition(
         (position) => {
             if (token !== watchToken || !map) {
                 return;
             }
+            const now = Date.now();
+            if (lastUserMarkerAt !== 0 && now - lastUserMarkerAt < USER_MARKER_INTERVAL_MS) {
+                return;
+            }
+            lastUserMarkerAt = now;
             const lat = position.coords.latitude;
             const lon = position.coords.longitude;
             showUser(lat, lon);
-            if (!mapSettled) {
-                map.panTo([lat, lon]);
-            }
+            maybeCenterOnUser();
         },
         () => {},
         { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 },
@@ -313,6 +338,7 @@ function stopWatching() {
         navigator.geolocation.clearWatch(watchId);
     }
     watchId = null;
+    lastUserMarkerAt = 0;
 }
 
 function renderObservations(observations) {
@@ -378,10 +404,12 @@ async function renderSession({ recenter = false } = {}) {
     map.invalidateSize();
     if (recenter || isNewSession) {
         mapSessionKey = session.startedAt;
-        mapSettled = false;
         clearPin();
         map.setView([session.lat, session.lon], 16);
         showUser(session.lat, session.lon);
+        // setView can emit zoomstart; turn follow on after that so opening
+        // the map does not leave follow off.
+        setFollowing(true);
     }
     renderObservationMarkers(observations);
     startWatching();
@@ -597,6 +625,17 @@ cancelPinButton.addEventListener("click", () => {
         return;
     }
     clearPin();
+});
+followToggle.addEventListener("click", () => {
+    if (busy) {
+        return;
+    }
+    if (following) {
+        setFollowing(false);
+        return;
+    }
+    setFollowing(true);
+    maybeCenterOnUser();
 });
 closeObserveButton.addEventListener("click", () => {
     observeDialog.close();

@@ -36,6 +36,7 @@
                 </button>
                 <div id="pin-actions" class="pin-actions" hidden>
                     <button type="button" id="add-obs" class="primary-action">Add obs</button>
+                    <button type="button" id="edit-obs" class="secondary" hidden>Edit</button>
                     <button type="button" id="cancel-pin" class="secondary">Cancel</button>
                 </div>
             </div>
@@ -77,6 +78,13 @@
                 <button type="submit" class="primary-action">Save</button>
                 <button type="button" id="close-observe" class="secondary">Close</button>
             </form>
+        </dialog>
+
+        <dialog id="edit-list-dialog" aria-label="Edit observation">
+            <div class="stack-form">
+                <ul id="edit-list" class="edit-list"></ul>
+                <button type="button" id="close-edit-list" class="secondary">Close</button>
+            </div>
         </dialog>
 
         <link

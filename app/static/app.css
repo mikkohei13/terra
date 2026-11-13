@@ -373,6 +373,10 @@ button:disabled {
     gap: 0.75rem;
 }
 
+.pin-actions:has(#edit-obs:not([hidden])) {
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
 .pin-actions button {
     width: 100%;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
@@ -382,7 +386,8 @@ button:disabled {
     background: var(--card);
 }
 
-#observe-dialog {
+#observe-dialog,
+#edit-list-dialog {
     border: 1px solid var(--border);
     border-radius: 0.75rem;
     padding: 0;
@@ -395,17 +400,33 @@ button:disabled {
     margin-bottom: auto;
 }
 
-#observe-dialog::backdrop {
+#observe-dialog::backdrop,
+#edit-list-dialog::backdrop {
     background: rgba(0, 0, 0, 0.55);
 }
 
-#observe-dialog .stack-form {
+#observe-dialog .stack-form,
+#edit-list-dialog .stack-form {
     border: none;
     background: transparent;
 }
 
-#observe-dialog button {
+#observe-dialog button,
+#edit-list-dialog button {
     width: 100%;
+}
+
+.edit-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.5rem;
+}
+
+.edit-list button {
+    text-align: left;
+    font-weight: 600;
 }
 
 .site-header .header-button {

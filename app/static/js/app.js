@@ -23,8 +23,12 @@ const endButton = document.getElementById("end-session");
 const doneDetail = document.getElementById("done-detail");
 const anotherButton = document.getElementById("another-session");
 const addObsButton = document.getElementById("add-obs");
+const editObsButton = document.getElementById("edit-obs");
 const cancelPinButton = document.getElementById("cancel-pin");
 const closeObserveButton = document.getElementById("close-observe");
+const editListDialog = document.getElementById("edit-list-dialog");
+const editList = document.getElementById("edit-list");
+const closeEditListButton = document.getElementById("close-edit-list");
 const pinActions = document.getElementById("pin-actions");
 const followToggle = document.getElementById("follow-toggle");
 const taxonField = attachTaxonField(
@@ -35,6 +39,7 @@ const taxonField = attachTaxonField(
 
 const USER_MARKER_INTERVAL_MS = 5000;
 const WATCH_RETRY_MS = 30000;
+const NEARBY_TAP_PX = 48;
 
 let busy = false;
 let map = null;
@@ -49,6 +54,9 @@ let lastUserMarkerAt = 0;
 let latestFix = null;
 let recordChain = Promise.resolve();
 let watchRetryTimer = null;
+let sessionObservations = [];
+let nearbyObservations = [];
+let editingObservation = null;
 
 function $(id) {
     return document.getElementById(id);
@@ -245,10 +253,11 @@ function ensureMap(lat, lon) {
         setFollowing(false);
     });
     map.on("click", (event) => {
-        if (busy || observeDialog.open) {
+        if (busy || observeDialog.open || editListDialog.open) {
             return;
         }
         placePin(event.latlng.lat, event.latlng.lng);
+        updateNearbyObservations(event.latlng);
     });
     showUser(lat, lon);
 }
@@ -276,6 +285,7 @@ function placePin(lat, lon) {
     if (!map) {
         return;
     }
+    editingObservation = null;
     if (!draftMarker) {
         draftMarker = L.marker([lat, lon], { icon: pinIcon(), draggable: true, autoPan: true }).addTo(map);
     } else {
@@ -284,14 +294,43 @@ function placePin(lat, lon) {
     pinActions.hidden = false;
 }
 
+function clearNearbyObservations() {
+    nearbyObservations = [];
+    editObsButton.hidden = true;
+}
+
+function updateNearbyObservations(latLng) {
+    if (!map) {
+        clearNearbyObservations();
+        return;
+    }
+    const tapPoint = map.latLngToContainerPoint(latLng);
+    nearbyObservations = sessionObservations
+        .filter((obs) => typeof obs.lat === "number" && typeof obs.lon === "number")
+        .filter((obs) => {
+            const point = map.latLngToContainerPoint([obs.lat, obs.lon]);
+            const dx = point.x - tapPoint.x;
+            const dy = point.y - tapPoint.y;
+            return dx * dx + dy * dy <= NEARBY_TAP_PX * NEARBY_TAP_PX;
+        })
+        .slice()
+        .sort((a, b) => (b.seq || 0) - (a.seq || 0));
+    editObsButton.hidden = nearbyObservations.length === 0;
+}
+
 function clearPin() {
     if (draftMarker) {
         draftMarker.remove();
         draftMarker = null;
     }
     pinActions.hidden = true;
+    clearNearbyObservations();
+    editingObservation = null;
     taxonField.clear();
     hideProblem("observe-error");
+    if (editListDialog.open) {
+        editListDialog.close();
+    }
     if (observeDialog.open) {
         observeDialog.close();
     }
@@ -488,6 +527,7 @@ async function renderSession({ recenter = false } = {}) {
         return;
     }
     const observations = await db.listObservations();
+    sessionObservations = observations;
     sessionMeta.textContent = formatStamp(session.startedAt);
     renderObservations(observations);
     show("session");
@@ -510,6 +550,9 @@ async function renderSession({ recenter = false } = {}) {
         setFollowing(true);
     }
     renderObservationMarkers(observations);
+    if (draftMarker) {
+        updateNearbyObservations(draftMarker.getLatLng());
+    }
     devdots.show(map, Array.isArray(session.points) ? session.points : []); // devdots
     startWatching();
 }
@@ -518,6 +561,46 @@ function openObserve() {
     if (busy || !draftMarker) {
         return;
     }
+    editingObservation = null;
+    taxonField.clear();
+    hideProblem("observe-error");
+    if (!observeDialog.open) {
+        observeDialog.showModal();
+    }
+    taxonInput.focus();
+}
+
+function openEditList() {
+    if (busy || nearbyObservations.length === 0) {
+        return;
+    }
+    editList.replaceChildren();
+    for (const obs of nearbyObservations) {
+        const item = document.createElement("li");
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "secondary";
+        button.textContent = obs.taxon || "Observation";
+        button.addEventListener("click", () => {
+            openEditObservation(obs);
+        });
+        item.append(button);
+        editList.append(item);
+    }
+    if (!editListDialog.open) {
+        editListDialog.showModal();
+    }
+}
+
+function openEditObservation(obs) {
+    if (busy || !obs) {
+        return;
+    }
+    editingObservation = obs;
+    if (editListDialog.open) {
+        editListDialog.close();
+    }
+    taxonField.setValue(obs.taxon || "", obs.taxonId || null);
     hideProblem("observe-error");
     if (!observeDialog.open) {
         observeDialog.showModal();
@@ -562,36 +645,56 @@ async function saveObservation() {
     if (busy) {
         return;
     }
-    const point = draftPoint();
-    if (!point) {
-        clearPin();
-        return;
-    }
     const taxon = taxonInput.value.trim();
     if (!taxon) {
         taxonInput.value = "";
         taxonInput.focus();
         return;
     }
+    const editing = editingObservation;
+    if (!editing) {
+        const point = draftPoint();
+        if (!point) {
+            clearPin();
+            return;
+        }
+    }
     hideProblem("observe-error");
     setBusy(true, "Saving…");
     try {
-        const existing = await db.listObservations();
-        const seq = existing.reduce((max, obs) => Math.max(max, obs.seq || 0), 0) + 1;
-        // More fields (count, notes, wildness) belong on this object.
-        const observation = {
-            id: crypto.randomUUID(),
-            seq,
-            taxon,
-            at: localStamp(),
-            lat: point.lat,
-            lon: point.lon,
-        };
         const taxonId = taxonField.selectedTaxonId();
-        if (taxonId) {
-            observation.taxonId = taxonId;
+        if (editing) {
+            // Keep id, seq, time, and coordinates; only the taxon can change here.
+            const observation = {
+                id: editing.id,
+                seq: editing.seq,
+                taxon,
+                at: editing.at,
+                lat: editing.lat,
+                lon: editing.lon,
+            };
+            if (taxonId) {
+                observation.taxonId = taxonId;
+            }
+            await db.addObservation(observation);
+        } else {
+            const point = draftPoint();
+            const existing = await db.listObservations();
+            const seq = existing.reduce((max, obs) => Math.max(max, obs.seq || 0), 0) + 1;
+            // More fields (count, notes, wildness) belong on this object.
+            const observation = {
+                id: crypto.randomUUID(),
+                seq,
+                taxon,
+                at: localStamp(),
+                lat: point.lat,
+                lon: point.lon,
+            };
+            if (taxonId) {
+                observation.taxonId = taxonId;
+            }
+            await db.addObservation(observation);
         }
-        await db.addObservation(observation);
         clearPin();
         await renderSession();
     } catch (error) {
@@ -725,6 +828,9 @@ observeForm.addEventListener("submit", (event) => {
 addObsButton.addEventListener("click", () => {
     openObserve();
 });
+editObsButton.addEventListener("click", () => {
+    openEditList();
+});
 cancelPinButton.addEventListener("click", () => {
     if (busy) {
         return;
@@ -744,6 +850,13 @@ followToggle.addEventListener("click", () => {
 });
 closeObserveButton.addEventListener("click", () => {
     observeDialog.close();
+});
+closeEditListButton.addEventListener("click", () => {
+    editListDialog.close();
+});
+observeDialog.addEventListener("close", () => {
+    // Closing without Save leaves the pin; Add obs can start a new one next.
+    editingObservation = null;
 });
 endButton.addEventListener("click", () => {
     endSession();

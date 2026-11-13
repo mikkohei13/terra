@@ -226,6 +226,22 @@ export function attachTaxonField(input, list, dialog) {
 
     return {
         selectedTaxonId,
+        setValue(name, taxonId) {
+            if (timer) {
+                clearTimeout(timer);
+                timer = null;
+            }
+            seq += 1;
+            abortRequest();
+            clearList();
+            const text = typeof name === "string" ? name : "";
+            input.value = text;
+            if (taxonId && text) {
+                selected = { id: taxonId, name: text };
+            } else {
+                selected = null;
+            }
+        },
         clear() {
             if (timer) {
                 clearTimeout(timer);

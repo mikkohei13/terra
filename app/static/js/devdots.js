@@ -2,7 +2,7 @@
 //
 // Remove this before the app is public:
 // 1. Delete app/static/js/devdots.js.
-// 2. In app/static/js/app.js, delete the devdots import and every call marked devdots.
+// 2. In app/static/js/session-map.js, delete the devdots import and every call marked devdots.
 // 3. Search the repo for "devdots" and delete anything left.
 
 let layer = null;

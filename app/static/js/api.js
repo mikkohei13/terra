@@ -27,7 +27,11 @@ export async function autocompleteTaxa(query, informalTaxonGroupIds, signal) {
     return body || { results: [] };
 }
 
-export async function submitSession(session, observations) {
+export async function submitSession(session, observations, document) {
+    const payload = { session, observations };
+    if (document && typeof document === "object" && !Array.isArray(document)) {
+        payload.document = document;
+    }
     const response = await fetch("/api/sessions/submit", {
         method: "POST",
         credentials: "same-origin",
@@ -35,7 +39,7 @@ export async function submitSession(session, observations) {
             Accept: "application/json",
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ session, observations }),
+        body: JSON.stringify(payload),
     });
 
     let body = null;

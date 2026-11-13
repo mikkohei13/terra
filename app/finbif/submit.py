@@ -30,8 +30,8 @@ def submit_session(
     POST /documents/validate, then POST /documents only if validation passes.
     Returns document_id on success.
     """
-    session, observations = parse_submission(body)
-    document = build_document(session, observations, observer_id)
+    session, observations, header = parse_submission(body)
+    document = build_document(session, observations, observer_id, header)
 
     v_status, v_body = post_json(
         "/documents/validate",

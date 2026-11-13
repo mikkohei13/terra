@@ -5,8 +5,10 @@ remains. With no route points it is the session start. Each observation is a
 species name, a time, and its own point. Older observations without a point
 use the session point.
 
-Count, notes, and wildness can be added in _build_unit later. A chosen
-taxon id is sent as unitFact.autocompleteSelectedTaxonID.
+A new observation field is read in _parse_observation and mapped in
+_build_unit. A document-level field, such as keywords, is read in
+_parse_header and written in build_document. Unknown keys are ignored.
+A chosen taxon id is sent as unitFact.autocompleteSelectedTaxonID.
 """
 
 from __future__ import annotations
@@ -22,6 +24,9 @@ _STAMP = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$")
 _MAX_OBSERVATIONS = 300
 _MAX_ROUTE_POINTS = 2000
 _MAX_TAXON_LENGTH = 300
+_MAX_KEYWORDS = 30
+_MAX_KEYWORD_LENGTH = 100
+_DEFAULT_KEYWORDS = ("new",)
 
 
 def _stamp(value: Any, label: str) -> str:
@@ -131,7 +136,77 @@ def _taxon_id(value: Any) -> Optional[str]:
     return taxon_id
 
 
-def parse_submission(body: dict[str, Any]) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+def _parse_observation(
+    raw: Any,
+    index: int,
+    session_lat: float,
+    session_lon: float,
+) -> dict[str, Any]:
+    """Read one posted observation. Unknown keys are ignored.
+
+    A new observation field is read here and mapped in _build_unit.
+    """
+    if not isinstance(raw, dict):
+        raise ValueError("An observation is missing its species name.")
+    taxon = str(raw.get("taxon") or "").strip()
+    if not taxon:
+        raise ValueError("Each observation needs a species name.")
+    if len(taxon) > _MAX_TAXON_LENGTH:
+        raise ValueError("A species name is too long.")
+    seq = raw.get("seq")
+    if not isinstance(seq, int):
+        seq = index
+    latitude, longitude = _observation_point(raw, session_lat, session_lon)
+    observation = {
+        "seq": seq,
+        "taxon": taxon,
+        "at": _stamp(raw.get("at"), "Observation time"),
+        "lat": latitude,
+        "lon": longitude,
+    }
+    taxon_id = _taxon_id(raw.get("taxonId"))
+    if taxon_id:
+        observation["taxonId"] = taxon_id
+    return observation
+
+
+def _parse_keywords(value: Any) -> list[str]:
+    if value is None:
+        return list(_DEFAULT_KEYWORDS)
+    if not isinstance(value, list):
+        raise ValueError("Keywords must be a list.")
+    if len(value) > _MAX_KEYWORDS:
+        raise ValueError(f"A document can contain at most {_MAX_KEYWORDS} keywords.")
+    keywords: list[str] = []
+    for item in value:
+        if not isinstance(item, str):
+            raise ValueError("A keyword must be text.")
+        text = item.strip()
+        if not text:
+            raise ValueError("A keyword is empty.")
+        if len(text) > _MAX_KEYWORD_LENGTH:
+            raise ValueError("A keyword is too long.")
+        keywords.append(text)
+    return keywords
+
+
+def _parse_header(body: dict[str, Any]) -> dict[str, Any]:
+    """Read optional document details. Unknown keys are ignored.
+
+    A new document-level field is read here and written in build_document.
+    Missing keywords stay ["new"].
+    """
+    raw = body.get("document")
+    if raw is None:
+        return {"keywords": list(_DEFAULT_KEYWORDS)}
+    if not isinstance(raw, dict):
+        raise ValueError("Document details must be an object.")
+    return {"keywords": _parse_keywords(raw.get("keywords"))}
+
+
+def parse_submission(
+    body: dict[str, Any],
+) -> tuple[dict[str, Any], list[dict[str, Any]], dict[str, Any]]:
     """Validate the JSON body from the phone. Raises ValueError with a short message."""
     raw_session = body.get("session")
     raw_observations = body.get("observations")
@@ -156,38 +231,19 @@ def parse_submission(body: dict[str, Any]) -> tuple[dict[str, Any], list[dict[st
 
     indexed: list[tuple[int, dict[str, Any]]] = []
     for index, raw in enumerate(raw_observations):
-        if not isinstance(raw, dict):
-            raise ValueError("An observation is missing its species name.")
-        taxon = str(raw.get("taxon") or "").strip()
-        if not taxon:
-            raise ValueError("Each observation needs a species name.")
-        if len(taxon) > _MAX_TAXON_LENGTH:
-            raise ValueError("A species name is too long.")
-        seq = raw.get("seq")
-        if not isinstance(seq, int):
-            seq = index
-        latitude, longitude = _observation_point(raw, session["lat"], session["lon"])
-        observation = {
-            "seq": seq,
-            "taxon": taxon,
-            "at": _stamp(raw.get("at"), "Observation time"),
-            "lat": latitude,
-            "lon": longitude,
-        }
-        taxon_id = _taxon_id(raw.get("taxonId"))
-        if taxon_id:
-            observation["taxonId"] = taxon_id
+        observation = _parse_observation(raw, index, session["lat"], session["lon"])
         indexed.append((index, observation))
 
     indexed.sort(key=lambda item: (item[1]["seq"], item[0]))
     observations = [item[1] for item in indexed]
-    return session, observations
+    return session, observations, _parse_header(body)
 
 
 def build_document(
     session: dict[str, Any],
     observations: list[dict[str, Any]],
     observer_id: str,
+    header: dict[str, Any],
 ) -> dict[str, Any]:
     """One document, one gathering, one unit per observation."""
     observer_id = (observer_id or "").strip()
@@ -203,7 +259,7 @@ def build_document(
     return {
         "collectionID": config.VIHKO_COLLECTION_ID,
         "formID": config.VIHKO_FORM_ID,
-        "keywords": ["new"],
+        "keywords": list(header["keywords"]),
         "secureLevel": "MX.secureLevelNone",
         "gatheringEvent": {
             "dateBegin": session["startedAt"],

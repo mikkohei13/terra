@@ -1,62 +1,44 @@
-// Field session UI. The map shows where the user is. A tap places the observation.
+// Field session screens. Start, end, and discard live here.
 
 import * as api from "./api.js";
 import * as db from "./db.js";
-import * as devdots from "./devdots.js"; // devdots
-import { MAX_ROUTE_POINTS, shouldRecordPoint } from "./route.js";
+import { createObserve, formatStamp } from "./observe.js";
+import { shouldRecordPoint } from "./route.js";
+import {
+    createSessionMap,
+    currentPosition,
+    fixFromPosition,
+    localStamp,
+    positionMessage,
+    round6,
+    sessionIsUsable,
+} from "./session-map.js";
 import { getSetting } from "./settings.js";
-import { attachTaxonField } from "./taxon-field.js";
-
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 const viewStart = document.getElementById("view-start");
 const viewSession = document.getElementById("view-session");
 const viewDone = document.getElementById("view-done");
 const statusLine = document.getElementById("status");
 const startButton = document.getElementById("start-session");
-const observeForm = document.getElementById("observe-form");
-const observeDialog = document.getElementById("observe-dialog");
-const taxonInput = document.getElementById("taxon");
 const sessionMeta = document.getElementById("session-meta");
-const observationList = document.getElementById("observation-list");
 const endButton = document.getElementById("end-session");
 const doneDetail = document.getElementById("done-detail");
 const anotherButton = document.getElementById("another-session");
-const addObsButton = document.getElementById("add-obs");
-const editObsButton = document.getElementById("edit-obs");
 const cancelPinButton = document.getElementById("cancel-pin");
-const closeObserveButton = document.getElementById("close-observe");
-const editListDialog = document.getElementById("edit-list-dialog");
-const editList = document.getElementById("edit-list");
-const closeEditListButton = document.getElementById("close-edit-list");
-const pinActions = document.getElementById("pin-actions");
-const followToggle = document.getElementById("follow-toggle");
-const taxonField = attachTaxonField(
-    taxonInput,
-    document.getElementById("taxon-results"),
-    observeDialog,
-);
-
-const USER_MARKER_INTERVAL_MS = 5000;
-const WATCH_RETRY_MS = 30000;
-const NEARBY_TAP_PX = 48;
 
 let busy = false;
-let map = null;
-let userMarker = null;
-let draftMarker = null;
-let savedLayer = null;
-let watchId = null;
-let watchToken = 0;
 let mapSessionKey = null;
-let following = true;
-let lastUserMarkerAt = 0;
-let latestFix = null;
-let recordChain = Promise.resolve();
-let watchRetryTimer = null;
-let sessionObservations = [];
-let nearbyObservations = [];
-let editingObservation = null;
+let observe;
+
+const mapApi = createSessionMap({
+    isBusy: () => busy,
+    isBlocked: () => observe.dialogsOpen(),
+    isSessionVisible: () => !viewSession.hidden,
+    onTap(latlng) {
+        observe.beginNewPin();
+        observe.updateNearby(latlng);
+    },
+});
 
 function $(id) {
     return document.getElementById(id);
@@ -67,8 +49,8 @@ function show(view) {
     viewSession.hidden = view !== "session";
     viewDone.hidden = view !== "done";
     if (view !== "session") {
-        stopWatching();
-        devdots.show(map, []); // devdots
+        mapApi.stopWatching();
+        mapApi.showRoute([]);
     }
     if (!busy) {
         statusLine.hidden = true;
@@ -122,490 +104,53 @@ function showProblem(id, error) {
     }
 }
 
-function localStamp(date = new Date()) {
-    const pad = (n) => String(n).padStart(2, "0");
-    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
-}
-
-function formatStamp(stamp) {
-    const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(stamp || "");
-    if (!match) {
-        return stamp || "";
-    }
-    const month = MONTHS[Number(match[2]) - 1] || match[2];
-    return `${Number(match[3])} ${month} ${match[1]}, ${match[4]}:${match[5]}`;
-}
-
-function formatPoint(lat, lon) {
-    return `${Number(lat).toFixed(5)}, ${Number(lon).toFixed(5)}`;
-}
-
-function round6(n) {
-    return Math.round(n * 1e6) / 1e6;
-}
-
 function nextFrame() {
     return new Promise((resolve) => {
         requestAnimationFrame(() => resolve());
     });
 }
 
-function sessionIsUsable(session) {
-    return Boolean(
-        session
-        && typeof session.startedAt === "string"
-        && typeof session.lat === "number"
-        && typeof session.lon === "number"
-    );
-}
-
-function currentPosition() {
-    if (!navigator.geolocation) {
-        return Promise.reject(new Error("This browser has no location service."));
-    }
-    return new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject, {
-            enableHighAccuracy: true,
-            timeout: 20000,
-            maximumAge: 0,
-        });
-    });
-}
-
-function positionMessage(error) {
-    if (error && error.code === 1) {
-        return "Location permission is needed to start a session.";
-    }
-    if (error && error.code === 2) {
-        return "Location is unavailable.";
-    }
-    if (error && error.code === 3) {
-        return "Finding the location took too long. Try again.";
-    }
-    return (error && error.message) || "Could not read the location.";
-}
-
-function pinIcon() {
-    // L.icon does not prefix Leaflet's own image folder. Icon.Default does,
-    // which turned these paths into unpkg URLs.
-    return L.icon({
-        iconUrl: "/static/images/marker-icon.png",
-        iconRetinaUrl: "/static/images/marker-icon.png",
-        shadowUrl: "/static/images/marker-shadow.png",
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        shadowSize: [41, 41],
-    });
-}
-
-function syncFollowButton() {
-    followToggle.setAttribute("aria-pressed", following ? "true" : "false");
-    followToggle.setAttribute("aria-label", following ? "Stop following" : "Start following");
-    const iconOff = followToggle.querySelector(".follow-icon-off");
-    const iconOn = followToggle.querySelector(".follow-icon-on");
-    if (iconOff) {
-        iconOff.hidden = following;
-    }
-    if (iconOn) {
-        iconOn.hidden = !following;
-    }
-}
-
-function setFollowing(on) {
-    following = on;
-    syncFollowButton();
-}
-
-function centerOnUser() {
-    if (!map || !userMarker) {
-        return;
-    }
-    map.panTo(userMarker.getLatLng());
-}
-
-function keepFollowingUser() {
-    if (!following) {
-        return;
-    }
-    centerOnUser();
-}
-
-function ensureMap(lat, lon) {
-    if (map) {
-        return;
-    }
-    if (typeof L === "undefined") {
-        throw new Error("The map failed to load. Check the network and try again.");
-    }
-    map = L.map("map");
-    // The page policy is no-referrer so a person token cannot leak. OSM still
-    // requires a Referer that identifies the site, so each tile sends the origin only.
-    // The browser caches these image requests; the URL has no cache-busting.
-    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 19,
-        referrerPolicy: "origin",
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-    }).addTo(map);
-    savedLayer = L.layerGroup().addTo(map);
-    map.setView([lat, lon], 16);
-    map.on("dragstart", () => {
-        // Update the FAB as soon as the drag begins, before the pan finishes.
-        setFollowing(false);
-    });
-    map.on("click", (event) => {
-        if (busy || observeDialog.open || editListDialog.open) {
-            return;
-        }
-        placePin(event.latlng.lat, event.latlng.lng);
-        updateNearbyObservations(event.latlng);
-    });
-    showUser(lat, lon);
-}
-
-function showUser(lat, lon) {
-    if (!map) {
-        return;
-    }
-    if (!userMarker) {
-        userMarker = L.circleMarker([lat, lon], {
-            radius: 9,
-            color: "#ffffff",
-            weight: 3,
-            fillColor: "#2563eb",
-            fillOpacity: 1,
-        }).addTo(map);
-        userMarker.bindTooltip("You", { direction: "top" });
-    } else {
-        userMarker.setLatLng([lat, lon]);
-    }
-    userMarker.bringToFront();
-}
-
-function placePin(lat, lon) {
-    if (!map) {
-        return;
-    }
-    editingObservation = null;
-    if (!draftMarker) {
-        draftMarker = L.marker([lat, lon], { icon: pinIcon(), draggable: true, autoPan: true }).addTo(map);
-    } else {
-        draftMarker.setLatLng([lat, lon]);
-    }
-    pinActions.hidden = false;
-}
-
-function clearNearbyObservations() {
-    nearbyObservations = [];
-    editObsButton.hidden = true;
-}
-
-function updateNearbyObservations(latLng) {
-    if (!map) {
-        clearNearbyObservations();
-        return;
-    }
-    const tapPoint = map.latLngToContainerPoint(latLng);
-    nearbyObservations = sessionObservations
-        .filter((obs) => typeof obs.lat === "number" && typeof obs.lon === "number")
-        .filter((obs) => {
-            const point = map.latLngToContainerPoint([obs.lat, obs.lon]);
-            const dx = point.x - tapPoint.x;
-            const dy = point.y - tapPoint.y;
-            return dx * dx + dy * dy <= NEARBY_TAP_PX * NEARBY_TAP_PX;
-        })
-        .slice()
-        .sort((a, b) => (b.seq || 0) - (a.seq || 0));
-    editObsButton.hidden = nearbyObservations.length === 0;
-}
-
 function clearPin() {
-    if (draftMarker) {
-        draftMarker.remove();
-        draftMarker = null;
-    }
-    pinActions.hidden = true;
-    clearNearbyObservations();
-    editingObservation = null;
-    taxonField.clear();
-    hideProblem("observe-error");
-    if (editListDialog.open) {
-        editListDialog.close();
-    }
-    if (observeDialog.open) {
-        observeDialog.close();
-    }
-}
-
-function draftPoint() {
-    if (!draftMarker) {
-        return null;
-    }
-    const latLng = draftMarker.getLatLng();
-    return { lat: round6(latLng.lat), lon: round6(latLng.lng) };
-}
-
-function renderObservationMarkers(observations) {
-    if (!savedLayer) {
-        return;
-    }
-    savedLayer.clearLayers();
-    for (const obs of observations) {
-        if (typeof obs.lat !== "number" || typeof obs.lon !== "number") {
-            continue;
-        }
-        const marker = L.circleMarker([obs.lat, obs.lon], {
-            radius: 8,
-            color: "#14532d",
-            weight: 2,
-            fillColor: "#2f6b3a",
-            fillOpacity: 0.95,
-        });
-        marker.bindTooltip(obs.taxon || "Observation", { direction: "top" });
-        marker.addTo(savedLayer);
-    }
-    if (userMarker) {
-        userMarker.bringToFront();
-    }
-}
-
-function fixFromPosition(position) {
-    const coords = position && position.coords;
-    if (!coords || typeof coords.latitude !== "number" || typeof coords.longitude !== "number") {
-        return null;
-    }
-    return {
-        lat: coords.latitude,
-        lon: coords.longitude,
-        accuracy: typeof coords.accuracy === "number" ? coords.accuracy : null,
-    };
-}
-
-function offerRoutePoint(fix) {
-    recordChain = recordChain.then(() => maybeRecordPoint(fix)).catch(() => {});
-    return recordChain;
-}
-
-async function maybeRecordPoint(fix) {
-    if (!fix || document.hidden || viewSession.hidden) {
-        return;
-    }
-    const session = await db.getSession();
-    if (!sessionIsUsable(session)) {
-        return;
-    }
-    const points = Array.isArray(session.points) ? session.points : [];
-    if (points.length >= MAX_ROUTE_POINTS) {
-        return;
-    }
-    const previous = points.length > 0 ? points[points.length - 1] : null;
-    if (!shouldRecordPoint(previous, fix, getSetting("minDistanceM"))) {
-        return;
-    }
-    session.points = points.concat({ lat: round6(fix.lat), lon: round6(fix.lon) });
-    await db.saveSession(session);
-    devdots.show(map, session.points); // devdots
-}
-
-function routePointsForSubmit(session) {
-    const points = Array.isArray(session.points) ? session.points : [];
-    return points
-        .filter((point) => typeof point.lat === "number" && typeof point.lon === "number")
-        .map((point) => ({ lat: point.lat, lon: point.lon }));
-}
-
-function clearWatchRetry() {
-    if (watchRetryTimer !== null) {
-        clearTimeout(watchRetryTimer);
-        watchRetryTimer = null;
-    }
-}
-
-function scheduleWatchRetry() {
-    watchToken += 1;
-    if (watchId !== null && navigator.geolocation) {
-        navigator.geolocation.clearWatch(watchId);
-    }
-    watchId = null;
-    if (watchRetryTimer !== null || document.hidden || viewSession.hidden) {
-        return;
-    }
-    watchRetryTimer = setTimeout(() => {
-        watchRetryTimer = null;
-        startWatching();
-    }, WATCH_RETRY_MS);
-}
-
-function startWatching() {
-    if (!map || watchId !== null || !navigator.geolocation || document.hidden) {
-        return;
-    }
-    clearWatchRetry();
-    const token = ++watchToken;
-    lastUserMarkerAt = 0;
-    watchId = navigator.geolocation.watchPosition(
-        (position) => {
-            if (token !== watchToken || !map || document.hidden) {
-                return;
-            }
-            const fix = fixFromPosition(position);
-            if (!fix) {
-                return;
-            }
-            latestFix = fix;
-            offerRoutePoint(fix);
-            const now = Date.now();
-            if (lastUserMarkerAt !== 0 && now - lastUserMarkerAt < USER_MARKER_INTERVAL_MS) {
-                return;
-            }
-            lastUserMarkerAt = now;
-            showUser(fix.lat, fix.lon);
-            keepFollowingUser();
-        },
-        () => {
-            if (token !== watchToken) {
-                return;
-            }
-            scheduleWatchRetry();
-        },
-        { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 },
-    );
-}
-
-function stopWatching() {
-    watchToken += 1;
-    clearWatchRetry();
-    if (watchId !== null && navigator.geolocation) {
-        navigator.geolocation.clearWatch(watchId);
-    }
-    watchId = null;
-    lastUserMarkerAt = 0;
-}
-
-function renderObservations(observations) {
-    observationList.replaceChildren();
-    if (observations.length === 0) {
-        const empty = document.createElement("li");
-        empty.className = "muted";
-        empty.textContent = "No observations yet.";
-        observationList.append(empty);
-        return;
-    }
-    for (const obs of observations) {
-        const item = document.createElement("li");
-        item.className = "obs-item";
-
-        const name = document.createElement("div");
-        name.className = "obs-name";
-        name.textContent = obs.taxon;
-
-        const meta = document.createElement("div");
-        meta.className = "obs-meta";
-        const bits = [formatStamp(obs.at)];
-        if (typeof obs.lat === "number" && typeof obs.lon === "number") {
-            bits.push(formatPoint(obs.lat, obs.lon));
-        }
-        meta.textContent = bits.join(" · ");
-
-        const remove = document.createElement("button");
-        remove.type = "button";
-        remove.className = "secondary";
-        remove.textContent = "Delete";
-        remove.addEventListener("click", () => {
-            removeObservation(obs);
-        });
-
-        item.append(name, meta, remove);
-        observationList.append(item);
-    }
+    mapApi.clearDraft();
+    observe.dismiss();
 }
 
 async function renderSession({ recenter = false } = {}) {
     const session = await db.getSession();
     if (!sessionIsUsable(session)) {
-        stopWatching();
+        mapApi.stopWatching();
         show("start");
         return;
     }
     const observations = await db.listObservations();
-    sessionObservations = observations;
+    observe.setObservations(observations);
     sessionMeta.textContent = formatStamp(session.startedAt);
-    renderObservations(observations);
+    observe.renderList(observations);
     show("session");
     await nextFrame();
     const isNewSession = mapSessionKey !== session.startedAt;
     try {
-        ensureMap(session.lat, session.lon);
+        mapApi.ensure(session.lat, session.lon);
     } catch (error) {
         showProblem("session-error", {
             message: error.message || "The map failed to load.",
         });
         return;
     }
-    map.invalidateSize();
+    mapApi.invalidate();
     if (recenter || isNewSession) {
         mapSessionKey = session.startedAt;
         clearPin();
-        map.setView([session.lat, session.lon], 16);
-        showUser(session.lat, session.lon);
-        setFollowing(true);
+        mapApi.view(session.lat, session.lon);
+        mapApi.showUser(session.lat, session.lon);
+        mapApi.follow(true);
     }
-    renderObservationMarkers(observations);
-    if (draftMarker) {
-        updateNearbyObservations(draftMarker.getLatLng());
+    mapApi.renderMarkers(observations);
+    if (mapApi.hasDraft()) {
+        observe.updateNearby(mapApi.draftLatLng());
     }
-    devdots.show(map, Array.isArray(session.points) ? session.points : []); // devdots
-    startWatching();
-}
-
-function openObserve() {
-    if (busy || !draftMarker) {
-        return;
-    }
-    editingObservation = null;
-    taxonField.clear();
-    hideProblem("observe-error");
-    if (!observeDialog.open) {
-        observeDialog.showModal();
-    }
-    taxonInput.focus();
-}
-
-function openEditList() {
-    if (busy || nearbyObservations.length === 0) {
-        return;
-    }
-    editList.replaceChildren();
-    for (const obs of nearbyObservations) {
-        const item = document.createElement("li");
-        const button = document.createElement("button");
-        button.type = "button";
-        button.className = "secondary";
-        button.textContent = obs.taxon || "Observation";
-        button.addEventListener("click", () => {
-            openEditObservation(obs);
-        });
-        item.append(button);
-        editList.append(item);
-    }
-    if (!editListDialog.open) {
-        editListDialog.showModal();
-    }
-}
-
-function openEditObservation(obs) {
-    if (busy || !obs) {
-        return;
-    }
-    editingObservation = obs;
-    if (editListDialog.open) {
-        editListDialog.close();
-    }
-    taxonField.setValue(obs.taxon || "", obs.taxonId || null);
-    hideProblem("observe-error");
-    if (!observeDialog.open) {
-        observeDialog.showModal();
-    }
-    taxonInput.focus();
+    mapApi.showRoute(Array.isArray(session.points) ? session.points : []);
+    mapApi.startWatching();
 }
 
 async function startSession() {
@@ -620,7 +165,7 @@ async function startSession() {
         if (!fix) {
             throw new Error("Could not read the location.");
         }
-        latestFix = fix;
+        mapApi.setLatestFix(fix);
         const session = {
             startedAt: localStamp(),
             lat: round6(fix.lat),
@@ -638,85 +183,6 @@ async function startSession() {
         showProblem("start-error", { message: positionMessage(error) });
     } finally {
         setBusy(false);
-    }
-}
-
-async function saveObservation() {
-    if (busy) {
-        return;
-    }
-    const taxon = taxonInput.value.trim();
-    if (!taxon) {
-        taxonInput.value = "";
-        taxonInput.focus();
-        return;
-    }
-    const editing = editingObservation;
-    if (!editing) {
-        const point = draftPoint();
-        if (!point) {
-            clearPin();
-            return;
-        }
-    }
-    hideProblem("observe-error");
-    setBusy(true, "Saving…");
-    try {
-        const taxonId = taxonField.selectedTaxonId();
-        if (editing) {
-            // Keep id, seq, time, and coordinates; only the taxon can change here.
-            const observation = {
-                id: editing.id,
-                seq: editing.seq,
-                taxon,
-                at: editing.at,
-                lat: editing.lat,
-                lon: editing.lon,
-            };
-            if (taxonId) {
-                observation.taxonId = taxonId;
-            }
-            await db.addObservation(observation);
-        } else {
-            const point = draftPoint();
-            const existing = await db.listObservations();
-            const seq = existing.reduce((max, obs) => Math.max(max, obs.seq || 0), 0) + 1;
-            // More fields (count, notes, wildness) belong on this object.
-            const observation = {
-                id: crypto.randomUUID(),
-                seq,
-                taxon,
-                at: localStamp(),
-                lat: point.lat,
-                lon: point.lon,
-            };
-            if (taxonId) {
-                observation.taxonId = taxonId;
-            }
-            await db.addObservation(observation);
-        }
-        clearPin();
-        await renderSession();
-    } catch (error) {
-        showProblem("observe-error", { message: error.message || "Could not save the observation." });
-    } finally {
-        setBusy(false);
-    }
-}
-
-async function removeObservation(obs) {
-    if (busy) {
-        return;
-    }
-    if (!window.confirm(`Delete ${obs.taxon}?`)) {
-        return;
-    }
-    hideProblem("session-error");
-    try {
-        await db.deleteObservation(obs.id);
-        await renderSession();
-    } catch (error) {
-        showProblem("session-error", { message: error.message || "Could not delete the observation." });
     }
 }
 
@@ -745,39 +211,19 @@ async function endSession() {
     }
 
     setBusy(true, "Submitting…");
-    stopWatching();
+    mapApi.stopWatching();
     try {
-        await offerRoutePoint(latestFix);
+        await mapApi.flushLatest();
         const session = await db.getSession();
         if (!sessionIsUsable(session)) {
             show("start");
             showProblem("start-error", { message: "The session is no longer on this phone." });
             return;
         }
-        const result = await api.submitSession(
-            {
-                startedAt: session.startedAt,
-                endedAt: localStamp(),
-                lat: session.lat,
-                lon: session.lon,
-                points: routePointsForSubmit(session),
-            },
-            observations.map((obs) => {
-                const row = {
-                    seq: obs.seq,
-                    taxon: obs.taxon,
-                    at: obs.at,
-                };
-                if (typeof obs.lat === "number" && typeof obs.lon === "number") {
-                    row.lat = obs.lat;
-                    row.lon = obs.lon;
-                }
-                if (obs.taxonId) {
-                    row.taxonId = obs.taxonId;
-                }
-                return row;
-            }),
-        );
+        session.endedAt = localStamp();
+        await db.saveSession(session);
+        const stored = await db.listObservations();
+        const result = await api.submitSession(session, stored, session.document);
         await db.clearSession();
         doneDetail.textContent = result.documentId
             ? `Document ID ${result.documentId}`
@@ -788,7 +234,7 @@ async function endSession() {
     } finally {
         setBusy(false);
         if (!viewSession.hidden) {
-            startWatching();
+            mapApi.startWatching();
         }
     }
 }
@@ -818,45 +264,26 @@ async function boot() {
     }
 }
 
+observe = createObserve({
+    isBusy: () => busy,
+    setBusy,
+    showProblem,
+    hideProblem,
+    draftPoint: () => mapApi.draftPoint(),
+    localStamp,
+    refresh: () => renderSession(),
+    clearPin,
+    toContainerPoint: (latlng) => mapApi.toContainerPoint(latlng),
+});
+
 startButton.addEventListener("click", () => {
     startSession();
-});
-observeForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-    saveObservation();
-});
-addObsButton.addEventListener("click", () => {
-    openObserve();
-});
-editObsButton.addEventListener("click", () => {
-    openEditList();
 });
 cancelPinButton.addEventListener("click", () => {
     if (busy) {
         return;
     }
     clearPin();
-});
-followToggle.addEventListener("click", () => {
-    if (busy) {
-        return;
-    }
-    if (following) {
-        setFollowing(false);
-        return;
-    }
-    setFollowing(true);
-    centerOnUser();
-});
-closeObserveButton.addEventListener("click", () => {
-    observeDialog.close();
-});
-closeEditListButton.addEventListener("click", () => {
-    editListDialog.close();
-});
-observeDialog.addEventListener("close", () => {
-    // Closing without Save leaves the pin; Add obs can start a new one next.
-    editingObservation = null;
 });
 endButton.addEventListener("click", () => {
     endSession();
@@ -867,11 +294,11 @@ anotherButton.addEventListener("click", () => {
 });
 document.addEventListener("visibilitychange", () => {
     if (document.hidden) {
-        stopWatching();
+        mapApi.stopWatching();
         return;
     }
     if (!viewSession.hidden) {
-        startWatching();
+        mapApi.startWatching();
     }
 });
 

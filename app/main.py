@@ -65,6 +65,21 @@ def _error_status(exc: FinbifError) -> int:
     return 502
 
 
+def _api_error(exc: Exception, *, warning: str, failure: str, fallback: str):
+    """JSON response for a FinBIF failure or an unexpected one."""
+    if isinstance(exc, FinbifError):
+        if _person_token_rejected(exc):
+            session.clear()
+            return jsonify({"message": exc.message, "loginRequired": True}), 401
+        app.logger.warning("%s: %s %s", warning, exc.status_code, exc.error_code)
+        payload = {"message": exc.message or fallback}
+        if exc.details:
+            payload["details"] = exc.details
+        return jsonify(payload), _error_status(exc)
+    app.logger.exception("%s", failure)
+    return jsonify({"message": fallback}), 502
+
+
 def _establish_session(person_token: str) -> None:
     person = fetch_person(person_token)
     person_id = (person.get("id") or "").strip()
@@ -157,18 +172,13 @@ def submit_session_route():
         result = submit_session(body, person_token=person_token, observer_id=observer_id)
     except ValueError as exc:
         return jsonify({"message": str(exc)}), 400
-    except FinbifError as exc:
-        if _person_token_rejected(exc):
-            session.clear()
-            return jsonify({"message": exc.message, "loginRequired": True}), 401
-        app.logger.warning("FinBIF submit failed: %s %s", exc.status_code, exc.error_code)
-        payload = {"message": exc.message or "Submit failed."}
-        if exc.details:
-            payload["details"] = exc.details
-        return jsonify(payload), _error_status(exc)
-    except Exception:
-        app.logger.exception("Session submit failed")
-        return jsonify({"message": "Submit failed."}), 502
+    except Exception as exc:
+        return _api_error(
+            exc,
+            warning="FinBIF submit failed",
+            failure="Session submit failed",
+            fallback="Submit failed.",
+        )
 
     return jsonify({"documentId": result.get("document_id")})
 
@@ -186,12 +196,13 @@ def autocomplete_taxa_route():
             limit=10,
             informal_taxon_groups=groups,
         )
-    except FinbifError as exc:
-        app.logger.warning("FinBIF taxon autocomplete failed: %s %s", exc.status_code, exc.error_code)
-        return jsonify({"message": exc.message or "Taxon search failed."}), _error_status(exc)
-    except Exception:
-        app.logger.exception("Taxon autocomplete failed")
-        return jsonify({"message": "Taxon search failed."}), 502
+    except Exception as exc:
+        return _api_error(
+            exc,
+            warning="FinBIF taxon autocomplete failed",
+            failure="Taxon autocomplete failed",
+            fallback="Taxon search failed.",
+        )
 
     results = []
     for row in rows:

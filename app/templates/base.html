@@ -13,12 +13,22 @@
         <nav>
             {% if logged_in %}
                 <span class="user-name">{{ person_name }}</span>
+                <button type="button" id="open-settings" class="secondary header-button">Settings</button>
                 <form class="inline-form" action="{{ url_for('logout') }}" method="post">
                     <button type="submit">Log out</button>
                 </form>
             {% endif %}
         </nav>
     </header>
+    {% if logged_in %}
+        <dialog id="settings-dialog" aria-labelledby="settings-title">
+            <form method="dialog" class="stack-form" id="settings-form">
+                <h2 id="settings-title">Settings</h2>
+                <div id="settings-sections"></div>
+                <button type="submit" class="secondary">Close</button>
+            </form>
+        </dialog>
+    {% endif %}
 
     <main class="container">
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -32,5 +42,8 @@
         {% endwith %}
         {% block content %}{% endblock %}
     </main>
+    {% if logged_in %}
+        <script type="module" src="{{ url_for('static', filename='js/settings-ui.js') }}"></script>
+    {% endif %}
 </body>
 </html>

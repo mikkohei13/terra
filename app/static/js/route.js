@@ -2,8 +2,10 @@
 // Compared only with the previous stored point, so a return visit may sit
 // next to an older point.
 
+import { MIN_DISTANCE_M_DEFAULT } from "./settings.js";
+
 export const MAX_ACCURACY_M = 100;
-export const MIN_DISTANCE_M = 100;
+export const MIN_DISTANCE_M = MIN_DISTANCE_M_DEFAULT;
 export const MAX_ROUTE_POINTS = 2000;
 
 const EARTH_RADIUS_M = 6371000;
@@ -22,7 +24,7 @@ export function distanceMeters(a, b) {
     return 2 * EARTH_RADIUS_M * Math.asin(Math.min(1, Math.sqrt(h)));
 }
 
-export function shouldRecordPoint(previous, fix) {
+export function shouldRecordPoint(previous, fix, minDistanceM = MIN_DISTANCE_M) {
     if (!fix || typeof fix.lat !== "number" || typeof fix.lon !== "number") {
         return false;
     }
@@ -38,5 +40,6 @@ export function shouldRecordPoint(previous, fix) {
     if (!previous) {
         return true;
     }
-    return distanceMeters(previous, fix) >= MIN_DISTANCE_M;
+    const minimum = Number.isFinite(minDistanceM) ? minDistanceM : MIN_DISTANCE_M;
+    return distanceMeters(previous, fix) >= minimum;
 }

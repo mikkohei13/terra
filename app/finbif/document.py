@@ -5,16 +5,18 @@ remains. With no route points it is the session start. Each observation is a
 species name, a time, and its own point. Older observations without a point
 use the session point.
 
-Count, notes, wildness, and taxon id can be added in _build_unit later.
+Count, notes, and wildness can be added in _build_unit later. A chosen
+taxon id is sent as unitFact.autocompleteSelectedTaxonID.
 """
 
 from __future__ import annotations
 
 import re
 from datetime import datetime
-from typing import Any
+from typing import Any, Optional
 
 import config
+from finbif.taxon import normalize_taxon_id
 
 _STAMP = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$")
 _MAX_OBSERVATIONS = 300
@@ -102,7 +104,7 @@ def _observation_point(
 
 
 def _build_unit(obs: dict[str, Any]) -> dict[str, Any]:
-    return {
+    unit: dict[str, Any] = {
         "identifications": [{"taxon": obs["taxon"]}],
         "unitGathering": {
             "geometry": _point(obs["lat"], obs["lon"]),
@@ -111,6 +113,22 @@ def _build_unit(obs: dict[str, Any]) -> dict[str, Any]:
         "taxonConfidence": "MY.taxonConfidenceSure",
         "recordBasis": "MY.recordBasisHumanObservation",
     }
+    taxon_id = obs.get("taxonId")
+    if taxon_id:
+        unit["unitFact"] = {"autocompleteSelectedTaxonID": taxon_id}
+    return unit
+
+
+def _taxon_id(value: Any) -> Optional[str]:
+    """Empty means no chosen taxon. Anything else must be an MX id."""
+    if value is None:
+        return None
+    if isinstance(value, str) and not value.strip():
+        return None
+    taxon_id = normalize_taxon_id(value)
+    if not taxon_id:
+        raise ValueError("A taxon id is not valid.")
+    return taxon_id
 
 
 def parse_submission(body: dict[str, Any]) -> tuple[dict[str, Any], list[dict[str, Any]]]:
@@ -149,18 +167,17 @@ def parse_submission(body: dict[str, Any]) -> tuple[dict[str, Any], list[dict[st
         if not isinstance(seq, int):
             seq = index
         latitude, longitude = _observation_point(raw, session["lat"], session["lon"])
-        indexed.append(
-            (
-                index,
-                {
-                    "seq": seq,
-                    "taxon": taxon,
-                    "at": _stamp(raw.get("at"), "Observation time"),
-                    "lat": latitude,
-                    "lon": longitude,
-                },
-            )
-        )
+        observation = {
+            "seq": seq,
+            "taxon": taxon,
+            "at": _stamp(raw.get("at"), "Observation time"),
+            "lat": latitude,
+            "lon": longitude,
+        }
+        taxon_id = _taxon_id(raw.get("taxonId"))
+        if taxon_id:
+            observation["taxonId"] = taxon_id
+        indexed.append((index, observation))
 
     indexed.sort(key=lambda item: (item[1]["seq"], item[0]))
     observations = [item[1] for item in indexed]

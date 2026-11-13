@@ -65,9 +65,14 @@
                     spellcheck="false"
                     enterkeyhint="done"
                     placeholder="Finnish or scientific name"
+                    role="combobox"
+                    aria-autocomplete="list"
+                    aria-expanded="false"
+                    aria-controls="taxon-results"
                     aria-label="Species"
                     required
                 >
+                <ul id="taxon-results" class="taxon-results" role="listbox" hidden></ul>
                 <div id="observe-error" class="error" role="alert" hidden></div>
                 <button type="submit" class="primary-action">Save</button>
                 <button type="button" id="close-observe" class="secondary">Close</button>

@@ -9,6 +9,7 @@ from flask import Flask, abort, flash, jsonify, redirect, render_template, reque
 import config
 from finbif.client import FinbifError, fetch_person
 from finbif.submit import submit_session
+from finbif.taxon import allowed_informal_taxon_groups, autocomplete_taxa, taxon_suggestion
 
 app = Flask(__name__)
 app.secret_key = config.FLASK_SECRET_KEY
@@ -170,6 +171,36 @@ def submit_session_route():
         return jsonify({"message": "Submit failed."}), 502
 
     return jsonify({"documentId": result.get("document_id")})
+
+
+@app.route("/api/taxa/autocomplete")
+def autocomplete_taxa_route():
+    """Proxy FinBIF taxon autocomplete. The browser never calls api.laji.fi."""
+    if not session.get("person_token"):
+        return jsonify({"message": "Log in to continue.", "loginRequired": True}), 401
+
+    groups = allowed_informal_taxon_groups(request.args.get("informalTaxonGroups"))
+    try:
+        rows = autocomplete_taxa(
+            request.args.get("query") or "",
+            limit=10,
+            informal_taxon_groups=groups,
+        )
+    except FinbifError as exc:
+        app.logger.warning("FinBIF taxon autocomplete failed: %s %s", exc.status_code, exc.error_code)
+        return jsonify({"message": exc.message or "Taxon search failed."}), _error_status(exc)
+    except Exception:
+        app.logger.exception("Taxon autocomplete failed")
+        return jsonify({"message": "Taxon search failed."}), 502
+
+    results = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        suggestion = taxon_suggestion(row)
+        if suggestion:
+            results.append(suggestion)
+    return jsonify({"results": results})
 
 
 @app.route("/logout", methods=["POST"])

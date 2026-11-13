@@ -130,6 +130,35 @@ class DocumentPointsTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             parse_submission(_body([_observation()], points=points))
 
+    def test_chosen_taxon_id_is_sent_as_unit_fact(self):
+        observation = _observation()
+        observation["taxonId"] = " MX.36308 "
+        session, observations = parse_submission(_body([observation]))
+        document = build_document(session, observations, "MA.1")
+        unit = document["gatherings"][0]["units"][0]
+        self.assertEqual(observations[0]["taxonId"], "MX.36308")
+        self.assertEqual(unit["identifications"], [{"taxon": "Talitiainen"}])
+        self.assertEqual(unit["unitFact"], {"autocompleteSelectedTaxonID": "MX.36308"})
+
+    def test_free_text_taxon_has_no_unit_fact(self):
+        session, observations = parse_submission(_body([_observation()]))
+        document = build_document(session, observations, "MA.1")
+        unit = document["gatherings"][0]["units"][0]
+        self.assertNotIn("taxonId", observations[0])
+        self.assertNotIn("unitFact", unit)
+
+    def test_blank_taxon_id_is_ignored(self):
+        observation = _observation()
+        observation["taxonId"] = "  "
+        _session, observations = parse_submission(_body([observation]))
+        self.assertNotIn("taxonId", observations[0])
+
+    def test_invalid_taxon_id_is_rejected(self):
+        observation = _observation()
+        observation["taxonId"] = "talitiainen"
+        with self.assertRaises(ValueError):
+            parse_submission(_body([observation]))
+
 
 if __name__ == "__main__":
     unittest.main()

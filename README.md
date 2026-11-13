@@ -24,7 +24,7 @@ End session sends the session and its observations to `POST /api/sessions/submit
 
 The page sends `Referrer-Policy: no-referrer` so a person token cannot leak. Map tiles are OpenStreetMap's standard layer, and each tile image sends only the site origin as its Referer, which OSM requires. The pin icon and shadow are local files in `app/static/images/`.
 
-## Remove devdots
+## Removing devdots
 
 Grey dots on the session map mark stored route points. They are only for development. Remove them before the app is public. The route itself stays.
 

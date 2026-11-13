@@ -4,6 +4,8 @@ import * as api from "./api.js";
 import * as db from "./db.js";
 import * as devdots from "./devdots.js"; // devdots
 import { MAX_ROUTE_POINTS, shouldRecordPoint } from "./route.js";
+import { getSetting } from "./settings.js";
+import { attachTaxonField } from "./taxon-field.js";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -25,6 +27,11 @@ const cancelPinButton = document.getElementById("cancel-pin");
 const closeObserveButton = document.getElementById("close-observe");
 const pinActions = document.getElementById("pin-actions");
 const followToggle = document.getElementById("follow-toggle");
+const taxonField = attachTaxonField(
+    taxonInput,
+    document.getElementById("taxon-results"),
+    observeDialog,
+);
 
 const USER_MARKER_INTERVAL_MS = 5000;
 const WATCH_RETRY_MS = 30000;
@@ -283,7 +290,7 @@ function clearPin() {
         draftMarker = null;
     }
     pinActions.hidden = true;
-    taxonInput.value = "";
+    taxonField.clear();
     hideProblem("observe-error");
     if (observeDialog.open) {
         observeDialog.close();
@@ -352,7 +359,7 @@ async function maybeRecordPoint(fix) {
         return;
     }
     const previous = points.length > 0 ? points[points.length - 1] : null;
-    if (!shouldRecordPoint(previous, fix)) {
+    if (!shouldRecordPoint(previous, fix, getSetting("minDistanceM"))) {
         return;
     }
     session.points = points.concat({ lat: round6(fix.lat), lon: round6(fix.lon) });
@@ -537,7 +544,7 @@ async function startSession() {
             lon: round6(fix.lon),
             points: [],
         };
-        if (shouldRecordPoint(null, fix)) {
+        if (shouldRecordPoint(null, fix, getSetting("minDistanceM"))) {
             session.points.push({ lat: session.lat, lon: session.lon });
         }
         await db.clearSession();
@@ -571,15 +578,20 @@ async function saveObservation() {
     try {
         const existing = await db.listObservations();
         const seq = existing.reduce((max, obs) => Math.max(max, obs.seq || 0), 0) + 1;
-        // More fields (count, notes, wildness, taxon id) belong on this object.
-        await db.addObservation({
+        // More fields (count, notes, wildness) belong on this object.
+        const observation = {
             id: crypto.randomUUID(),
             seq,
             taxon,
             at: localStamp(),
             lat: point.lat,
             lon: point.lon,
-        });
+        };
+        const taxonId = taxonField.selectedTaxonId();
+        if (taxonId) {
+            observation.taxonId = taxonId;
+        }
+        await db.addObservation(observation);
         clearPin();
         await renderSession();
     } catch (error) {
@@ -656,6 +668,9 @@ async function endSession() {
                 if (typeof obs.lat === "number" && typeof obs.lon === "number") {
                     row.lat = obs.lat;
                     row.lon = obs.lon;
+                }
+                if (obs.taxonId) {
+                    row.taxonId = obs.taxonId;
                 }
                 return row;
             }),

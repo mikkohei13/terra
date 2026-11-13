@@ -22,9 +22,13 @@ const statusLine = document.getElementById("status");
 const startButton = document.getElementById("start-session");
 const sessionMeta = document.getElementById("session-meta");
 const endButton = document.getElementById("end-session");
+const discardButton = document.getElementById("discard-session");
 const doneDetail = document.getElementById("done-detail");
 const anotherButton = document.getElementById("another-session");
 const cancelPinButton = document.getElementById("cancel-pin");
+const addObsButton = document.getElementById("add-obs");
+const editObsButton = document.getElementById("edit-obs");
+const useLocationButton = document.getElementById("use-location");
 
 let busy = false;
 let mapSessionKey = null;
@@ -35,6 +39,9 @@ const mapApi = createSessionMap({
     isBlocked: () => observe.dialogsOpen(),
     isSessionVisible: () => !viewSession.hidden,
     onTap(latlng) {
+        if (observe.isRelocating()) {
+            return;
+        }
         observe.beginNewPin();
         observe.updateNearby(latlng);
     },
@@ -110,9 +117,58 @@ function nextFrame() {
     });
 }
 
+function setRelocateActions(on) {
+    addObsButton.hidden = on;
+    useLocationButton.hidden = !on;
+    if (on) {
+        editObsButton.hidden = true;
+    }
+}
+
+function pointFrom(source) {
+    if (!source || typeof source.lat !== "number" || typeof source.lon !== "number") {
+        return null;
+    }
+    return { lat: source.lat, lon: source.lon };
+}
+
 function clearPin() {
+    setRelocateActions(false);
     mapApi.clearDraft();
     observe.dismiss();
+}
+
+async function beginLocationChange(obs, pending) {
+    try {
+        let point = pointFrom(pending) || pointFrom(obs);
+        if (!point) {
+            const session = await db.getSession();
+            if (!observe.isRelocating()) {
+                return;
+            }
+            if (!sessionIsUsable(session)) {
+                observe.cancelLocationChange();
+                return;
+            }
+            point = { lat: session.lat, lon: session.lon };
+        }
+        if (!observe.isRelocating()) {
+            return;
+        }
+        mapApi.follow(false);
+        mapApi.placePin(point.lat, point.lon);
+        if (!mapApi.hasDraft()) {
+            observe.cancelLocationChange();
+            return;
+        }
+        mapApi.panTo(point.lat, point.lon);
+        setRelocateActions(true);
+    } catch (error) {
+        if (observe.isRelocating()) {
+            observe.cancelLocationChange();
+        }
+        showProblem("session-error", { message: error.message || "Could not change the location." });
+    }
 }
 
 async function renderSession({ recenter = false } = {}) {
@@ -193,15 +249,7 @@ async function endSession() {
     hideProblem("session-error");
     const observations = await db.listObservations();
     if (observations.length === 0) {
-        if (!window.confirm("There are no observations to submit. Discard this session?")) {
-            return;
-        }
-        try {
-            await db.clearSession();
-            show("start");
-        } catch (error) {
-            showProblem("session-error", { message: error.message || "Could not discard the session." });
-        }
+        await discardSession(observations);
         return;
     }
     const names = observations.map((obs) => obs.taxon).join("\n");
@@ -236,6 +284,32 @@ async function endSession() {
         if (!viewSession.hidden) {
             mapApi.startWatching();
         }
+    }
+}
+
+function discardMessage(observations) {
+    if (observations.length === 0) {
+        return "There are no observations to submit. Discard this session?";
+    }
+    const label = observations.length === 1 ? "1 observation" : `${observations.length} observations`;
+    const names = observations.map((obs) => obs.taxon).join("\n");
+    return `Discard this session? ${label} will be deleted from this phone and will not be sent to FinBIF.\n\n${names}`;
+}
+
+async function discardSession(observations) {
+    if (busy) {
+        return;
+    }
+    hideProblem("session-error");
+    if (!window.confirm(discardMessage(observations))) {
+        return;
+    }
+    try {
+        await db.clearSession();
+        clearPin();
+        show("start");
+    } catch (error) {
+        showProblem("session-error", { message: error.message || "Could not discard the session." });
     }
 }
 
@@ -274,6 +348,11 @@ observe = createObserve({
     refresh: () => renderSession(),
     clearPin,
     toContainerPoint: (latlng) => mapApi.toContainerPoint(latlng),
+    requestLocationChange: beginLocationChange,
+    abortLocationChange() {
+        setRelocateActions(false);
+        mapApi.clearDraft();
+    },
 });
 
 startButton.addEventListener("click", () => {
@@ -283,10 +362,36 @@ cancelPinButton.addEventListener("click", () => {
     if (busy) {
         return;
     }
+    if (observe.isRelocating()) {
+        setRelocateActions(false);
+        mapApi.clearDraft();
+        observe.cancelLocationChange();
+        return;
+    }
     clearPin();
+});
+useLocationButton.addEventListener("click", () => {
+    if (busy) {
+        return;
+    }
+    const point = mapApi.draftPoint();
+    if (!point || !observe.acceptLocation(point)) {
+        setRelocateActions(false);
+        return;
+    }
+    setRelocateActions(false);
+    if (mapApi.hasDraft()) {
+        observe.updateNearby(mapApi.draftLatLng());
+    }
 });
 endButton.addEventListener("click", () => {
     endSession();
+});
+discardButton.addEventListener("click", async () => {
+    if (busy) {
+        return;
+    }
+    await discardSession(await db.listObservations());
 });
 anotherButton.addEventListener("click", () => {
     hideProblem("start-error");

@@ -177,9 +177,54 @@ class DocumentPointsTest(unittest.TestCase):
         self.assertEqual(document["keywords"], ["meadow", "new"])
         self.assertNotIn("locality", document)
 
-    def test_unknown_observation_fields_are_ignored(self):
+    def test_count_and_notes_are_sent_on_the_unit(self):
+        observation = _observation()
+        observation["count"] = " 4 "
+        observation["notes"] = " singing "
+        session, observations, header = parse_submission(_body([observation]))
+        document = build_document(session, observations, "MA.1", header)
+        unit = document["gatherings"][0]["units"][0]
+        self.assertEqual(observations[0]["count"], "4")
+        self.assertEqual(observations[0]["notes"], "singing")
+        self.assertEqual(unit["count"], "4")
+        self.assertEqual(unit["notes"], "singing")
+        self.assertEqual(unit["identifications"], [{"taxon": "Talitiainen"}])
+
+    def test_blank_count_and_notes_are_left_out(self):
+        observation = _observation()
+        observation["count"] = "  "
+        observation["notes"] = ""
+        session, observations, header = parse_submission(_body([observation]))
+        document = build_document(session, observations, "MA.1", header)
+        unit = document["gatherings"][0]["units"][0]
+        self.assertNotIn("count", observations[0])
+        self.assertNotIn("notes", observations[0])
+        self.assertNotIn("count", unit)
+        self.assertNotIn("notes", unit)
+
+    def test_count_and_notes_must_be_text(self):
         observation = _observation()
         observation["count"] = 4
+        with self.assertRaises(ValueError):
+            parse_submission(_body([observation]))
+        observation = _observation()
+        observation["notes"] = ["singing"]
+        with self.assertRaises(ValueError):
+            parse_submission(_body([observation]))
+
+    def test_count_and_notes_that_are_too_long_are_rejected(self):
+        observation = _observation()
+        observation["count"] = "x" * 301
+        with self.assertRaises(ValueError):
+            parse_submission(_body([observation]))
+        observation = _observation()
+        observation["notes"] = "x" * 2001
+        with self.assertRaises(ValueError):
+            parse_submission(_body([observation]))
+
+    def test_unknown_observation_fields_are_ignored(self):
+        observation = _observation()
+        observation["weather"] = "sun"
         observation["id"] = "phone-1"
         _session, observations, _header = parse_submission(_body([observation]))
         self.assertEqual(set(observations[0]), {"seq", "taxon", "at", "lat", "lon"})

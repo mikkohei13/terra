@@ -189,6 +189,13 @@ export function createSessionMap({ isBusy, isBlocked, isSessionVisible, onTap })
         showUser(lat, lon);
     }
 
+    function panTo(lat, lon) {
+        if (!map) {
+            return;
+        }
+        map.panTo([lat, lon]);
+    }
+
     function clearDraft() {
         if (draftMarker) {
             draftMarker.remove();
@@ -354,6 +361,8 @@ export function createSessionMap({ isBusy, isBlocked, isSessionVisible, onTap })
         },
         showUser,
         follow: setFollowing,
+        placePin,
+        panTo,
         clearDraft,
         hasDraft() {
             return Boolean(draftMarker);

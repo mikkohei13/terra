@@ -8,7 +8,7 @@ const DEBOUNCE_MS = 300;
 const MIN_INTERVAL_MS = 1000;
 const MIN_QUERY_LENGTH = 2;
 
-export function attachTaxonField(input, list, dialog) {
+export function attachTaxonField(input, list, dialog, onAdvance) {
     let timer = null;
     let controller = null;
     let seq = 0;
@@ -70,6 +70,15 @@ export function attachTaxonField(input, list, dialog) {
         clearList();
     }
 
+    function advance() {
+        if (!list.hidden) {
+            hideList();
+        }
+        if (typeof onAdvance === "function") {
+            onAdvance();
+        }
+    }
+
     function render(results) {
         list.replaceChildren();
         activeIndex = -1;
@@ -91,6 +100,7 @@ export function attachTaxonField(input, list, dialog) {
             });
             button.addEventListener("click", () => {
                 selectItem(item);
+                advance();
             });
             li.append(button);
             list.append(li);
@@ -189,22 +199,30 @@ export function attachTaxonField(input, list, dialog) {
     });
 
     input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            if (!list.hidden && activeIndex >= 0) {
+                const buttons = [...list.querySelectorAll("button")];
+                const button = buttons[activeIndex];
+                if (button) {
+                    selectItem({
+                        id: button.dataset.id,
+                        name: button.textContent,
+                    });
+                }
+            }
+            advance();
+            return;
+        }
         if (list.hidden) {
             return;
         }
-        const buttons = [...list.querySelectorAll("button")];
         if (event.key === "ArrowDown") {
             event.preventDefault();
             highlight(activeIndex + 1);
         } else if (event.key === "ArrowUp") {
             event.preventDefault();
             highlight(activeIndex < 0 ? 0 : activeIndex - 1);
-        } else if (event.key === "Enter" && activeIndex >= 0 && buttons[activeIndex]) {
-            event.preventDefault();
-            selectItem({
-                id: buttons[activeIndex].dataset.id,
-                name: buttons[activeIndex].textContent,
-            });
         }
     });
 

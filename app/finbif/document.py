@@ -2,13 +2,14 @@
 
 The gathering is the route: a LineString, or a Point when only one position
 remains. With no route points it is the session start. Each observation is a
-species name, a time, and its own point. Older observations without a point
-use the session point.
+species name, an optional count, optional notes, a time, and its own point.
+Older observations without a point use the session point.
 
 A new observation field is read in _parse_observation and mapped in
 _build_unit. A document-level field, such as keywords, is read in
 _parse_header and written in build_document. Unknown keys are ignored.
 A chosen taxon id is sent as unitFact.autocompleteSelectedTaxonID.
+Count is sent as unit.count and notes as unit.notes. Blank values are left out.
 """
 
 from __future__ import annotations
@@ -24,6 +25,8 @@ _STAMP = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$")
 _MAX_OBSERVATIONS = 300
 _MAX_ROUTE_POINTS = 2000
 _MAX_TAXON_LENGTH = 300
+_MAX_COUNT_LENGTH = 300
+_MAX_NOTES_LENGTH = 2000
 _MAX_KEYWORDS = 30
 _MAX_KEYWORD_LENGTH = 100
 _DEFAULT_KEYWORDS = ("new",)
@@ -118,10 +121,28 @@ def _build_unit(obs: dict[str, Any]) -> dict[str, Any]:
         "taxonConfidence": "MY.taxonConfidenceSure",
         "recordBasis": "MY.recordBasisHumanObservation",
     }
+    if obs.get("count"):
+        unit["count"] = obs["count"]
+    if obs.get("notes"):
+        unit["notes"] = obs["notes"]
     taxon_id = obs.get("taxonId")
     if taxon_id:
         unit["unitFact"] = {"autocompleteSelectedTaxonID": taxon_id}
     return unit
+
+
+def _optional_text(value: Any, label: str, max_length: int) -> Optional[str]:
+    """Empty means the field is absent. Anything else must be text."""
+    if value is None:
+        return None
+    if not isinstance(value, str):
+        raise ValueError(f"{label} must be text.")
+    text = value.strip()
+    if not text:
+        return None
+    if len(text) > max_length:
+        raise ValueError(f"{label} is too long.")
+    return text
 
 
 def _taxon_id(value: Any) -> Optional[str]:
@@ -167,6 +188,12 @@ def _parse_observation(
     taxon_id = _taxon_id(raw.get("taxonId"))
     if taxon_id:
         observation["taxonId"] = taxon_id
+    count = _optional_text(raw.get("count"), "Count", _MAX_COUNT_LENGTH)
+    if count:
+        observation["count"] = count
+    notes = _optional_text(raw.get("notes"), "Notes", _MAX_NOTES_LENGTH)
+    if notes:
+        observation["notes"] = notes
     return observation
 
 

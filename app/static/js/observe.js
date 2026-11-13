@@ -20,6 +20,13 @@ function formatPoint(lat, lon) {
     return `${Number(lat).toFixed(5)}, ${Number(lon).toFixed(5)}`;
 }
 
+function storedPoint(obs) {
+    if (!obs || typeof obs.lat !== "number" || typeof obs.lon !== "number") {
+        return null;
+    }
+    return { lat: obs.lat, lon: obs.lon };
+}
+
 export function createObserve({
     isBusy,
     setBusy,
@@ -30,10 +37,17 @@ export function createObserve({
     refresh,
     clearPin,
     toContainerPoint,
+    requestLocationChange,
+    abortLocationChange,
 }) {
     const observeForm = document.getElementById("observe-form");
     const observeDialog = document.getElementById("observe-dialog");
     const taxonInput = document.getElementById("taxon");
+    const countInput = document.getElementById("count");
+    const notesInput = document.getElementById("notes");
+    const observePoint = document.getElementById("observe-point");
+    const changeLocationButton = document.getElementById("change-location");
+    const deleteObsButton = document.getElementById("delete-obs");
     const observationList = document.getElementById("observation-list");
     const addObsButton = document.getElementById("add-obs");
     const editObsButton = document.getElementById("edit-obs");
@@ -45,11 +59,16 @@ export function createObserve({
         taxonInput,
         document.getElementById("taxon-results"),
         observeDialog,
+        () => {
+            countInput.focus();
+        },
     );
 
     let sessionObservations = [];
     let nearbyObservations = [];
     let editingObservation = null;
+    let relocating = false;
+    let pendingPoint = null;
 
     function renderList(observations) {
         observationList.replaceChildren();
@@ -66,7 +85,7 @@ export function createObserve({
 
             const name = document.createElement("div");
             name.className = "obs-name";
-            name.textContent = obs.taxon;
+            name.textContent = obs.count ? `${obs.taxon} · ${obs.count}` : obs.taxon;
 
             const meta = document.createElement("div");
             meta.className = "obs-meta";
@@ -74,17 +93,20 @@ export function createObserve({
             if (typeof obs.lat === "number" && typeof obs.lon === "number") {
                 bits.push(formatPoint(obs.lat, obs.lon));
             }
+            if (obs.notes) {
+                bits.push(obs.notes);
+            }
             meta.textContent = bits.join(" · ");
 
-            const remove = document.createElement("button");
-            remove.type = "button";
-            remove.className = "secondary";
-            remove.textContent = "Delete";
-            remove.addEventListener("click", () => {
-                removeObservation(obs);
+            const edit = document.createElement("button");
+            edit.type = "button";
+            edit.className = "secondary";
+            edit.textContent = "Edit";
+            edit.addEventListener("click", () => {
+                openEditObservation(obs);
             });
 
-            item.append(name, meta, remove);
+            item.append(name, meta, edit);
             observationList.append(item);
         }
     }
@@ -113,14 +135,55 @@ export function createObserve({
             })
             .slice()
             .sort((a, b) => (b.seq || 0) - (a.seq || 0));
-        editObsButton.hidden = nearbyObservations.length === 0;
+        if (!relocating) {
+            editObsButton.hidden = nearbyObservations.length === 0;
+        }
+    }
+
+    function clearCountAndNotes() {
+        countInput.value = "";
+        notesInput.value = "";
+    }
+
+    function applyText(observation, key, value) {
+        if (value) {
+            observation[key] = value;
+        } else {
+            delete observation[key];
+        }
+    }
+
+    function showLocation(point) {
+        if (!point) {
+            observePoint.hidden = true;
+            observePoint.textContent = "";
+            return;
+        }
+        observePoint.hidden = false;
+        observePoint.textContent = formatPoint(point.lat, point.lon);
+    }
+
+    function setEditingActions(on) {
+        changeLocationButton.hidden = !on;
+        deleteObsButton.hidden = !on;
+    }
+
+    function fillForm(obs) {
+        taxonField.setValue(obs.taxon || "", obs.taxonId || null);
+        countInput.value = obs.count || "";
+        notesInput.value = obs.notes || "";
     }
 
     function dismiss() {
-        clearNearby();
+        relocating = false;
+        pendingPoint = null;
         editingObservation = null;
+        setEditingActions(false);
         taxonField.clear();
+        clearCountAndNotes();
+        showLocation(null);
         hideProblem("observe-error");
+        clearNearby();
         if (editListDialog.open) {
             editListDialog.close();
         }
@@ -130,11 +193,20 @@ export function createObserve({
     }
 
     function openObserve() {
-        if (isBusy() || !draftPoint()) {
+        if (isBusy()) {
             return;
         }
+        const point = draftPoint();
+        if (!point) {
+            return;
+        }
+        relocating = false;
+        pendingPoint = null;
         editingObservation = null;
         taxonField.clear();
+        clearCountAndNotes();
+        setEditingActions(false);
+        showLocation(point);
         hideProblem("observe-error");
         if (!observeDialog.open) {
             observeDialog.showModal();
@@ -152,7 +224,8 @@ export function createObserve({
             const button = document.createElement("button");
             button.type = "button";
             button.className = "secondary";
-            button.textContent = obs.taxon || "Observation";
+            const label = obs.taxon || "Observation";
+            button.textContent = obs.count ? `${label} · ${obs.count}` : label;
             button.addEventListener("click", () => {
                 openEditObservation(obs);
             });
@@ -168,16 +241,60 @@ export function createObserve({
         if (isBusy() || !obs) {
             return;
         }
+        const same = Boolean(editingObservation && editingObservation.id === obs.id);
+        if (relocating) {
+            relocating = false;
+            abortLocationChange();
+        }
+        if (!same) {
+            pendingPoint = null;
+            fillForm(obs);
+        }
         editingObservation = obs;
         if (editListDialog.open) {
             editListDialog.close();
         }
-        taxonField.setValue(obs.taxon || "", obs.taxonId || null);
+        showLocation(pendingPoint || storedPoint(obs));
+        setEditingActions(true);
         hideProblem("observe-error");
         if (!observeDialog.open) {
             observeDialog.showModal();
         }
-        taxonInput.focus();
+        if (!same) {
+            taxonInput.focus();
+        }
+    }
+
+    function beginLocationChange() {
+        if (isBusy() || !editingObservation) {
+            return;
+        }
+        // Collapse suggestions, but keep the name and taxon the form already has.
+        taxonField.setValue(taxonInput.value.trim(), taxonField.selectedTaxonId());
+        relocating = true;
+        const obs = editingObservation;
+        const pending = pendingPoint;
+        observeDialog.close();
+        requestLocationChange(obs, pending);
+    }
+
+    function acceptLocation(point) {
+        if (!point || !editingObservation) {
+            relocating = false;
+            return false;
+        }
+        pendingPoint = { lat: point.lat, lon: point.lon };
+        relocating = false;
+        openEditObservation(editingObservation);
+        return true;
+    }
+
+    function cancelLocationChange() {
+        relocating = false;
+        if (!editingObservation) {
+            return;
+        }
+        openEditObservation(editingObservation);
     }
 
     async function saveObservation() {
@@ -192,6 +309,7 @@ export function createObserve({
         }
         const editing = editingObservation;
         const point = draftPoint();
+        const moved = pendingPoint;
         if (!editing && !point) {
             clearPin();
             return;
@@ -204,6 +322,11 @@ export function createObserve({
             if (editing) {
                 // Copy first so a field this form does not show stays on the record.
                 observation = { ...editing, taxon };
+                // A location counts only after Use this point. A leftover Add pin must not move this record.
+                if (moved) {
+                    observation.lat = moved.lat;
+                    observation.lon = moved.lon;
+                }
             } else {
                 const existing = await db.listObservations();
                 const seq = existing.reduce((max, obs) => Math.max(max, obs.seq || 0), 0) + 1;
@@ -221,6 +344,8 @@ export function createObserve({
             } else {
                 delete observation.taxonId;
             }
+            applyText(observation, "count", countInput.value.trim());
+            applyText(observation, "notes", notesInput.value.trim());
             await db.addObservation(observation);
             clearPin();
             await refresh();
@@ -231,19 +356,24 @@ export function createObserve({
         }
     }
 
-    async function removeObservation(obs) {
-        if (isBusy()) {
+    async function deleteEditingObservation() {
+        const obs = editingObservation;
+        if (isBusy() || !obs) {
             return;
         }
         if (!window.confirm(`Delete ${obs.taxon}?`)) {
             return;
         }
-        hideProblem("session-error");
+        hideProblem("observe-error");
+        setBusy(true, "Deleting…");
         try {
             await db.deleteObservation(obs.id);
+            clearPin();
             await refresh();
         } catch (error) {
-            showProblem("session-error", { message: error.message || "Could not delete the observation." });
+            showProblem("observe-error", { message: error.message || "Could not delete the observation." });
+        } finally {
+            setBusy(false);
         }
     }
 
@@ -257,6 +387,12 @@ export function createObserve({
     editObsButton.addEventListener("click", () => {
         openEditList();
     });
+    changeLocationButton.addEventListener("click", () => {
+        beginLocationChange();
+    });
+    deleteObsButton.addEventListener("click", () => {
+        deleteEditingObservation();
+    });
     closeObserveButton.addEventListener("click", () => {
         observeDialog.close();
     });
@@ -264,21 +400,37 @@ export function createObserve({
         editListDialog.close();
     });
     observeDialog.addEventListener("close", () => {
-        // Closing without Save leaves the pin; Add obs can start a new one next.
+        // A location change closes the dialog on purpose and keeps the edit.
+        // Any other close drops the unsaved edit. The pin stays for Add obs.
+        if (relocating) {
+            return;
+        }
         editingObservation = null;
+        pendingPoint = null;
+        setEditingActions(false);
     });
 
     return {
         dialogsOpen() {
             return observeDialog.open || editListDialog.open;
         },
+        isRelocating() {
+            return relocating;
+        },
         setObservations(observations) {
             sessionObservations = observations;
         },
         renderList,
         updateNearby,
+        acceptLocation,
+        cancelLocationChange,
         beginNewPin() {
+            if (relocating) {
+                return;
+            }
+            pendingPoint = null;
             editingObservation = null;
+            setEditingActions(false);
         },
         dismiss,
     };

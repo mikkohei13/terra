@@ -37,6 +37,7 @@
                 <div id="pin-actions" class="pin-actions" hidden>
                     <button type="button" id="add-obs" class="primary-action">Add obs</button>
                     <button type="button" id="edit-obs" class="secondary" hidden>Edit</button>
+                    <button type="button" id="use-location" class="primary-action" hidden>Use this point</button>
                     <button type="button" id="cancel-pin" class="secondary">Cancel</button>
                 </div>
             </div>
@@ -44,6 +45,7 @@
             <ul id="observation-list" class="obs-list"></ul>
             <div class="session-actions">
                 <button type="button" id="end-session" class="primary-action">End session</button>
+                <button type="button" id="discard-session" class="secondary primary-action">Discard session</button>
             </div>
             <div id="session-error" class="error" role="alert" hidden></div>
         </div>
@@ -64,7 +66,7 @@
                     autocomplete="off"
                     autocapitalize="off"
                     spellcheck="false"
-                    enterkeyhint="done"
+                    enterkeyhint="next"
                     placeholder="Finnish or scientific name"
                     role="combobox"
                     aria-autocomplete="list"
@@ -74,8 +76,31 @@
                     required
                 >
                 <ul id="taxon-results" class="taxon-results" role="listbox" hidden></ul>
+                <input
+                    id="count"
+                    name="count"
+                    type="text"
+                    maxlength="300"
+                    autocomplete="off"
+                    enterkeyhint="next"
+                    placeholder="Count"
+                    aria-label="Count"
+                >
+                <input
+                    id="notes"
+                    name="notes"
+                    type="text"
+                    maxlength="2000"
+                    autocomplete="off"
+                    enterkeyhint="done"
+                    placeholder="Notes"
+                    aria-label="Notes"
+                >
+                <p id="observe-point" class="observe-point" hidden></p>
+                <button type="button" id="change-location" class="secondary" hidden>Change location</button>
                 <div id="observe-error" class="error" role="alert" hidden></div>
                 <button type="submit" class="primary-action">Save</button>
+                <button type="button" id="delete-obs" class="secondary" hidden>Delete</button>
                 <button type="button" id="close-observe" class="secondary">Close</button>
             </form>
         </dialog>

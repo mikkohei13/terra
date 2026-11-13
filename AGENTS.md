@@ -1,7 +1,7 @@
 
 This web app is maintained by a single person. Favor simple solutions.
 
-It is built with Python/Flask (backend and bussiness logic) with vanilla JavaScript and CSS (frontend and UI).
+It is built with Python/Flask (backend and business logic) with vanilla JavaScript and CSS (frontend and UI).
 
 The app is run locally with Docker and Docker Compose. Running it with plain Python will fail, so don't try that.  Do not use Node, as it not available on this computer.
 

@@ -4,7 +4,18 @@ from __future__ import annotations
 
 from functools import wraps
 
-from flask import Flask, abort, flash, jsonify, redirect, render_template, request, session, url_for
+from flask import (
+    Flask,
+    abort,
+    flash,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    send_from_directory,
+    session,
+    url_for,
+)
 
 import config
 from finbif.client import FinbifError, fetch_person
@@ -89,6 +100,13 @@ def _establish_session(person_token: str) -> None:
     session["person_token"] = person_token
     session["person_id"] = person_id
     session["person_name"] = (person.get("fullName") or person_id).strip()
+
+
+@app.route("/favicon.ico")
+def favicon():
+    return send_from_directory(
+        app.static_folder, "favicon.ico", mimetype="image/vnd.microsoft.icon"
+    )
 
 
 @app.route("/")

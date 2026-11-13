@@ -1,8 +1,9 @@
 // IndexedDB for the active field session. This module does not call the network.
 
 const DB_NAME = "terra";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const ACTIVE_KEY = "active";
+export const AUTOCOMPLETE_STORE = "taxonAutocomplete";
 
 let dbPromise = null;
 
@@ -17,13 +18,16 @@ function openDatabase() {
             if (!db.objectStoreNames.contains("observations")) {
                 db.createObjectStore("observations", { keyPath: "id" });
             }
+            if (!db.objectStoreNames.contains(AUTOCOMPLETE_STORE)) {
+                db.createObjectStore(AUTOCOMPLETE_STORE);
+            }
         };
         request.onsuccess = () => resolve(request.result);
         request.onerror = () => reject(request.error || new Error("Could not open saved observations."));
     });
 }
 
-function databaseConnection() {
+export function databaseConnection() {
     if (!dbPromise) {
         dbPromise = openDatabase().catch((error) => {
             dbPromise = null;
@@ -33,7 +37,7 @@ function databaseConnection() {
     return dbPromise;
 }
 
-function transactionDone(tx) {
+export function transactionDone(tx) {
     return new Promise((resolve, reject) => {
         tx.oncomplete = () => resolve();
         tx.onabort = () => reject(tx.error || new Error("The save was aborted."));

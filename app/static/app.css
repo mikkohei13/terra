@@ -477,7 +477,8 @@ button:disabled {
     flex: 0 0 auto;
 }
 
-#settings-dialog input[type="number"] {
+#settings-dialog input[type="number"],
+#settings-dialog select {
     width: 100%;
     min-height: 3rem;
     margin-top: 0.35rem;
@@ -488,6 +489,10 @@ button:disabled {
     color: var(--fg);
     font: inherit;
     font-size: 1.125rem;
+}
+
+.settings-section > button {
+    margin-top: 0.75rem;
 }
 
 .settings-hint {

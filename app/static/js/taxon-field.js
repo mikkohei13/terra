@@ -1,7 +1,8 @@
 // Taxon name field. Suggestions come from Terra's autocomplete route.
 
 import * as api from "./api.js";
-import { getSetting } from "./settings.js";
+import { autocompleteCacheMs, getSetting } from "./settings.js";
+import { readAutocomplete, writeAutocomplete } from "./taxon-cache.js";
 
 const DEBOUNCE_MS = 300;
 const MIN_INTERVAL_MS = 1000;
@@ -108,40 +109,67 @@ export function attachTaxonField(input, list, dialog) {
             timer = null;
         }
         seq += 1;
+        abortRequest();
         const mySeq = seq;
         const query = input.value.trim();
         if (query.length < MIN_QUERY_LENGTH) {
-            abortRequest();
             clearList();
             return;
         }
-        const sinceSend = lastSentAt === 0 ? MIN_INTERVAL_MS : Date.now() - lastSentAt;
-        const wait = Math.max(DEBOUNCE_MS, MIN_INTERVAL_MS - sinceSend);
         timer = setTimeout(() => {
             run(mySeq, query);
-        }, wait);
+        }, DEBOUNCE_MS);
+    }
+
+    function stillCurrent(mySeq, query) {
+        return mySeq === seq && input.value.trim() === query;
     }
 
     async function run(mySeq, query) {
         timer = null;
-        if (mySeq !== seq || input.value.trim() !== query) {
+        if (!stillCurrent(mySeq, query)) {
+            return;
+        }
+        const groups = getSetting("informalTaxonGroupIds");
+        const maxAgeMs = autocompleteCacheMs(getSetting("autocompleteCache"));
+        if (maxAgeMs > 0) {
+            try {
+                const cached = await readAutocomplete(groups, query, maxAgeMs);
+                if (!stillCurrent(mySeq, query)) {
+                    return;
+                }
+                if (cached !== null) {
+                    render(cached);
+                    return;
+                }
+            } catch (_error) {
+                if (!stillCurrent(mySeq, query)) {
+                    return;
+                }
+            }
+        }
+        const sinceSend = lastSentAt === 0 ? MIN_INTERVAL_MS : Date.now() - lastSentAt;
+        if (sinceSend < MIN_INTERVAL_MS) {
+            timer = setTimeout(() => {
+                run(mySeq, query);
+            }, MIN_INTERVAL_MS - sinceSend);
             return;
         }
         abortRequest();
         controller = new AbortController();
         lastSentAt = Date.now();
         try {
-            const data = await api.autocompleteTaxa(
-                query,
-                getSetting("informalTaxonGroupIds"),
-                controller.signal,
-            );
-            if (mySeq !== seq || input.value.trim() !== query) {
+            const data = await api.autocompleteTaxa(query, groups, controller.signal);
+            const results = Array.isArray(data.results) ? data.results : [];
+            if (maxAgeMs > 0) {
+                writeAutocomplete(groups, query, results).catch(() => {});
+            }
+            if (!stillCurrent(mySeq, query)) {
                 return;
             }
-            render(Array.isArray(data.results) ? data.results : []);
+            render(results);
         } catch (error) {
-            if (error.name === "AbortError" || mySeq !== seq) {
+            if (error.name === "AbortError" || !stillCurrent(mySeq, query)) {
                 return;
             }
             clearList();

@@ -16,10 +16,36 @@ export const MIN_DISTANCE_M_DEFAULT = 100;
 export const MIN_DISTANCE_M_MIN = 20;
 export const MIN_DISTANCE_M_MAX = 1000;
 
+const HOUR_MS = 60 * 60 * 1000;
+const DAY_MS = 24 * HOUR_MS;
+
+export const AUTOCOMPLETE_CACHE_MAX_MS = 30 * DAY_MS;
+export const AUTOCOMPLETE_CACHE_DEFAULT = "7d";
+
+export const AUTOCOMPLETE_CACHE_OPTIONS = [
+    { id: "off", label: "No caching", ms: 0 },
+    { id: "3h", label: "3 hours", ms: 3 * HOUR_MS },
+    { id: "24h", label: "24 hours", ms: DAY_MS },
+    { id: "7d", label: "7 days", ms: 7 * DAY_MS },
+    { id: "30d", label: "30 days", ms: AUTOCOMPLETE_CACHE_MAX_MS },
+];
+
+const AUTOCOMPLETE_CACHE_IDS = new Set(AUTOCOMPLETE_CACHE_OPTIONS.map((option) => option.id));
+
 function normalizeInformalTaxonGroupIds(value) {
     const raw = Array.isArray(value) ? value : [];
     const picked = new Set(raw.filter((id) => typeof id === "string"));
     return INFORMAL_TAXON_GROUP_IDS.filter((id) => picked.has(id));
+}
+
+function normalizeAutocompleteCache(value) {
+    const id = typeof value === "string" ? value : "";
+    return AUTOCOMPLETE_CACHE_IDS.has(id) ? id : AUTOCOMPLETE_CACHE_DEFAULT;
+}
+
+export function autocompleteCacheMs(id) {
+    const option = AUTOCOMPLETE_CACHE_OPTIONS.find((item) => item.id === id);
+    return option ? option.ms : 0;
 }
 
 function normalizeMinDistanceM(value) {
@@ -39,6 +65,10 @@ const REGISTRY = {
     minDistanceM: {
         default: MIN_DISTANCE_M_DEFAULT,
         normalize: normalizeMinDistanceM,
+    },
+    autocompleteCache: {
+        default: AUTOCOMPLETE_CACHE_DEFAULT,
+        normalize: normalizeAutocompleteCache,
     },
 };
 

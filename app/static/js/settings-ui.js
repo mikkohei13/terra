@@ -1,18 +1,20 @@
 // Settings dialog. Opens from the header and does not touch the observation session.
 
 import {
+    AUTOCOMPLETE_CACHE_OPTIONS,
     INFORMAL_TAXON_GROUPS,
     MIN_DISTANCE_M_MAX,
     MIN_DISTANCE_M_MIN,
     getSetting,
     setSetting,
 } from "./settings.js";
+import { clearAutocompleteCache } from "./taxon-cache.js";
 
 const dialog = document.getElementById("settings-dialog");
 const openButton = document.getElementById("open-settings");
 const sectionsRoot = document.getElementById("settings-sections");
 
-const sections = [taxonGroupSection, minDistanceSection];
+const sections = [taxonGroupSection, autocompleteCacheSection, minDistanceSection];
 
 if (dialog && openButton && sectionsRoot) {
     openButton.addEventListener("click", () => {
@@ -83,6 +85,62 @@ function storeTaxonGroups(ids) {
     } catch (_error) {
         // Keep the previous document. paint() reads it back.
     }
+}
+
+function autocompleteCacheSection() {
+    const fieldset = document.createElement("fieldset");
+    fieldset.className = "settings-section";
+    const legend = document.createElement("legend");
+    legend.textContent = "Taxon search";
+    fieldset.append(legend);
+
+    const label = document.createElement("label");
+    label.htmlFor = "setting-autocomplete-cache";
+    label.textContent = "Keep suggestions";
+    fieldset.append(label);
+
+    const select = document.createElement("select");
+    select.id = "setting-autocomplete-cache";
+    for (const option of AUTOCOMPLETE_CACHE_OPTIONS) {
+        const item = document.createElement("option");
+        item.value = option.id;
+        item.textContent = option.label;
+        select.append(item);
+    }
+    select.value = getSetting("autocompleteCache");
+    select.addEventListener("change", () => {
+        try {
+            select.value = setSetting("autocompleteCache", select.value);
+        } catch (_error) {
+            select.value = getSetting("autocompleteCache");
+        }
+    });
+    fieldset.append(select);
+
+    const hint = document.createElement("p");
+    hint.className = "settings-hint";
+    hint.textContent = "Stored on this phone. Each combination of taxon groups is kept separately.";
+    fieldset.append(hint);
+
+    const clearButton = document.createElement("button");
+    clearButton.type = "button";
+    clearButton.className = "secondary";
+    clearButton.textContent = "Clear cache";
+    clearButton.addEventListener("click", async () => {
+        if (!window.confirm("Clear saved taxon suggestions?")) {
+            return;
+        }
+        clearButton.disabled = true;
+        try {
+            await clearAutocompleteCache();
+        } catch (_error) {
+            // Leave the saved suggestions in place.
+        } finally {
+            clearButton.disabled = false;
+        }
+    });
+    fieldset.append(clearButton);
+    return fieldset;
 }
 
 function minDistanceSection() {

@@ -4,8 +4,6 @@ Terra is a mobile-first prototype web app to make nature observations and submit
 
 Built with Python/Flask (backend and bussiness logic) with vanilla JavaScript and CSS (frontend and UI).
 
-See terra-spec.md for specifications for the prototype.
-
 ## Deployment
 
 The app runs on Google Cloud Run, and the Makefile contains the deployment script. Required env vars are `FINBIF_API_TOKEN` and `FLASK_SECRET_KEY`.

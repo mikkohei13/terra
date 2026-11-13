@@ -82,8 +82,8 @@ While the app is visible, the map can show the user's live position (`watchPosit
 ### Map view (main view)
 
 - The map shows the user's position and a marker for each observation. The route is not drawn.
-- Follow starts on when the session map opens. A Start following / Stop following control toggles it. While follow is on, recenter with `panTo` only when the You marker is outside the visible map (keep the current zoom). Panning or zooming turns follow off; placing or dragging a pin does not. Saving or deleting an observation must not turn follow back on.
-- A large "Observe" button opens the observation entry view.
+- Follow starts on when the session map opens. A circular FAB at the bottom-right of the map toggles it (hollow gray crosshairs when off, filled blue when on). Tapping it while off centers on the user and turns follow on. While follow is on, keep the user centered with `panTo` on each marker update (keep the current zoom). Dragging the map turns follow off immediately on `dragstart`; placing or dragging a pin does not. Saving or deleting an observation must not turn follow back on.
+- Am "Observe" button opens the observation entry view.
 - Tapping an observation marker opens that observation for editing.
 - The view also links to the list view, "End session", and "Discard session".
 
@@ -94,7 +94,7 @@ While the app is visible, the map can show the user's live position (`watchPosit
 **Taxon:**
 
 - Taxon names are shown everywhere as "Finnish name (Scientific name)", or the scientific name alone when there is no Finnish name.
-- Quick picks: the first 10 of the top 100 list, shown as large buttons. The list doesn't change during the session.
+- Quick picks: the first 10 of the top 100 list, shown as buttons. The list doesn't change during the session.
 - Taxon text field. While the user types, show two dropdowns:
   1. Matches from the top 100 list, filtered client-side by Finnish and scientific name and ordered by record count, descending.
   2. Matches from FinBIF `/autocomplete/taxa`, which does fuzzy matching. Use Finnish names and debounce requests.
@@ -154,7 +154,6 @@ Shows the session's observations in the order they were added, with the taxon, c
 
 The app is used outdoors, often in bad weather, with one hand and wet fingers. That means:
 
-- reasonably large touch targets
 - high contrast
 - minimal typing
 - no small or hover-dependent controls

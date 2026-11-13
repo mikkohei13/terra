@@ -18,7 +18,24 @@
             <h1>Session</h1>
             <div class="map-wrap">
                 <div id="map" role="application" aria-label="Map. Tap to place an observation."></div>
-                <button type="button" id="follow-toggle" class="follow-toggle" aria-pressed="true">Stop following</button>
+                <button type="button" id="follow-toggle" class="follow-toggle" aria-pressed="true" aria-label="Stop following">
+                    {# Lucide locate / locate-fixed (ISC), also saved under static/images/ #}
+                    <svg class="follow-icon follow-icon-off" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" hidden>
+                        <line x1="2" x2="5" y1="12" y2="12"/>
+                        <line x1="19" x2="22" y1="12" y2="12"/>
+                        <line x1="12" x2="12" y1="2" y2="5"/>
+                        <line x1="12" x2="12" y1="19" y2="22"/>
+                        <circle cx="12" cy="12" r="7"/>
+                    </svg>
+                    <svg class="follow-icon follow-icon-on" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <line x1="2" x2="5" y1="12" y2="12"/>
+                        <line x1="19" x2="22" y1="12" y2="12"/>
+                        <line x1="12" x2="12" y1="2" y2="5"/>
+                        <line x1="12" x2="12" y1="19" y2="22"/>
+                        <circle cx="12" cy="12" r="7"/>
+                        <circle class="follow-icon-dot" cx="12" cy="12" r="3"/>
+                    </svg>
+                </button>
                 <div id="pin-actions" class="pin-actions" hidden>
                     <button type="button" id="add-obs" class="primary-action">Add obs</button>
                     <button type="button" id="cancel-pin" class="secondary">Cancel</button>

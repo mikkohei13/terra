@@ -324,14 +324,42 @@ button:disabled {
 
 .follow-toggle {
     position: absolute;
-    z-index: 650;
-    top: 0.75rem;
+    z-index: 1000;
     right: 0.75rem;
-    padding: 0.7rem 0.9rem;
-    background: var(--card);
-    color: var(--accent);
-    border: 1px solid var(--accent);
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+    bottom: 1.75rem;
+    width: 3.25rem;
+    height: 3.25rem;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: #ffffff;
+    color: #4b5563;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+    display: grid;
+    place-items: center;
+}
+
+.follow-toggle[aria-pressed="true"] {
+    color: #2563eb;
+}
+
+.follow-toggle .follow-icon-dot {
+    fill: currentColor;
+    stroke: currentColor;
+}
+
+.map-wrap:has(#pin-actions:not([hidden])) .follow-toggle {
+    bottom: 5.25rem;
+}
+
+.follow-toggle .follow-icon {
+    display: block;
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.follow-toggle .follow-icon[hidden] {
+    display: none;
 }
 
 .pin-actions {

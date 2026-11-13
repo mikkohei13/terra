@@ -178,8 +178,16 @@ function pinIcon() {
 }
 
 function syncFollowButton() {
-    followToggle.textContent = following ? "Stop following" : "Start following";
     followToggle.setAttribute("aria-pressed", following ? "true" : "false");
+    followToggle.setAttribute("aria-label", following ? "Stop following" : "Start following");
+    const iconOff = followToggle.querySelector(".follow-icon-off");
+    const iconOn = followToggle.querySelector(".follow-icon-on");
+    if (iconOff) {
+        iconOff.hidden = following;
+    }
+    if (iconOn) {
+        iconOn.hidden = !following;
+    }
 }
 
 function setFollowing(on) {
@@ -187,14 +195,18 @@ function setFollowing(on) {
     syncFollowButton();
 }
 
-function maybeCenterOnUser() {
-    if (!following || !map || !userMarker) {
+function centerOnUser() {
+    if (!map || !userMarker) {
         return;
     }
-    const latLng = userMarker.getLatLng();
-    if (!map.getBounds().contains(latLng)) {
-        map.panTo(latLng);
+    map.panTo(userMarker.getLatLng());
+}
+
+function keepFollowingUser() {
+    if (!following) {
+        return;
     }
+    centerOnUser();
 }
 
 function ensureMap(lat, lon) {
@@ -216,9 +228,7 @@ function ensureMap(lat, lon) {
     savedLayer = L.layerGroup().addTo(map);
     map.setView([lat, lon], 16);
     map.on("dragstart", () => {
-        setFollowing(false);
-    });
-    map.on("zoomstart", () => {
+        // Update the FAB as soon as the drag begins, before the pan finishes.
         setFollowing(false);
     });
     map.on("click", (event) => {
@@ -325,7 +335,7 @@ function startWatching() {
             const lat = position.coords.latitude;
             const lon = position.coords.longitude;
             showUser(lat, lon);
-            maybeCenterOnUser();
+            keepFollowingUser();
         },
         () => {},
         { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 },
@@ -407,8 +417,6 @@ async function renderSession({ recenter = false } = {}) {
         clearPin();
         map.setView([session.lat, session.lon], 16);
         showUser(session.lat, session.lon);
-        // setView can emit zoomstart; turn follow on after that so opening
-        // the map does not leave follow off.
         setFollowing(true);
     }
     renderObservationMarkers(observations);
@@ -635,7 +643,7 @@ followToggle.addEventListener("click", () => {
         return;
     }
     setFollowing(true);
-    maybeCenterOnUser();
+    centerOnUser();
 });
 closeObserveButton.addEventListener("click", () => {
     observeDialog.close();

@@ -1,8 +1,9 @@
 """Build a FinBIF Vihko document from one field session.
 
-The gathering is the session's starting point. Each observation is a species
-name, a time, and its own point. Older observations without a point use the
-session point.
+The gathering is the route: a LineString, or a Point when only one position
+remains. With no route points it is the session start. Each observation is a
+species name, a time, and its own point. Older observations without a point
+use the session point.
 
 Count, notes, wildness, and taxon id can be added in _build_unit later.
 """
@@ -17,6 +18,7 @@ import config
 
 _STAMP = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$")
 _MAX_OBSERVATIONS = 300
+_MAX_ROUTE_POINTS = 2000
 _MAX_TAXON_LENGTH = 300
 
 
@@ -45,6 +47,42 @@ def _coordinate(value: Any, label: str, low: float, high: float) -> float:
 def _point(latitude: float, longitude: float) -> dict[str, Any]:
     # GeoJSON order is longitude, latitude.
     return {"type": "Point", "coordinates": [longitude, latitude]}
+
+
+def _parse_points(raw_session: dict[str, Any]) -> list[tuple[float, float]]:
+    raw_points = raw_session.get("points", [])
+    if raw_points is None:
+        return []
+    if not isinstance(raw_points, list):
+        raise ValueError("Route points must be a list.")
+    if len(raw_points) > _MAX_ROUTE_POINTS:
+        raise ValueError(f"A route can contain at most {_MAX_ROUTE_POINTS} points.")
+    points: list[tuple[float, float]] = []
+    for raw in raw_points:
+        if not isinstance(raw, dict):
+            raise ValueError("A route point is missing.")
+        points.append(
+            (
+                _coordinate(raw.get("lat"), "Route latitude", -90, 90),
+                _coordinate(raw.get("lon"), "Route longitude", -180, 180),
+            )
+        )
+    return points
+
+
+def _gathering_geometry(session: dict[str, Any]) -> dict[str, Any]:
+    """LineString of the route, or a Point when fewer than two positions remain."""
+    coordinates: list[list[float]] = []
+    for latitude, longitude in session["points"]:
+        pair = [longitude, latitude]
+        if coordinates and coordinates[-1] == pair:
+            continue
+        coordinates.append(pair)
+    if len(coordinates) >= 2:
+        return {"type": "LineString", "coordinates": coordinates}
+    if len(coordinates) == 1:
+        return {"type": "Point", "coordinates": coordinates[0]}
+    return _point(session["lat"], session["lon"])
 
 
 def _observation_point(
@@ -93,6 +131,7 @@ def parse_submission(body: dict[str, Any]) -> tuple[dict[str, Any], list[dict[st
         "endedAt": _stamp(raw_session.get("endedAt"), "Session end"),
         "lat": _coordinate(raw_session.get("lat"), "Latitude", -90, 90),
         "lon": _coordinate(raw_session.get("lon"), "Longitude", -180, 180),
+        "points": _parse_points(raw_session),
     }
     if session["endedAt"] < session["startedAt"]:
         session["endedAt"] = session["startedAt"]
@@ -141,7 +180,7 @@ def build_document(
         raise ValueError("Add at least one observation before ending the session.")
 
     gathering = {
-        "geometry": _point(session["lat"], session["lon"]),
+        "geometry": _gathering_geometry(session),
         "units": [_build_unit(obs) for obs in observations],
     }
     return {

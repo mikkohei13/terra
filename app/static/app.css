@@ -233,11 +233,6 @@ code {
     gap: 1rem;
 }
 
-#app h1 {
-    margin: 0;
-    font-size: 1.6rem;
-}
-
 #app p {
     margin: 0;
 }
@@ -252,8 +247,7 @@ code {
     font-size: 1.125rem;
 }
 
-.primary-action,
-#discard-session {
+.primary-action {
     width: 100%;
 }
 
@@ -295,13 +289,15 @@ button:disabled {
 
 .map-wrap {
     position: relative;
+    margin-inline: -1rem;
 }
 
 #map {
     height: min(62dvh, 36rem);
     min-height: 18rem;
     border: 1px solid var(--border);
-    border-radius: 0.75rem;
+    border-inline: none;
+    border-radius: 0;
     background: #d5dcd0;
 }
 
@@ -389,6 +385,10 @@ button:disabled {
     background: var(--card);
     color: var(--fg);
     width: min(32rem, calc(100vw - 2rem));
+    top: 0;
+    bottom: auto;
+    margin-top: 0;
+    margin-bottom: auto;
 }
 
 #observe-dialog::backdrop {
@@ -398,11 +398,6 @@ button:disabled {
 #observe-dialog .stack-form {
     border: none;
     background: transparent;
-}
-
-#observe-dialog h2 {
-    margin: 0;
-    font-size: 1.35rem;
 }
 
 #observe-dialog button {

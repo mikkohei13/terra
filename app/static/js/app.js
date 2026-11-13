@@ -2,6 +2,8 @@
 
 import * as api from "./api.js";
 import * as db from "./db.js";
+import * as devdots from "./devdots.js"; // devdots
+import { MAX_ROUTE_POINTS, shouldRecordPoint } from "./route.js";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -16,7 +18,6 @@ const taxonInput = document.getElementById("taxon");
 const sessionMeta = document.getElementById("session-meta");
 const observationList = document.getElementById("observation-list");
 const endButton = document.getElementById("end-session");
-const discardButton = document.getElementById("discard-session");
 const doneDetail = document.getElementById("done-detail");
 const anotherButton = document.getElementById("another-session");
 const addObsButton = document.getElementById("add-obs");
@@ -26,6 +27,7 @@ const pinActions = document.getElementById("pin-actions");
 const followToggle = document.getElementById("follow-toggle");
 
 const USER_MARKER_INTERVAL_MS = 5000;
+const WATCH_RETRY_MS = 30000;
 
 let busy = false;
 let map = null;
@@ -37,6 +39,9 @@ let watchToken = 0;
 let mapSessionKey = null;
 let following = true;
 let lastUserMarkerAt = 0;
+let latestFix = null;
+let recordChain = Promise.resolve();
+let watchRetryTimer = null;
 
 function $(id) {
     return document.getElementById(id);
@@ -48,6 +53,7 @@ function show(view) {
     viewDone.hidden = view !== "done";
     if (view !== "session") {
         stopWatching();
+        devdots.show(map, []); // devdots
     }
     if (!busy) {
         statusLine.hidden = true;
@@ -316,34 +322,112 @@ function renderObservationMarkers(observations) {
     }
 }
 
+function fixFromPosition(position) {
+    const coords = position && position.coords;
+    if (!coords || typeof coords.latitude !== "number" || typeof coords.longitude !== "number") {
+        return null;
+    }
+    return {
+        lat: coords.latitude,
+        lon: coords.longitude,
+        accuracy: typeof coords.accuracy === "number" ? coords.accuracy : null,
+    };
+}
+
+function offerRoutePoint(fix) {
+    recordChain = recordChain.then(() => maybeRecordPoint(fix)).catch(() => {});
+    return recordChain;
+}
+
+async function maybeRecordPoint(fix) {
+    if (!fix || document.hidden || viewSession.hidden) {
+        return;
+    }
+    const session = await db.getSession();
+    if (!sessionIsUsable(session)) {
+        return;
+    }
+    const points = Array.isArray(session.points) ? session.points : [];
+    if (points.length >= MAX_ROUTE_POINTS) {
+        return;
+    }
+    const previous = points.length > 0 ? points[points.length - 1] : null;
+    if (!shouldRecordPoint(previous, fix)) {
+        return;
+    }
+    session.points = points.concat({ lat: round6(fix.lat), lon: round6(fix.lon) });
+    await db.saveSession(session);
+    devdots.show(map, session.points); // devdots
+}
+
+function routePointsForSubmit(session) {
+    const points = Array.isArray(session.points) ? session.points : [];
+    return points
+        .filter((point) => typeof point.lat === "number" && typeof point.lon === "number")
+        .map((point) => ({ lat: point.lat, lon: point.lon }));
+}
+
+function clearWatchRetry() {
+    if (watchRetryTimer !== null) {
+        clearTimeout(watchRetryTimer);
+        watchRetryTimer = null;
+    }
+}
+
+function scheduleWatchRetry() {
+    watchToken += 1;
+    if (watchId !== null && navigator.geolocation) {
+        navigator.geolocation.clearWatch(watchId);
+    }
+    watchId = null;
+    if (watchRetryTimer !== null || document.hidden || viewSession.hidden) {
+        return;
+    }
+    watchRetryTimer = setTimeout(() => {
+        watchRetryTimer = null;
+        startWatching();
+    }, WATCH_RETRY_MS);
+}
+
 function startWatching() {
     if (!map || watchId !== null || !navigator.geolocation || document.hidden) {
         return;
     }
+    clearWatchRetry();
     const token = ++watchToken;
     lastUserMarkerAt = 0;
     watchId = navigator.geolocation.watchPosition(
         (position) => {
-            if (token !== watchToken || !map) {
+            if (token !== watchToken || !map || document.hidden) {
                 return;
             }
+            const fix = fixFromPosition(position);
+            if (!fix) {
+                return;
+            }
+            latestFix = fix;
+            offerRoutePoint(fix);
             const now = Date.now();
             if (lastUserMarkerAt !== 0 && now - lastUserMarkerAt < USER_MARKER_INTERVAL_MS) {
                 return;
             }
             lastUserMarkerAt = now;
-            const lat = position.coords.latitude;
-            const lon = position.coords.longitude;
-            showUser(lat, lon);
+            showUser(fix.lat, fix.lon);
             keepFollowingUser();
         },
-        () => {},
+        () => {
+            if (token !== watchToken) {
+                return;
+            }
+            scheduleWatchRetry();
+        },
         { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 },
     );
 }
 
 function stopWatching() {
     watchToken += 1;
+    clearWatchRetry();
     if (watchId !== null && navigator.geolocation) {
         navigator.geolocation.clearWatch(watchId);
     }
@@ -397,8 +481,7 @@ async function renderSession({ recenter = false } = {}) {
         return;
     }
     const observations = await db.listObservations();
-    const countLabel = observations.length === 1 ? "1 observation" : `${observations.length} observations`;
-    sessionMeta.textContent = `Started ${formatStamp(session.startedAt)} at ${formatPoint(session.lat, session.lon)}. ${countLabel}.`;
+    sessionMeta.textContent = formatStamp(session.startedAt);
     renderObservations(observations);
     show("session");
     await nextFrame();
@@ -420,6 +503,7 @@ async function renderSession({ recenter = false } = {}) {
         setFollowing(true);
     }
     renderObservationMarkers(observations);
+    devdots.show(map, Array.isArray(session.points) ? session.points : []); // devdots
     startWatching();
 }
 
@@ -442,11 +526,20 @@ async function startSession() {
     setBusy(true, "Getting location…");
     try {
         const position = await currentPosition();
+        const fix = fixFromPosition(position);
+        if (!fix) {
+            throw new Error("Could not read the location.");
+        }
+        latestFix = fix;
         const session = {
             startedAt: localStamp(),
-            lat: round6(position.coords.latitude),
-            lon: round6(position.coords.longitude),
+            lat: round6(fix.lat),
+            lon: round6(fix.lon),
+            points: [],
         };
+        if (shouldRecordPoint(null, fix)) {
+            session.points.push({ lat: session.lat, lon: session.lon });
+        }
         await db.clearSession();
         await db.saveSession(session);
         hideProblem("session-error");
@@ -537,7 +630,9 @@ async function endSession() {
     }
 
     setBusy(true, "Submitting…");
+    stopWatching();
     try {
+        await offerRoutePoint(latestFix);
         const session = await db.getSession();
         if (!sessionIsUsable(session)) {
             show("start");
@@ -550,6 +645,7 @@ async function endSession() {
                 endedAt: localStamp(),
                 lat: session.lat,
                 lon: session.lon,
+                points: routePointsForSubmit(session),
             },
             observations.map((obs) => {
                 const row = {
@@ -573,23 +669,9 @@ async function endSession() {
         showProblem("session-error", error);
     } finally {
         setBusy(false);
-    }
-}
-
-async function discardSession() {
-    if (busy) {
-        return;
-    }
-    if (!window.confirm("Discard this session and its observations?")) {
-        return;
-    }
-    try {
-        await db.clearSession();
-        hideProblem("start-error");
-        clearPin();
-        show("start");
-    } catch (error) {
-        showProblem("session-error", { message: error.message || "Could not discard the session." });
+        if (!viewSession.hidden) {
+            startWatching();
+        }
     }
 }
 
@@ -650,9 +732,6 @@ closeObserveButton.addEventListener("click", () => {
 });
 endButton.addEventListener("click", () => {
     endSession();
-});
-discardButton.addEventListener("click", () => {
-    discardSession();
 });
 anotherButton.addEventListener("click", () => {
     hideProblem("start-error");

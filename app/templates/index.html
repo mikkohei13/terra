@@ -8,14 +8,12 @@
         <p id="status" class="status" role="status" hidden></p>
 
         <div id="view-start">
-            <h1>New session</h1>
             <p>The session starts at your current location. On the map, tap where each observation is.</p>
             <button type="button" id="start-session" class="primary-action">Start session</button>
             <div id="start-error" class="error" role="alert" hidden></div>
         </div>
 
         <div id="view-session" hidden>
-            <h1>Session</h1>
             <div class="map-wrap">
                 <div id="map" role="application" aria-label="Map. Tap to place an observation."></div>
                 <button type="button" id="follow-toggle" class="follow-toggle" aria-pressed="true" aria-label="Stop following">
@@ -41,26 +39,22 @@
                     <button type="button" id="cancel-pin" class="secondary">Cancel</button>
                 </div>
             </div>
-            <p id="session-meta"></p>
+            <p id="session-meta" class="session-meta"></p>
             <ul id="observation-list" class="obs-list"></ul>
             <div class="session-actions">
                 <button type="button" id="end-session" class="primary-action">End session</button>
-                <button type="button" id="discard-session" class="secondary">Discard session</button>
             </div>
             <div id="session-error" class="error" role="alert" hidden></div>
         </div>
 
         <div id="view-done" hidden>
-            <h1>Submitted</h1>
             <p id="done-detail"></p>
             <p>Further edits are done on laji.fi.</p>
             <button type="button" id="another-session" class="primary-action">Start another session</button>
         </div>
 
-        <dialog id="observe-dialog" aria-labelledby="observe-title">
+        <dialog id="observe-dialog" aria-label="Observation">
             <form id="observe-form" class="stack-form">
-                <h2 id="observe-title">Observation</h2>
-                <label for="taxon">Species</label>
                 <input
                     id="taxon"
                     name="taxon"
@@ -71,6 +65,7 @@
                     spellcheck="false"
                     enterkeyhint="done"
                     placeholder="Finnish or scientific name"
+                    aria-label="Species"
                     required
                 >
                 <div id="observe-error" class="error" role="alert" hidden></div>
@@ -93,7 +88,6 @@
         <script type="module" src="{{ url_for('static', filename='js/app.js') }}"></script>
     </div>
     {% else %}
-        <h1>Terra</h1>
         <p><a class="button" href="{{ havistin_url }}">Log in via Havistin</a></p>
     {% endif %}
 </section>

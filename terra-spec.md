@@ -1,4 +1,6 @@
-# Terra
+# Terra Architecture Guidelines
+
+IMPORTANT: This document is a conceptual architecture that only guides the development of the app. If the user gives conflicting instructions, follow them instead. Do not edit this document unless asked.
 
 Terra is a mobile-first web app for recording nature observations in the field and submitting them to FinBIF (api.laji.fi).
 

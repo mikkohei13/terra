@@ -3,7 +3,7 @@
 import * as api from "./api.js";
 import * as db from "./db.js";
 import { createObserve, formatStamp } from "./observe.js";
-import { shouldRecordPoint } from "./route.js";
+import { shouldRecordPoint, suggestedObservationAccuracy } from "./route.js";
 import {
     createSessionMap,
     currentPosition,
@@ -499,6 +499,9 @@ observe = createObserve({
     abortLocationChange() {
         setRelocateActions(false);
         mapApi.clearDraft();
+    },
+    suggestedAccuracy(point) {
+        return suggestedObservationAccuracy(mapApi.latestFix(), point);
     },
 });
 

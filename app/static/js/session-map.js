@@ -221,13 +221,17 @@ export function createSessionMap({ isBusy, isBlocked, isSessionVisible, onTap })
             if (typeof obs.lat !== "number" || typeof obs.lon !== "number") {
                 continue;
             }
-            const marker = L.circleMarker([obs.lat, obs.lon], {
-                radius: 8,
+            const style = {
                 color: "#14532d",
                 weight: 2,
-                fillColor: "#2f6b3a",
-                fillOpacity: 0.95,
-            });
+                fillOpacity: 0,
+            };
+            const hasAccuracy = typeof obs.accuracy === "number"
+                && Number.isFinite(obs.accuracy)
+                && obs.accuracy > 0;
+            const marker = hasAccuracy
+                ? L.circle([obs.lat, obs.lon], { ...style, radius: obs.accuracy })
+                : L.circleMarker([obs.lat, obs.lon], { ...style, radius: 8 });
             marker.bindTooltip(obs.taxon || "Observation", { direction: "top" });
             marker.addTo(savedLayer);
         }
@@ -385,6 +389,9 @@ export function createSessionMap({ isBusy, isBlocked, isSessionVisible, onTap })
         },
         setLatestFix(fix) {
             latestFix = fix;
+        },
+        latestFix() {
+            return latestFix;
         },
         showRoute,
     };

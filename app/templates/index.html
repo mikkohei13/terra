@@ -125,9 +125,20 @@
                     type="text"
                     maxlength="2000"
                     autocomplete="off"
-                    enterkeyhint="done"
+                    enterkeyhint="next"
                     placeholder="Notes"
                     aria-label="Notes"
+                >
+                <input
+                    id="accuracy"
+                    name="accuracy"
+                    type="number"
+                    step="1"
+                    inputmode="numeric"
+                    autocomplete="off"
+                    enterkeyhint="done"
+                    placeholder="Accuracy (radius/m)"
+                    aria-label="Accuracy (radius/m)"
                 >
                 <button type="button" id="change-location" class="blue" hidden>Change location</button>
                 <div id="observe-error" class="error" role="alert" hidden></div>

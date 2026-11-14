@@ -24,6 +24,36 @@ export function distanceMeters(a, b) {
     return 2 * EARTH_RADIUS_M * Math.asin(Math.min(1, Math.sqrt(h)));
 }
 
+const OBSERVATION_ACCURACY_MIN_M = 5;
+const OBSERVATION_ACCURACY_MAX_M = 5000;
+
+/** Suggested observation accuracy from observer→pin distance, or null. */
+export function suggestedObservationAccuracy(fix, point) {
+    if (!fix || !point) {
+        return null;
+    }
+    if (typeof fix.lat !== "number" || typeof fix.lon !== "number") {
+        return null;
+    }
+    if (!Number.isFinite(fix.lat) || !Number.isFinite(fix.lon)) {
+        return null;
+    }
+    if (typeof fix.accuracy !== "number" || !Number.isFinite(fix.accuracy) || fix.accuracy < 0) {
+        return null;
+    }
+    if (fix.accuracy > MAX_ACCURACY_M) {
+        return null;
+    }
+    if (typeof point.lat !== "number" || typeof point.lon !== "number") {
+        return null;
+    }
+    if (!Number.isFinite(point.lat) || !Number.isFinite(point.lon)) {
+        return null;
+    }
+    const meters = Math.round(distanceMeters(fix, point) / 10);
+    return Math.min(OBSERVATION_ACCURACY_MAX_M, Math.max(OBSERVATION_ACCURACY_MIN_M, meters));
+}
+
 export function shouldRecordPoint(previous, fix, minDistanceM = MIN_DISTANCE_M) {
     if (!fix || typeof fix.lat !== "number" || typeof fix.lon !== "number") {
         return false;

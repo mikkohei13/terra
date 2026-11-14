@@ -261,6 +261,7 @@ code {
 
 #app button,
 #observe-form input[type="text"],
+#observe-form input[type="number"],
 #document-form input[type="text"] {
     min-height: 3rem;
     font-size: 1.125rem;

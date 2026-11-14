@@ -28,12 +28,14 @@ export function createObserve({
     toContainerPoint,
     requestLocationChange,
     abortLocationChange,
+    suggestedAccuracy,
 }) {
     const observeForm = document.getElementById("observe-form");
     const observeDialog = document.getElementById("observe-dialog");
     const taxonInput = document.getElementById("taxon");
     const countInput = document.getElementById("count");
     const notesInput = document.getElementById("notes");
+    const accuracyInput = document.getElementById("accuracy");
     const changeLocationButton = document.getElementById("change-location");
     const deleteObsButton = document.getElementById("delete-obs");
     const observationList = document.getElementById("observation-list");
@@ -125,9 +127,10 @@ export function createObserve({
         }
     }
 
-    function clearCountAndNotes() {
+    function clearCountNotesAndAccuracy() {
         countInput.value = "";
         notesInput.value = "";
+        accuracyInput.value = "";
     }
 
     function applyText(observation, key, value) {
@@ -136,6 +139,35 @@ export function createObserve({
         } else {
             delete observation[key];
         }
+    }
+
+    function accuracyFieldEmpty() {
+        return accuracyInput.value.trim() === "";
+    }
+
+    function fillAccuracyIfEmpty(point) {
+        if (!accuracyFieldEmpty() || !point || typeof suggestedAccuracy !== "function") {
+            return;
+        }
+        const value = suggestedAccuracy(point);
+        if (typeof value === "number" && Number.isInteger(value) && value > 0) {
+            accuracyInput.value = String(value);
+        }
+    }
+
+    function readAccuracy() {
+        const text = accuracyInput.value.trim();
+        if (!text) {
+            return null;
+        }
+        if (!/^\d+$/.test(text)) {
+            throw new Error("Accuracy must be a whole number of meters.");
+        }
+        const value = Number(text);
+        if (!Number.isInteger(value) || value < 1) {
+            throw new Error("Accuracy must be a whole number of meters.");
+        }
+        return value;
     }
 
     function setEditingActions(on) {
@@ -147,6 +179,9 @@ export function createObserve({
         taxonField.setValue(obs.taxon || "", obs.taxonId || null);
         countInput.value = obs.count || "";
         notesInput.value = obs.notes || "";
+        accuracyInput.value = typeof obs.accuracy === "number" && Number.isInteger(obs.accuracy) && obs.accuracy > 0
+            ? String(obs.accuracy)
+            : "";
     }
 
     function dismiss() {
@@ -155,7 +190,7 @@ export function createObserve({
         editingObservation = null;
         setEditingActions(false);
         taxonField.clear();
-        clearCountAndNotes();
+        clearCountNotesAndAccuracy();
         hideProblem("observe-error");
         clearNearby();
         if (editListDialog.open) {
@@ -178,7 +213,8 @@ export function createObserve({
         pendingPoint = null;
         editingObservation = null;
         taxonField.clear();
-        clearCountAndNotes();
+        clearCountNotesAndAccuracy();
+        fillAccuracyIfEmpty(point);
         setEditingActions(false);
         hideProblem("observe-error");
         if (!observeDialog.open) {
@@ -258,6 +294,7 @@ export function createObserve({
         pendingPoint = { lat: point.lat, lon: point.lon };
         relocating = false;
         openEditObservation(editingObservation);
+        fillAccuracyIfEmpty(pendingPoint);
         return true;
     }
 
@@ -287,6 +324,14 @@ export function createObserve({
             return;
         }
         hideProblem("observe-error");
+        let accuracy;
+        try {
+            accuracy = readAccuracy();
+        } catch (error) {
+            showProblem("observe-error", { message: error.message || "Accuracy must be a whole number of meters." });
+            accuracyInput.focus();
+            return;
+        }
         setBusy(true, "Saving…");
         try {
             const taxonId = taxonField.selectedTaxonId();
@@ -318,6 +363,11 @@ export function createObserve({
             }
             applyText(observation, "count", countInput.value.trim());
             applyText(observation, "notes", notesInput.value.trim());
+            if (accuracy === null) {
+                delete observation.accuracy;
+            } else {
+                observation.accuracy = accuracy;
+            }
             await db.addObservation(observation);
             clearPin();
             await refresh();

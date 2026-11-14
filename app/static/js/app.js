@@ -262,7 +262,7 @@ function renderKeywords() {
         name.textContent = keyword;
         const remove = document.createElement("button");
         remove.type = "button";
-        remove.className = "secondary";
+        remove.className = "red";
         remove.textContent = "Remove";
         remove.addEventListener("click", () => {
             keywords.splice(index, 1);

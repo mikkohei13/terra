@@ -36,15 +36,15 @@
                 </button>
                 <div id="pin-actions" class="pin-actions" hidden>
                     <button type="button" id="add-obs" class="primary-action">Add obs</button>
-                    <button type="button" id="edit-obs" class="secondary" hidden>Edit</button>
+                    <button type="button" id="edit-obs" class="blue" hidden>Edit</button>
                     <button type="button" id="use-location" class="primary-action" hidden>Use this point</button>
-                    <button type="button" id="cancel-pin" class="secondary">Cancel</button>
+                    <button type="button" id="cancel-pin" class="white">Cancel</button>
                 </div>
             </div>
             <p id="session-meta" class="session-meta"></p>
             <ul id="observation-list" class="obs-list"></ul>
             <div class="session-actions">
-                <button type="button" id="end-session" class="primary-action">End session</button>
+                <button type="button" id="end-session" class="primary-action blue">End session</button>
             </div>
             <div id="session-error" class="error" role="alert" hidden></div>
         </div>
@@ -74,12 +74,12 @@
                         placeholder="Keyword"
                         aria-label="Keyword"
                     >
-                    <button type="button" id="add-keyword" class="secondary">Add</button>
+                    <button type="button" id="add-keyword">Add</button>
                 </div>
                 <div id="document-error" class="error" role="alert" hidden></div>
                 <button type="submit" class="primary-action">Submit to Vihko</button>
-                <button type="button" id="discard-session" class="secondary">Discard session</button>
-                <button type="button" id="back-to-map" class="secondary">Back to map</button>
+                <button type="button" id="discard-session" class="red">Discard session</button>
+                <button type="button" id="back-to-map" class="white">Back to map</button>
             </form>
         </div>
 
@@ -129,18 +129,18 @@
                     placeholder="Notes"
                     aria-label="Notes"
                 >
-                <button type="button" id="change-location" class="secondary" hidden>Change location</button>
+                <button type="button" id="change-location" class="blue" hidden>Change location</button>
                 <div id="observe-error" class="error" role="alert" hidden></div>
                 <button type="submit" class="primary-action">Save</button>
-                <button type="button" id="delete-obs" class="secondary" hidden>Delete</button>
-                <button type="button" id="close-observe" class="secondary">Close</button>
+                <button type="button" id="delete-obs" class="red" hidden>Delete</button>
+                <button type="button" id="close-observe" class="white">Close</button>
             </form>
         </dialog>
 
         <dialog id="edit-list-dialog" aria-label="Edit observation">
             <div class="stack-form">
                 <ul id="edit-list" class="edit-list"></ul>
-                <button type="button" id="close-edit-list" class="secondary">Close</button>
+                <button type="button" id="close-edit-list" class="white">Close</button>
             </div>
         </dialog>
 

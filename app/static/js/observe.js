@@ -85,7 +85,7 @@ export function createObserve({
 
             const edit = document.createElement("button");
             edit.type = "button";
-            edit.className = "secondary";
+            edit.className = "blue";
             edit.textContent = "Edit";
             edit.addEventListener("click", () => {
                 openEditObservation(obs);
@@ -196,7 +196,7 @@ export function createObserve({
             const item = document.createElement("li");
             const button = document.createElement("button");
             button.type = "button";
-            button.className = "secondary";
+            button.className = "blue";
             const label = obs.taxon || "Observation";
             button.textContent = obs.count ? `${label} · ${obs.count}` : label;
             button.addEventListener("click", () => {

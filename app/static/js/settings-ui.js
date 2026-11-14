@@ -124,7 +124,7 @@ function autocompleteCacheSection() {
 
     const clearButton = document.createElement("button");
     clearButton.type = "button";
-    clearButton.className = "secondary";
+    clearButton.className = "red";
     clearButton.textContent = "Clear cache";
     clearButton.addEventListener("click", async () => {
         if (!window.confirm("Clear saved taxon suggestions?")) {

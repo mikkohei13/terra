@@ -79,7 +79,11 @@ def allowed_informal_taxon_groups(value: Optional[str]) -> list[str]:
 
 
 def taxon_suggestion(row: dict[str, Any]) -> Optional[dict[str, str]]:
-    """One autocomplete row as the id and the name shown in the field."""
+    """One autocomplete row: id, list label, and the name written into the field.
+
+    The label keeps both names when the taxon has them. The field gets only the
+    name of the type that matched the query (vernacular, scientific, synonym, …).
+    """
     taxon_id = normalize_taxon_id(row.get("id"))
     if not taxon_id:
         return None
@@ -91,7 +95,13 @@ def taxon_suggestion(row: dict[str, Any]) -> Optional[dict[str, str]]:
         name = vernacular or scientific
     if not name:
         return None
-    return {"id": taxon_id, "name": name}
+    value = _matched_name(row) or name
+    return {"id": taxon_id, "name": name, "value": value}
+
+
+def _matched_name(row: dict[str, Any]) -> str:
+    """FinBIF's matchingName: the name of the type that matched the query."""
+    return _localized_name(row.get("matchingName"))
 
 
 def _localized_name(value: Any) -> str:

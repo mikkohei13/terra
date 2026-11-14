@@ -18,7 +18,11 @@ function storedResults(results) {
         if (!item || typeof item.id !== "string" || typeof item.name !== "string") {
             continue;
         }
-        stored.push({ id: item.id, name: item.name });
+        const storedItem = { id: item.id, name: item.name };
+        if (typeof item.value === "string" && item.value) {
+            storedItem.value = item.value;
+        }
+        stored.push(storedItem);
     }
     return stored;
 }

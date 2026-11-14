@@ -64,9 +64,17 @@ export function attachTaxonField(input, list, dialog, onAdvance) {
         current.scrollIntoView({ block: "nearest" });
     }
 
+    function fieldValue(item) {
+        if (item && typeof item.value === "string" && item.value) {
+            return item.value;
+        }
+        return item && typeof item.name === "string" ? item.name : "";
+    }
+
     function selectItem(item) {
-        selected = { id: item.id, name: item.name };
-        input.value = item.name;
+        const name = fieldValue(item);
+        selected = { id: item.id, name };
+        input.value = name;
         clearList();
     }
 
@@ -92,6 +100,7 @@ export function attachTaxonField(input, list, dialog, onAdvance) {
             button.type = "button";
             button.id = "taxon-option-" + index;
             button.dataset.id = item.id;
+            button.dataset.value = fieldValue(item);
             button.setAttribute("role", "option");
             button.setAttribute("aria-selected", "false");
             button.textContent = item.name;
@@ -208,6 +217,7 @@ export function attachTaxonField(input, list, dialog, onAdvance) {
                     selectItem({
                         id: button.dataset.id,
                         name: button.textContent,
+                        value: button.dataset.value,
                     });
                 }
             }

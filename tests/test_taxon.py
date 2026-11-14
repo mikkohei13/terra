@@ -51,9 +51,65 @@ class TaxonSuggestionTest(unittest.TestCase):
             }
         )
         self.assertEqual(
-            {"id": "MX.36308", "name": "kottarainen (Sturnus vulgaris)"},
+            {
+                "id": "MX.36308",
+                "name": "kottarainen (Sturnus vulgaris)",
+                "value": "kottarainen (Sturnus vulgaris)",
+            },
             suggestion,
         )
+
+    def test_field_gets_the_vernacular_name_that_matched(self):
+        suggestion = taxon_suggestion(
+            {
+                "id": "MX.36366",
+                "matchingName": "punatulkku",
+                "nameType": "MX.vernacularName",
+                "vernacularName": "punatulkku",
+                "scientificName": "Pyrrhula pyrrhula",
+            }
+        )
+        self.assertEqual("punatulkku (Pyrrhula pyrrhula)", suggestion["name"])
+        self.assertEqual("punatulkku", suggestion["value"])
+
+    def test_field_gets_the_scientific_name_that_matched(self):
+        suggestion = taxon_suggestion(
+            {
+                "id": "MX.36366",
+                "matchingName": "Pyrrhula pyrrhula",
+                "nameType": "MX.scientificName",
+                "vernacularName": "punatulkku",
+                "scientificName": "Pyrrhula pyrrhula",
+            }
+        )
+        self.assertEqual("punatulkku (Pyrrhula pyrrhula)", suggestion["name"])
+        self.assertEqual("Pyrrhula pyrrhula", suggestion["value"])
+
+    def test_field_gets_a_synonym_or_colloquial_name_that_matched(self):
+        synonym = taxon_suggestion(
+            {
+                "id": "MX.37142",
+                "matchingName": "Corvus monedula",
+                "nameType": "MX.hasSynonym",
+                "vernacularName": "naakka",
+                "scientificName": "Coloeus monedula",
+            }
+        )
+        self.assertEqual("naakka (Coloeus monedula)", synonym["name"])
+        self.assertEqual("Corvus monedula", synonym["value"])
+        self.assertEqual("MX.37142", synonym["id"])
+
+        colloquial = taxon_suggestion(
+            {
+                "id": "MX.34567",
+                "matchingName": "talitintti",
+                "nameType": "MX.colloquialVernacularName",
+                "vernacularName": "talitiainen",
+                "scientificName": "Parus major",
+            }
+        )
+        self.assertEqual("talitiainen (Parus major)", colloquial["name"])
+        self.assertEqual("talitintti", colloquial["value"])
 
     def test_uses_the_finnish_value_from_a_localized_object(self):
         suggestion = taxon_suggestion(
@@ -64,10 +120,12 @@ class TaxonSuggestionTest(unittest.TestCase):
             }
         )
         self.assertEqual("talitiainen (Parus major)", suggestion["name"])
+        self.assertEqual("talitiainen (Parus major)", suggestion["value"])
 
     def test_uses_the_scientific_name_when_finnish_is_missing(self):
         suggestion = taxon_suggestion({"id": "MX.1", "scientificName": "Sturnus vulgaris"})
         self.assertEqual("Sturnus vulgaris", suggestion["name"])
+        self.assertEqual("Sturnus vulgaris", suggestion["value"])
 
     def test_skips_a_row_without_an_mx_id(self):
         self.assertIsNone(taxon_suggestion({"id": "MX.not", "scientificName": "A"}))

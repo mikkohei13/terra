@@ -30,6 +30,7 @@ class AutocompleteRouteTest(unittest.TestCase):
         rows = [
             {
                 "id": "MX.36308",
+                "matchingName": "kottarainen",
                 "vernacularName": "kottarainen",
                 "scientificName": "Sturnus vulgaris",
             },
@@ -40,7 +41,13 @@ class AutocompleteRouteTest(unittest.TestCase):
             response = self.client.get("/api/taxa/autocomplete?query=kottaroinen")
         self.assertEqual(200, response.status_code)
         self.assertEqual(
-            [{"id": "MX.36308", "name": "kottarainen (Sturnus vulgaris)"}],
+            [
+                {
+                    "id": "MX.36308",
+                    "name": "kottarainen (Sturnus vulgaris)",
+                    "value": "kottarainen",
+                }
+            ],
             response.get_json()["results"],
         )
         autocomplete.assert_called_once_with(

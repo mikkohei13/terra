@@ -452,10 +452,6 @@ button:disabled {
     width: 100%;
 }
 
-.observe-point {
-    color: var(--muted);
-}
-
 .edit-list {
     list-style: none;
     margin: 0;

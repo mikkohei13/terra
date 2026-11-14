@@ -16,17 +16,6 @@ export function formatStamp(stamp) {
     return `${Number(match[3])} ${month} ${match[1]}, ${match[4]}:${match[5]}`;
 }
 
-function formatPoint(lat, lon) {
-    return `${Number(lat).toFixed(5)}, ${Number(lon).toFixed(5)}`;
-}
-
-function storedPoint(obs) {
-    if (!obs || typeof obs.lat !== "number" || typeof obs.lon !== "number") {
-        return null;
-    }
-    return { lat: obs.lat, lon: obs.lon };
-}
-
 export function createObserve({
     isBusy,
     setBusy,
@@ -45,7 +34,6 @@ export function createObserve({
     const taxonInput = document.getElementById("taxon");
     const countInput = document.getElementById("count");
     const notesInput = document.getElementById("notes");
-    const observePoint = document.getElementById("observe-point");
     const changeLocationButton = document.getElementById("change-location");
     const deleteObsButton = document.getElementById("delete-obs");
     const observationList = document.getElementById("observation-list");
@@ -90,9 +78,6 @@ export function createObserve({
             const meta = document.createElement("div");
             meta.className = "obs-meta";
             const bits = [formatStamp(obs.at)];
-            if (typeof obs.lat === "number" && typeof obs.lon === "number") {
-                bits.push(formatPoint(obs.lat, obs.lon));
-            }
             if (obs.notes) {
                 bits.push(obs.notes);
             }
@@ -153,16 +138,6 @@ export function createObserve({
         }
     }
 
-    function showLocation(point) {
-        if (!point) {
-            observePoint.hidden = true;
-            observePoint.textContent = "";
-            return;
-        }
-        observePoint.hidden = false;
-        observePoint.textContent = formatPoint(point.lat, point.lon);
-    }
-
     function setEditingActions(on) {
         changeLocationButton.hidden = !on;
         deleteObsButton.hidden = !on;
@@ -181,7 +156,6 @@ export function createObserve({
         setEditingActions(false);
         taxonField.clear();
         clearCountAndNotes();
-        showLocation(null);
         hideProblem("observe-error");
         clearNearby();
         if (editListDialog.open) {
@@ -206,7 +180,6 @@ export function createObserve({
         taxonField.clear();
         clearCountAndNotes();
         setEditingActions(false);
-        showLocation(point);
         hideProblem("observe-error");
         if (!observeDialog.open) {
             observeDialog.showModal();
@@ -254,7 +227,6 @@ export function createObserve({
         if (editListDialog.open) {
             editListDialog.close();
         }
-        showLocation(pendingPoint || storedPoint(obs));
         setEditingActions(true);
         hideProblem("observe-error");
         if (!observeDialog.open) {

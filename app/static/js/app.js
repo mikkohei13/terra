@@ -15,14 +15,23 @@ import {
 } from "./session-map.js";
 import { getSetting } from "./settings.js";
 
+const MAX_KEYWORDS = 30;
+
 const viewStart = document.getElementById("view-start");
 const viewSession = document.getElementById("view-session");
+const viewDocument = document.getElementById("view-document");
 const viewDone = document.getElementById("view-done");
 const statusLine = document.getElementById("status");
 const startButton = document.getElementById("start-session");
 const sessionMeta = document.getElementById("session-meta");
 const endButton = document.getElementById("end-session");
+const documentForm = document.getElementById("document-form");
+const localityInput = document.getElementById("locality");
+const keywordList = document.getElementById("keyword-list");
+const keywordInput = document.getElementById("keyword-input");
+const addKeywordButton = document.getElementById("add-keyword");
 const discardButton = document.getElementById("discard-session");
+const backToMapButton = document.getElementById("back-to-map");
 const doneDetail = document.getElementById("done-detail");
 const anotherButton = document.getElementById("another-session");
 const cancelPinButton = document.getElementById("cancel-pin");
@@ -33,6 +42,7 @@ const useLocationButton = document.getElementById("use-location");
 let busy = false;
 let mapSessionKey = null;
 let observe;
+let keywords = ["new"];
 
 const mapApi = createSessionMap({
     isBusy: () => busy,
@@ -54,6 +64,7 @@ function $(id) {
 function show(view) {
     viewStart.hidden = view !== "start";
     viewSession.hidden = view !== "session";
+    viewDocument.hidden = view !== "document";
     viewDone.hidden = view !== "done";
     if (view !== "session") {
         mapApi.stopWatching();
@@ -242,24 +253,91 @@ async function startSession() {
     }
 }
 
-async function endSession() {
+function renderKeywords() {
+    keywordList.replaceChildren();
+    keywords.forEach((keyword, index) => {
+        const item = document.createElement("li");
+        item.className = "keyword-item";
+        const name = document.createElement("span");
+        name.textContent = keyword;
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "secondary";
+        remove.textContent = "Remove";
+        remove.addEventListener("click", () => {
+            keywords.splice(index, 1);
+            renderKeywords();
+        });
+        item.append(name, remove);
+        keywordList.append(item);
+    });
+}
+
+function fillDocumentForm(documentHeader) {
+    const header = documentHeader && typeof documentHeader === "object" && !Array.isArray(documentHeader)
+        ? documentHeader
+        : {};
+    localityInput.value = typeof header.locality === "string" ? header.locality : "";
+    if (Array.isArray(header.keywords)) {
+        keywords = header.keywords
+            .filter((keyword) => typeof keyword === "string" && keyword.trim())
+            .map((keyword) => keyword.trim());
+    } else {
+        keywords = ["new"];
+    }
+    keywordInput.value = "";
+    renderKeywords();
+    hideProblem("document-error");
+}
+
+function readDocumentForm() {
+    const header = { keywords: keywords.slice() };
+    const locality = localityInput.value.trim();
+    if (locality) {
+        header.locality = locality;
+    }
+    return header;
+}
+
+function addKeyword() {
+    const text = keywordInput.value.trim();
+    if (!text) {
+        keywordInput.value = "";
+        return;
+    }
+    if (keywords.length >= MAX_KEYWORDS) {
+        showProblem("document-error", { message: `A document can contain at most ${MAX_KEYWORDS} keywords.` });
+        return;
+    }
+    hideProblem("document-error");
+    keywords.push(text);
+    keywordInput.value = "";
+    renderKeywords();
+}
+
+function saveJsonFile(data, filename) {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+}
+
+async function openDocumentView() {
     if (busy) {
         return;
     }
     hideProblem("session-error");
-    const observations = await db.listObservations();
-    if (observations.length === 0) {
-        await discardSession(observations);
-        return;
+    if (observe.isRelocating()) {
+        setRelocateActions(false);
+        mapApi.clearDraft();
+        observe.dismiss();
     }
-    const names = observations.map((obs) => obs.taxon).join("\n");
-    const label = observations.length === 1 ? "1 observation" : `${observations.length} observations`;
-    if (!window.confirm(`Submit ${label} to FinBIF?\n\n${names}`)) {
-        return;
-    }
-
-    setBusy(true, "Submitting…");
-    mapApi.stopWatching();
+    setBusy(true, "Saving route…");
     try {
         await mapApi.flushLatest();
         const session = await db.getSession();
@@ -268,7 +346,56 @@ async function endSession() {
             showProblem("start-error", { message: "The session is no longer on this phone." });
             return;
         }
+        fillDocumentForm(session.document);
+        show("document");
+    } catch (error) {
+        showProblem("session-error", { message: error.message || "Could not open the document." });
+    } finally {
+        setBusy(false);
+    }
+}
+
+async function backToMap() {
+    if (busy) {
+        return;
+    }
+    hideProblem("document-error");
+    try {
+        const session = await db.getSession();
+        if (!sessionIsUsable(session)) {
+            show("start");
+            return;
+        }
+        session.document = readDocumentForm();
+        await db.saveSession(session);
+        await renderSession();
+    } catch (error) {
+        showProblem("document-error", { message: error.message || "Could not save the document." });
+    }
+}
+
+async function submitDocument() {
+    if (busy) {
+        return;
+    }
+    hideProblem("document-error");
+    const observations = await db.listObservations();
+    if (observations.length === 0) {
+        showProblem("document-error", {
+            message: "Add at least one observation before ending the session.",
+        });
+        return;
+    }
+    setBusy(true, "Submitting…");
+    try {
+        const session = await db.getSession();
+        if (!sessionIsUsable(session)) {
+            show("start");
+            showProblem("start-error", { message: "The session is no longer on this phone." });
+            return;
+        }
         session.endedAt = localStamp();
+        session.document = readDocumentForm();
         await db.saveSession(session);
         const stored = await db.listObservations();
         const result = await api.submitSession(session, stored, session.document);
@@ -278,7 +405,7 @@ async function endSession() {
             : "Submitted. Look up the new document on laji.fi.";
         show("done");
     } catch (error) {
-        showProblem("session-error", error);
+        showProblem("document-error", error);
     } finally {
         setBusy(false);
         if (!viewSession.hidden) {
@@ -289,27 +416,47 @@ async function endSession() {
 
 function discardMessage(observations) {
     if (observations.length === 0) {
-        return "There are no observations to submit. Discard this session?";
+        return "Save this session as a file on this phone and remove it from the app? Nothing will be sent to FinBIF.";
     }
     const label = observations.length === 1 ? "1 observation" : `${observations.length} observations`;
     const names = observations.map((obs) => obs.taxon).join("\n");
-    return `Discard this session? ${label} will be deleted from this phone and will not be sent to FinBIF.\n\n${names}`;
+    return `Save this session as a file on this phone and remove it from the app? ${label} will not be sent to FinBIF.\n\n${names}`;
 }
 
-async function discardSession(observations) {
+async function discardSession() {
     if (busy) {
         return;
     }
-    hideProblem("session-error");
+    hideProblem("document-error");
+    const observations = await db.listObservations();
     if (!window.confirm(discardMessage(observations))) {
         return;
     }
     try {
+        const session = await db.getSession();
+        if (!sessionIsUsable(session)) {
+            show("start");
+            return;
+        }
+        const header = readDocumentForm();
+        const endedAt = localStamp();
+        const file = {
+            session: {
+                startedAt: session.startedAt,
+                endedAt,
+                lat: session.lat,
+                lon: session.lon,
+                points: Array.isArray(session.points) ? session.points : [],
+            },
+            observations,
+            document: header,
+        };
+        saveJsonFile(file, `terra-${endedAt.replace(/:/g, "")}.json`);
         await db.clearSession();
         clearPin();
         show("start");
     } catch (error) {
-        showProblem("session-error", { message: error.message || "Could not discard the session." });
+        showProblem("document-error", { message: error.message || "Could not save the session file." });
     }
 }
 
@@ -385,13 +532,31 @@ useLocationButton.addEventListener("click", () => {
     }
 });
 endButton.addEventListener("click", () => {
-    endSession();
+    openDocumentView();
 });
-discardButton.addEventListener("click", async () => {
-    if (busy) {
-        return;
+documentForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    submitDocument();
+});
+localityInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+        event.preventDefault();
     }
-    await discardSession(await db.listObservations());
+});
+keywordInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        addKeyword();
+    }
+});
+addKeywordButton.addEventListener("click", () => {
+    addKeyword();
+});
+discardButton.addEventListener("click", () => {
+    discardSession();
+});
+backToMapButton.addEventListener("click", () => {
+    backToMap();
 });
 anotherButton.addEventListener("click", () => {
     hideProblem("start-error");

@@ -1,7 +1,8 @@
+# Development Principles:
 
-This web app is maintained by a single person. Favor simple solutions.
+This web app "Terra" is maintained by a single person. Favor simple solutions.
 
-It is built with Python/Flask (backend and business logic) with vanilla JavaScript and CSS (frontend and UI).
+The app uses Python/Flask, vanilla JavaScript, and CSS. Implement business rules, server-side validation, and data processing in Python. Use JavaScript for UI behavior, IndexedDB, and browser or device APIs. For other work, default to Python unless running it in the browser provides a concrete benefit, such as offline operation or immediate feedback.
 
 The app is run locally with Docker and Docker Compose. Running it with plain Python will fail, so don't try that.  Do not use Node, as it not available on this computer.
 

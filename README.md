@@ -14,13 +14,15 @@ Local Compose sets `DEV_LOGIN=1`. Opening `http://127.0.0.1:85/dev/login` signs 
 
 ## Field session
 
-One session is active at a time, in IndexedDB, until submit succeeds. Logout leaves it on the phone.
+One session is active at a time, in IndexedDB, until it is submitted or discarded. Logout leaves it on the phone.
 
-Start reads the location once. The session screen is a Leaflet map. A blue dot follows the user until the map is dragged. A tap places or moves a pin. Add obs opens a dialog for the species name, with FinBIF autocomplete. Cancel removes the pin. An observation stores the name, an optional taxon id, the time, and the pin. Tapping near saved observations offers edit. Edit copies the stored record and overlays the fields the form shows, so anything the form does not touch stays.
+Start reads the location once. The session screen is a Leaflet map. A blue dot follows the user until the map is dragged. A tap places or moves a pin. Add obs opens a dialog for the species name, with FinBIF autocomplete. Cancel removes the pin. An observation stores the name, an optional taxon id, the time, and the pin. Each listed observation has Edit, and tapping near saved observations opens the same form. Edit copies the stored record and overlays the fields the form shows, so anything the form does not touch stays. Delete is on that form and asks first. Change location moves the pin; Save writes the new point only after Use this point. Cancel keeps the previous point.
 
 While the session screen is open, the browser thins GPS fixes (`route.js`: accuracy and minimum distance) and appends them to the route. That filter runs offline on each fix. The server checks the stored points when the draft is posted.
 
-End session writes `endedAt` from the phone clock, then POSTs the stored session, its observations, and a `document` object when the session already has one, to `POST /api/sessions/submit`. On success the phone deletes the local session. Until then the draft stays.
+End session opens a document step. It has a locality name (at most 64 characters) and keywords, with `new` shown when none are stored yet. Back to map stores those fields on the session and returns to the map. Submit to Vihko writes `endedAt` from the phone clock, then POSTs the stored session, its observations, and the `document` object to `POST /api/sessions/submit`. On success the phone deletes the local session. Until then the draft stays.
+
+Discard session asks first, saves that same payload as a JSON file on the phone, and deletes the local session. It does not post to FinBIF.
 
 Settings for this browser (taxon groups for autocomplete, autocomplete cache, route spacing) live in `localStorage`.
 
@@ -31,8 +33,9 @@ Settings for this browser (taxon groups for autocomplete, autocomplete cache, ro
 - One gathering. Its geometry is the route: a LineString, or a Point when fewer than two positions remain. With no route points it is the session start.
 - One unit per observation, at that observation's pin. An observation without a pin uses the session point. A chosen taxon id is sent as `unitFact.autocompleteSelectedTaxonID`.
 - Keywords from the optional `document` object. When they are missing, the document uses `new`.
+- Locality from that same object, written on the gathering. A blank locality is left out.
 
-Unknown keys are ignored. A new observation field is read in `_parse_observation` and mapped in `_build_unit`. A document-level field, such as keywords or a location name, is read in `_parse_header` and written in `build_document`.
+Unknown keys are ignored. A new observation field is read in `_parse_observation` and mapped in `_build_unit`. A document-level field, such as keywords or a locality name, is read in `_parse_header` and written in `build_document`.
 
 `app/finbif/submit.py` POSTs `/documents/validate`, then `/documents` only if validation passes. The observer is the person id from the cookie. `app/finbif/client.py` is the HTTP client for api.laji.fi. It always sends the access token and the person token. Other remote services get their own module.
 

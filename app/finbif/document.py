@@ -6,8 +6,9 @@ species name, an optional count, optional notes, a time, and its own point.
 Older observations without a point use the session point.
 
 A new observation field is read in _parse_observation and mapped in
-_build_unit. A document-level field, such as keywords, is read in
-_parse_header and written in build_document. Unknown keys are ignored.
+_build_unit. A document-level field, such as keywords or a locality name, is
+read in _parse_header and written in build_document. Locality is the
+gathering's locality. Unknown keys are ignored.
 A chosen taxon id is sent as unitFact.autocompleteSelectedTaxonID.
 Count is sent as unit.count and notes as unit.notes. Blank values are left out.
 """
@@ -29,6 +30,7 @@ _MAX_COUNT_LENGTH = 300
 _MAX_NOTES_LENGTH = 2000
 _MAX_KEYWORDS = 30
 _MAX_KEYWORD_LENGTH = 100
+_MAX_LOCALITY_LENGTH = 64
 _DEFAULT_KEYWORDS = ("new",)
 
 
@@ -221,14 +223,18 @@ def _parse_header(body: dict[str, Any]) -> dict[str, Any]:
     """Read optional document details. Unknown keys are ignored.
 
     A new document-level field is read here and written in build_document.
-    Missing keywords stay ["new"].
+    Missing keywords stay ["new"]. A blank locality is left out.
     """
     raw = body.get("document")
     if raw is None:
         return {"keywords": list(_DEFAULT_KEYWORDS)}
     if not isinstance(raw, dict):
         raise ValueError("Document details must be an object.")
-    return {"keywords": _parse_keywords(raw.get("keywords"))}
+    header: dict[str, Any] = {"keywords": _parse_keywords(raw.get("keywords"))}
+    locality = _optional_text(raw.get("locality"), "Locality name", _MAX_LOCALITY_LENGTH)
+    if locality:
+        header["locality"] = locality
+    return header
 
 
 def parse_submission(
@@ -283,6 +289,8 @@ def build_document(
         "geometry": _gathering_geometry(session),
         "units": [_build_unit(obs) for obs in observations],
     }
+    if header.get("locality"):
+        gathering["locality"] = header["locality"]
     return {
         "collectionID": config.VIHKO_COLLECTION_ID,
         "formID": config.VIHKO_FORM_ID,

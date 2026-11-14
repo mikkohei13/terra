@@ -160,22 +160,40 @@ class DocumentPointsTest(unittest.TestCase):
             parse_submission(_body([observation]))
 
     def test_missing_keywords_stay_new(self):
-        for document_header in (None, {}, {"locality": "Park"}):
+        for document_header in (None, {}):
             body = _body([_observation()])
             if document_header is not None:
                 body["document"] = document_header
             _session, _observations, header = parse_submission(body)
             document = build_document(_session, _observations, "MA.1", header)
             self.assertEqual(document["keywords"], ["new"])
-            self.assertNotIn("locality", document)
+            self.assertNotIn("locality", document["gatherings"][0])
 
     def test_provided_keywords_are_placed_on_the_document(self):
         body = _body([_observation()])
-        body["document"] = {"keywords": [" meadow ", "new"], "locality": "Park"}
+        body["document"] = {"keywords": [" meadow ", "new"], "locality": " Park "}
         _session, _observations, header = parse_submission(body)
         document = build_document(_session, _observations, "MA.1", header)
         self.assertEqual(document["keywords"], ["meadow", "new"])
+        self.assertEqual(document["gatherings"][0]["locality"], "Park")
         self.assertNotIn("locality", document)
+
+    def test_blank_locality_is_left_out(self):
+        body = _body([_observation()])
+        body["document"] = {"locality": "  "}
+        _session, _observations, header = parse_submission(body)
+        document = build_document(_session, _observations, "MA.1", header)
+        self.assertNotIn("locality", header)
+        self.assertNotIn("locality", document["gatherings"][0])
+
+    def test_locality_that_is_too_long_or_not_text_is_rejected(self):
+        body = _body([_observation()])
+        body["document"] = {"locality": "x" * 65}
+        with self.assertRaises(ValueError):
+            parse_submission(body)
+        body["document"] = {"locality": 1}
+        with self.assertRaises(ValueError):
+            parse_submission(body)
 
     def test_count_and_notes_are_sent_on_the_unit(self):
         observation = _observation()

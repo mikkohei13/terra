@@ -45,9 +45,42 @@
             <ul id="observation-list" class="obs-list"></ul>
             <div class="session-actions">
                 <button type="button" id="end-session" class="primary-action">End session</button>
-                <button type="button" id="discard-session" class="secondary primary-action">Discard session</button>
             </div>
             <div id="session-error" class="error" role="alert" hidden></div>
+        </div>
+
+        <div id="view-document" hidden>
+            <form id="document-form" class="stack-form">
+                <label for="locality">Locality name</label>
+                <input
+                    id="locality"
+                    name="locality"
+                    type="text"
+                    maxlength="64"
+                    autocomplete="off"
+                    enterkeyhint="done"
+                    aria-label="Locality name"
+                >
+                <label for="keyword-input">Keywords</label>
+                <ul id="keyword-list" class="keyword-list"></ul>
+                <div class="keyword-add">
+                    <input
+                        id="keyword-input"
+                        name="keyword"
+                        type="text"
+                        maxlength="100"
+                        autocomplete="off"
+                        enterkeyhint="done"
+                        placeholder="Keyword"
+                        aria-label="Keyword"
+                    >
+                    <button type="button" id="add-keyword" class="secondary">Add</button>
+                </div>
+                <div id="document-error" class="error" role="alert" hidden></div>
+                <button type="submit" class="primary-action">Submit to Vihko</button>
+                <button type="button" id="discard-session" class="secondary">Discard session</button>
+                <button type="button" id="back-to-map" class="secondary">Back to map</button>
+            </form>
         </div>
 
         <div id="view-done" hidden>

@@ -17,3 +17,8 @@ terra-spec.md provides guidelines and high-level ideas for the app. Do not edit 
 The app is still under development, so backwards compatibility e.g with IndexedDB is not a concern.
 
 If something is unclear, ask instead of making assumptions.
+
+# Local testing
+
+Local Compose sets `DEV_LOGIN=1`. Opening `http://127.0.0.1:85/dev/login` signs in with `DEV_PERSON_TOKEN` from `.env.dev`, which is not deployed.
+

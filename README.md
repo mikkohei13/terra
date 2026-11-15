@@ -6,6 +6,11 @@ Mobile-first web app for recording nature observations on a phone and submitting
 
 Local: Docker Compose on `127.0.0.1:85` (`make dev`). Production: Google Cloud Run (`make deploy`). Required env vars are `FINBIF_API_TOKEN` and `FLASK_SECRET_KEY`.
 
+## Ideas
+
+- On observation form, have one-click button to remove informaltaxongroup setting from autocomplete, so that one can enter any taxon. This should affect only this observation this time, not touch settings.
+- On settings, allow adjusting default accuracy as integer between 1 and 50. Default this to 20% of distance to the observation.
+
 ## Login
 
 Havistin POSTs the FinBIF person token to `/login` as `personToken`. Terra checks it with `GET /person` and stores the token, person id, and name in a signed cookie (`HttpOnly`, `SameSite=Lax`, `Secure` on Cloud Run). The API access token stays in `FINBIF_API_TOKEN` on the server. A GET, or a token in the query string, is ignored so it cannot be written to request logs. `POST /logout` clears the cookie only. The token is shared with Havistin, so it is left in place. Logged-out visitors are linked to `HAVISTIN_URL`.

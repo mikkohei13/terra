@@ -30,6 +30,7 @@ const localityInput = document.getElementById("locality");
 const keywordList = document.getElementById("keyword-list");
 const keywordInput = document.getElementById("keyword-input");
 const addKeywordButton = document.getElementById("add-keyword");
+const sendLaterButton = document.getElementById("send-later");
 const discardButton = document.getElementById("discard-session");
 const backToMapButton = document.getElementById("back-to-map");
 const doneDetail = document.getElementById("done-detail");
@@ -38,6 +39,8 @@ const cancelPinButton = document.getElementById("cancel-pin");
 const addObsButton = document.getElementById("add-obs");
 const editObsButton = document.getElementById("edit-obs");
 const useLocationButton = document.getElementById("use-location");
+const unsentBlock = document.getElementById("unsent-block");
+const unsentList = document.getElementById("unsent-list");
 
 let busy = false;
 let mapSessionKey = null;
@@ -73,6 +76,9 @@ function show(view) {
     if (!busy) {
         statusLine.hidden = true;
         statusLine.textContent = "";
+    }
+    if (view === "start") {
+        renderUnsentList();
     }
 }
 
@@ -460,6 +466,118 @@ async function discardSession() {
     }
 }
 
+async function sendLater() {
+    if (busy) {
+        return;
+    }
+    hideProblem("document-error");
+    try {
+        const session = await db.getSession();
+        if (!sessionIsUsable(session)) {
+            show("start");
+            return;
+        }
+        const observations = await db.listObservations();
+        const header = readDocumentForm();
+        const id = typeof session.unsentId === "string" && session.unsentId
+            ? session.unsentId
+            : crypto.randomUUID();
+        await db.saveUnsent({
+            id,
+            startedAt: session.startedAt,
+            lat: session.lat,
+            lon: session.lon,
+            points: Array.isArray(session.points) ? session.points : [],
+            document: header,
+            observations,
+        });
+        await db.clearSession();
+        clearPin();
+        show("start");
+    } catch (error) {
+        showProblem("document-error", { message: error.message || "Could not keep the session." });
+    }
+}
+
+function unsentMeta(row) {
+    const observations = Array.isArray(row.observations) ? row.observations : [];
+    const bits = [];
+    const locality = row.document && typeof row.document.locality === "string"
+        ? row.document.locality.trim()
+        : "";
+    if (locality) {
+        bits.push(locality);
+    }
+    bits.push(observations.length === 1 ? "1 observation" : `${observations.length} observations`);
+    return bits.join(" · ");
+}
+
+async function renderUnsentList() {
+    try {
+        const rows = await db.listUnsent();
+        if (rows.length === 0) {
+            unsentBlock.hidden = true;
+            unsentList.replaceChildren();
+            return;
+        }
+        unsentBlock.hidden = false;
+        unsentList.replaceChildren();
+        for (const row of rows) {
+            const item = document.createElement("li");
+            item.className = "obs-item";
+
+            const name = document.createElement("div");
+            name.className = "obs-name";
+            name.textContent = formatStamp(row.startedAt);
+
+            const meta = document.createElement("div");
+            meta.className = "obs-meta";
+            meta.textContent = unsentMeta(row);
+
+            const edit = document.createElement("button");
+            edit.type = "button";
+            edit.className = "blue";
+            edit.textContent = "Edit";
+            edit.addEventListener("click", () => {
+                editUnsent(row.id);
+            });
+
+            item.append(name, meta, edit);
+            unsentList.append(item);
+        }
+    } catch (error) {
+        unsentBlock.hidden = true;
+        unsentList.replaceChildren();
+        showProblem("start-error", {
+            message: error.message || "Could not load unsent sessions.",
+        });
+    }
+}
+
+async function editUnsent(id) {
+    if (busy) {
+        return;
+    }
+    hideProblem("start-error");
+    setBusy(true, "Opening…");
+    try {
+        const bundle = await db.getUnsent(id);
+        if (!bundle) {
+            showProblem("start-error", { message: "That session is no longer on this phone." });
+            show("start");
+            return;
+        }
+        const session = await db.restoreUnsent(bundle);
+        fillDocumentForm(session.document);
+        show("document");
+    } catch (error) {
+        show("start");
+        showProblem("start-error", { message: error.message || "Could not open the session." });
+    } finally {
+        setBusy(false);
+    }
+}
+
 async function boot() {
     if (navigator.storage && navigator.storage.persist) {
         navigator.storage.persist().catch(() => {});
@@ -554,6 +672,9 @@ keywordInput.addEventListener("keydown", (event) => {
 });
 addKeywordButton.addEventListener("click", () => {
     addKeyword();
+});
+sendLaterButton.addEventListener("click", () => {
+    sendLater();
 });
 discardButton.addEventListener("click", () => {
     discardSession();

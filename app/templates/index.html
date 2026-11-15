@@ -10,6 +10,10 @@
         <div id="view-start">
             <p>The session starts at your current location. On the map, tap where each observation is.</p>
             <button type="button" id="start-session" class="primary-action">Start session</button>
+            <div id="unsent-block" hidden>
+                <h2 id="unsent-title">Unsent sessions</h2>
+                <ul id="unsent-list" class="obs-list"></ul>
+            </div>
             <div id="start-error" class="error" role="alert" hidden></div>
         </div>
 
@@ -78,6 +82,7 @@
                 </div>
                 <div id="document-error" class="error" role="alert" hidden></div>
                 <button type="submit" class="primary-action">Submit to Vihko</button>
+                <button type="button" id="send-later" class="blue">Send later</button>
                 <button type="button" id="discard-session" class="red">Discard session</button>
                 <button type="button" id="back-to-map" class="white">Back to map</button>
             </form>

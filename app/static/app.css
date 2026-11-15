@@ -166,6 +166,11 @@ button.white,
     border-radius: 0.5rem;
 }
 
+#unsent-title {
+    margin: 0.5rem 0 0;
+    font-size: 1.15rem;
+}
+
 .obs-list {
     list-style: none;
     padding: 0;

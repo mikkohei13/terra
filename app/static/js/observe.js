@@ -53,6 +53,7 @@ export function createObserve({
         () => {
             countInput.focus();
         },
+        document.getElementById("taxon-scope"),
     );
 
     let sessionObservations = [];

@@ -96,23 +96,31 @@
 
         <dialog id="observe-dialog" aria-label="Observation">
             <form id="observe-form" class="stack-form">
-                <input
-                    id="taxon"
-                    name="taxon"
-                    type="text"
-                    maxlength="{{ client_config.limits.taxon }}"
-                    autocomplete="off"
-                    autocapitalize="off"
-                    spellcheck="false"
-                    enterkeyhint="next"
-                    placeholder="Finnish or scientific name"
-                    role="combobox"
-                    aria-autocomplete="list"
-                    aria-expanded="false"
-                    aria-controls="taxon-results"
-                    aria-label="Species"
-                    required
-                >
+                <div class="taxon-row">
+                    <button
+                        type="button"
+                        id="taxon-scope"
+                        class="taxon-scope"
+                        aria-label="Taxon search: custom groups"
+                    >C</button>
+                    <input
+                        id="taxon"
+                        name="taxon"
+                        type="text"
+                        maxlength="{{ client_config.limits.taxon }}"
+                        autocomplete="off"
+                        autocapitalize="off"
+                        spellcheck="false"
+                        enterkeyhint="next"
+                        placeholder="Finnish or scientific name"
+                        role="combobox"
+                        aria-autocomplete="list"
+                        aria-expanded="false"
+                        aria-controls="taxon-results"
+                        aria-label="Species"
+                        required
+                    >
+                </div>
                 <ul id="taxon-results" class="taxon-results" role="listbox" hidden></ul>
                 <input
                     id="count"

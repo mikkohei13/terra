@@ -53,6 +53,13 @@ function normalizeMinDistanceM(value) {
     return number;
 }
 
+function normalizeTaxonSearchMode(value) {
+    if (value === "A" || value === "B" || value === "C") {
+        return value;
+    }
+    return "C";
+}
+
 // A later setting is another entry here, plus a section in settings-ui.js.
 const REGISTRY = {
     informalTaxonGroupIds: {
@@ -66,6 +73,10 @@ const REGISTRY = {
     autocompleteCache: {
         default: AUTOCOMPLETE_CACHE_DEFAULT,
         normalize: normalizeAutocompleteCache,
+    },
+    taxonSearchMode: {
+        default: "C",
+        normalize: normalizeTaxonSearchMode,
     },
 };
 

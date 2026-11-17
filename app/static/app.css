@@ -200,6 +200,28 @@ button.white,
     margin-left: 0.35rem;
 }
 
+.taxon-row {
+    display: flex;
+    align-items: stretch;
+    gap: 0.4rem;
+}
+
+.taxon-row input[type="text"] {
+    flex: 1;
+    min-width: 0;
+    width: auto;
+}
+
+#observe-dialog .taxon-scope {
+    flex: 0 0 2.75rem;
+    width: 2.75rem;
+    padding: 0;
+    background: transparent;
+    color: var(--fg);
+    border: 1px solid var(--border);
+    font-weight: 700;
+}
+
 .taxon-results {
     list-style: none;
     margin: 0;

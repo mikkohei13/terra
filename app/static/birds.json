@@ -1,0 +1,6299 @@
+{
+  "taxa": [
+    {
+      "id": "MX.26277",
+      "sci": "Cygnus olor",
+      "fi": [
+        "kyhmyjoutsen"
+      ],
+      "abbr": [
+        "CYGOLO"
+      ],
+      "syn": [],
+      "obs_count": 62127
+    },
+    {
+      "id": "MX.26282",
+      "sci": "Cygnus columbianus",
+      "fi": [
+        "pikkujoutsen"
+      ],
+      "abbr": [
+        "CYGCOL"
+      ],
+      "syn": [],
+      "obs_count": 1454
+    },
+    {
+      "id": "MX.26280",
+      "sci": "Cygnus cygnus",
+      "fi": [
+        "laulujoutsen"
+      ],
+      "abbr": [
+        "CYGCYG"
+      ],
+      "syn": [],
+      "obs_count": 137169
+    },
+    {
+      "id": "MX.292022",
+      "sci": "Anser fabalis",
+      "fi": [
+        "taigametsähanhi"
+      ],
+      "abbr": [
+        "ANSLIS"
+      ],
+      "syn": [
+        "Anser fabalis"
+      ],
+      "obs_count": 9812
+    },
+    {
+      "id": "MX.292023",
+      "sci": "Anser serrirostris",
+      "fi": [
+        "tundrametsähanhi"
+      ],
+      "abbr": [
+        "ANSSER"
+      ],
+      "syn": [
+        "Anser fabalis",
+        "Anser serrirostris"
+      ],
+      "obs_count": 3186
+    },
+    {
+      "id": "MX.26288",
+      "sci": "Anser brachyrhynchus",
+      "fi": [
+        "lyhytnokkahanhi"
+      ],
+      "abbr": [
+        "ANSBRA"
+      ],
+      "syn": [],
+      "obs_count": 1834
+    },
+    {
+      "id": "MX.26289",
+      "sci": "Anser albifrons",
+      "fi": [
+        "tundrahanhi"
+      ],
+      "abbr": [
+        "ANSALB"
+      ],
+      "syn": [],
+      "obs_count": 7831
+    },
+    {
+      "id": "MX.26290",
+      "sci": "Anser erythropus",
+      "fi": [
+        "kiljuhanhi"
+      ],
+      "abbr": [
+        "ANSERY"
+      ],
+      "syn": [],
+      "obs_count": 985
+    },
+    {
+      "id": "MX.26291",
+      "sci": "Anser anser",
+      "fi": [
+        "merihanhi"
+      ],
+      "abbr": [
+        "ANSANS"
+      ],
+      "syn": [],
+      "obs_count": 33092
+    },
+    {
+      "id": "MX.26292",
+      "sci": "Anser indicus",
+      "fi": [
+        "tiibetinhanhi"
+      ],
+      "abbr": [
+        "ANSIND"
+      ],
+      "syn": [],
+      "obs_count": 265
+    },
+    {
+      "id": "MX.26298",
+      "sci": "Branta canadensis",
+      "fi": [
+        "kanadanhanhi"
+      ],
+      "abbr": [
+        "BRACAN"
+      ],
+      "syn": [],
+      "obs_count": 34775
+    },
+    {
+      "id": "MX.232253",
+      "sci": "Branta hutchinsii",
+      "fi": [
+        "pikkukanadanhanhi"
+      ],
+      "abbr": [
+        "BRAHUT"
+      ],
+      "syn": [],
+      "obs_count": 65
+    },
+    {
+      "id": "MX.26299",
+      "sci": "Branta leucopsis",
+      "fi": [
+        "valkoposkihanhi"
+      ],
+      "abbr": [
+        "BRALEU"
+      ],
+      "syn": [],
+      "obs_count": 51334
+    },
+    {
+      "id": "MX.26300",
+      "sci": "Branta bernicla",
+      "fi": [
+        "sepelhanhi"
+      ],
+      "abbr": [
+        "BRABER"
+      ],
+      "syn": [],
+      "obs_count": 2728
+    },
+    {
+      "id": "MX.26301",
+      "sci": "Branta ruficollis",
+      "fi": [
+        "punakaulahanhi"
+      ],
+      "abbr": [
+        "BRARUF"
+      ],
+      "syn": [],
+      "obs_count": 357
+    },
+    {
+      "id": "MX.26319",
+      "sci": "Tadorna ferruginea",
+      "fi": [
+        "ruostesorsa"
+      ],
+      "abbr": [
+        "TADFER"
+      ],
+      "syn": [],
+      "obs_count": 91
+    },
+    {
+      "id": "MX.26323",
+      "sci": "Tadorna tadorna",
+      "fi": [
+        "ristisorsa"
+      ],
+      "abbr": [
+        "TADTAD"
+      ],
+      "syn": [],
+      "obs_count": 7193
+    },
+    {
+      "id": "MX.26348",
+      "sci": "Aix galericulata",
+      "fi": [
+        "mandariinisorsa"
+      ],
+      "abbr": [
+        "AIXGAL"
+      ],
+      "syn": [],
+      "obs_count": 522
+    },
+    {
+      "id": "MX.26388",
+      "sci": "Spatula querquedula",
+      "fi": [
+        "heinätavi"
+      ],
+      "abbr": [
+        "SPAQUE"
+      ],
+      "syn": [
+        "Anas querquedula"
+      ],
+      "obs_count": 5735
+    },
+    {
+      "id": "MX.26389",
+      "sci": "Spatula discors",
+      "fi": [
+        "sinisiipitavi"
+      ],
+      "abbr": [
+        "SPADIS"
+      ],
+      "syn": [
+        "Anas discors"
+      ],
+      "obs_count": 37
+    },
+    {
+      "id": "MX.26394",
+      "sci": "Spatula clypeata",
+      "fi": [
+        "lapasorsa"
+      ],
+      "abbr": [
+        "SPACLY"
+      ],
+      "syn": [
+        "Anas clypeata"
+      ],
+      "obs_count": 24293
+    },
+    {
+      "id": "MX.26365",
+      "sci": "Sibirionetta formosa",
+      "fi": [
+        "siperiantavi"
+      ],
+      "abbr": [
+        "SIBFOR"
+      ],
+      "syn": [
+        "Anas formosa"
+      ],
+      "obs_count": 20
+    },
+    {
+      "id": "MX.26364",
+      "sci": "Mareca strepera",
+      "fi": [
+        "harmaasorsa"
+      ],
+      "abbr": [
+        "MARSTR"
+      ],
+      "syn": [
+        "Anas strepera"
+      ],
+      "obs_count": 13462
+    },
+    {
+      "id": "MX.26360",
+      "sci": "Mareca penelope",
+      "fi": [
+        "haapana"
+      ],
+      "abbr": [
+        "MARPEN"
+      ],
+      "syn": [
+        "Anas penelope"
+      ],
+      "obs_count": 52926
+    },
+    {
+      "id": "MX.26361",
+      "sci": "Mareca americana",
+      "fi": [
+        "amerikanhaapana"
+      ],
+      "abbr": [
+        "MARAME"
+      ],
+      "syn": [
+        "Anas americana"
+      ],
+      "obs_count": 121
+    },
+    {
+      "id": "MX.26373",
+      "sci": "Anas platyrhynchos",
+      "fi": [
+        "sinisorsa",
+        "heinäsorsa"
+      ],
+      "abbr": [
+        "ANAPLA"
+      ],
+      "syn": [
+        "Anas platyrynchos"
+      ],
+      "obs_count": 174998
+    },
+    {
+      "id": "MX.26374",
+      "sci": "Anas rubripes",
+      "fi": [
+        "nokisorsa"
+      ],
+      "abbr": [
+        "ANARUB"
+      ],
+      "syn": [],
+      "obs_count": 60
+    },
+    {
+      "id": "MX.26382",
+      "sci": "Anas acuta",
+      "fi": [
+        "jouhisorsa"
+      ],
+      "abbr": [
+        "ANAACU"
+      ],
+      "syn": [],
+      "obs_count": 18017
+    },
+    {
+      "id": "MX.26366",
+      "sci": "Anas crecca",
+      "fi": [
+        "tavi"
+      ],
+      "abbr": [
+        "ANACRE"
+      ],
+      "syn": [
+        "Anas crecca"
+      ],
+      "obs_count": 72488
+    },
+    {
+      "id": "MX.26402",
+      "sci": "Netta rufina",
+      "fi": [
+        "punapäänarsku"
+      ],
+      "abbr": [
+        "NETRUF"
+      ],
+      "syn": [],
+      "obs_count": 190
+    },
+    {
+      "id": "MX.26407",
+      "sci": "Aythya ferina",
+      "fi": [
+        "punasotka"
+      ],
+      "abbr": [
+        "AYTFER"
+      ],
+      "syn": [],
+      "obs_count": 10002
+    },
+    {
+      "id": "MX.26409",
+      "sci": "Aythya collaris",
+      "fi": [
+        "amerikantukkasotka"
+      ],
+      "abbr": [
+        "AYTCOL"
+      ],
+      "syn": [],
+      "obs_count": 71
+    },
+    {
+      "id": "MX.26412",
+      "sci": "Aythya nyroca",
+      "fi": [
+        "ruskosotka"
+      ],
+      "abbr": [
+        "AYTNYR"
+      ],
+      "syn": [],
+      "obs_count": 104
+    },
+    {
+      "id": "MX.26415",
+      "sci": "Aythya fuligula",
+      "fi": [
+        "tukkasotka"
+      ],
+      "abbr": [
+        "AYTFUL"
+      ],
+      "syn": [],
+      "obs_count": 68024
+    },
+    {
+      "id": "MX.26416",
+      "sci": "Aythya marila",
+      "fi": [
+        "lapasotka"
+      ],
+      "abbr": [
+        "AYTMAR"
+      ],
+      "syn": [],
+      "obs_count": 6660
+    },
+    {
+      "id": "MX.26417",
+      "sci": "Aythya affinis",
+      "fi": [
+        "pikkulapasotka"
+      ],
+      "abbr": [
+        "AYTAFF"
+      ],
+      "syn": [],
+      "obs_count": 3
+    },
+    {
+      "id": "MX.26419",
+      "sci": "Somateria mollissima",
+      "fi": [
+        "haahka"
+      ],
+      "abbr": [
+        "SOMMOL"
+      ],
+      "syn": [],
+      "obs_count": 114666
+    },
+    {
+      "id": "MX.26420",
+      "sci": "Somateria spectabilis",
+      "fi": [
+        "kyhmyhaahka"
+      ],
+      "abbr": [
+        "SOMSPE"
+      ],
+      "syn": [],
+      "obs_count": 429
+    },
+    {
+      "id": "MX.26423",
+      "sci": "Polysticta stelleri",
+      "fi": [
+        "allihaahka"
+      ],
+      "abbr": [
+        "POLSTE"
+      ],
+      "syn": [],
+      "obs_count": 650
+    },
+    {
+      "id": "MX.26425",
+      "sci": "Histrionicus histrionicus",
+      "fi": [
+        "virta-alli"
+      ],
+      "abbr": [
+        "HISHIS"
+      ],
+      "syn": [],
+      "obs_count": 5
+    },
+    {
+      "id": "MX.26427",
+      "sci": "Clangula hyemalis",
+      "fi": [
+        "alli"
+      ],
+      "abbr": [
+        "CLAHYE"
+      ],
+      "syn": [],
+      "obs_count": 18765
+    },
+    {
+      "id": "MX.26429",
+      "sci": "Melanitta nigra",
+      "fi": [
+        "mustalintu",
+        "meriteeri"
+      ],
+      "abbr": [
+        "MELNIG"
+      ],
+      "syn": [
+        "Oidemia nigra"
+      ],
+      "obs_count": 12348
+    },
+    {
+      "id": "MX.73587",
+      "sci": "Melanitta americana",
+      "fi": [
+        "amerikanmustalintu"
+      ],
+      "abbr": [
+        "MELAME"
+      ],
+      "syn": [],
+      "obs_count": 7
+    },
+    {
+      "id": "MX.26430",
+      "sci": "Melanitta perspicillata",
+      "fi": [
+        "pilkkaniska"
+      ],
+      "abbr": [
+        "MELPER"
+      ],
+      "syn": [],
+      "obs_count": 43
+    },
+    {
+      "id": "MX.26431",
+      "sci": "Melanitta fusca",
+      "fi": [
+        "pilkkasiipi"
+      ],
+      "abbr": [
+        "MELFUS"
+      ],
+      "syn": [],
+      "obs_count": 18436
+    },
+    {
+      "id": "MX.5080627",
+      "sci": "Melanitta deglandi",
+      "fi": [
+        "amerikanpilkkasiipi"
+      ],
+      "abbr": [
+        "MELDEG"
+      ],
+      "syn": [
+        "Melanitta deglandi"
+      ],
+      "obs_count": null
+    },
+    {
+      "id": "MX.5080628",
+      "sci": "Melanitta stejnegeri",
+      "fi": [
+        "siperianpilkkasiipi",
+        "Siberian Scoter"
+      ],
+      "abbr": [
+        "MELSTE"
+      ],
+      "syn": [
+        "Melanitta deglandi"
+      ],
+      "obs_count": 2
+    },
+    {
+      "id": "MX.26435",
+      "sci": "Bucephala clangula",
+      "fi": [
+        "telkkä"
+      ],
+      "abbr": [
+        "BUCCLA"
+      ],
+      "syn": [],
+      "obs_count": 198298
+    },
+    {
+      "id": "MX.26438",
+      "sci": "Mergellus albellus",
+      "fi": [
+        "uivelo"
+      ],
+      "abbr": [
+        "MERALB"
+      ],
+      "syn": [
+        "Mergus albellus"
+      ],
+      "obs_count": 27491
+    },
+    {
+      "id": "MX.26440",
+      "sci": "Mergus serrator",
+      "fi": [
+        "tukkakoskelo"
+      ],
+      "abbr": [
+        "MERSER"
+      ],
+      "syn": [],
+      "obs_count": 33820
+    },
+    {
+      "id": "MX.26442",
+      "sci": "Mergus merganser",
+      "fi": [
+        "isokoskelo"
+      ],
+      "abbr": [
+        "MERMER"
+      ],
+      "syn": [],
+      "obs_count": 89337
+    },
+    {
+      "id": "MX.26447",
+      "sci": "Oxyura jamaicensis",
+      "fi": [
+        "kuparisorsa"
+      ],
+      "abbr": [
+        "OXYJAM"
+      ],
+      "syn": [],
+      "obs_count": 29
+    },
+    {
+      "id": "MX.27058",
+      "sci": "Coturnix coturnix",
+      "fi": [
+        "viiriäinen"
+      ],
+      "abbr": [
+        "COTCOT"
+      ],
+      "syn": [],
+      "obs_count": 2066
+    },
+    {
+      "id": "MX.26931",
+      "sci": "Tetrastes bonasia",
+      "fi": [
+        "pyy"
+      ],
+      "abbr": [
+        "TETBON"
+      ],
+      "syn": [
+        "Bonasa bonasia",
+        "Bonasia bonasia"
+      ],
+      "obs_count": 53981
+    },
+    {
+      "id": "MX.26921",
+      "sci": "Lagopus lagopus",
+      "fi": [
+        "riekko"
+      ],
+      "abbr": [
+        "LAGLAG"
+      ],
+      "syn": [],
+      "obs_count": 18035
+    },
+    {
+      "id": "MX.26922",
+      "sci": "Lagopus muta",
+      "fi": [
+        "kiiruna"
+      ],
+      "abbr": [
+        "LAGMUT"
+      ],
+      "syn": [
+        "Lagopus mutus"
+      ],
+      "obs_count": 1709
+    },
+    {
+      "id": "MX.26926",
+      "sci": "Lyrurus tetrix",
+      "fi": [
+        "teeri"
+      ],
+      "abbr": [
+        "LYRTET"
+      ],
+      "syn": [
+        "Tetrao tetrix"
+      ],
+      "obs_count": 77731
+    },
+    {
+      "id": "MX.26928",
+      "sci": "Tetrao urogallus",
+      "fi": [
+        "metso"
+      ],
+      "abbr": [
+        "TETURO"
+      ],
+      "syn": [],
+      "obs_count": 37959
+    },
+    {
+      "id": "MX.27048",
+      "sci": "Perdix perdix",
+      "fi": [
+        "peltopyy"
+      ],
+      "abbr": [
+        "PERPER"
+      ],
+      "syn": [],
+      "obs_count": 18330
+    },
+    {
+      "id": "MX.27152",
+      "sci": "Phasianus colchicus",
+      "fi": [
+        "fasaani"
+      ],
+      "abbr": [
+        "PHACOL"
+      ],
+      "syn": [],
+      "obs_count": 77216
+    },
+    {
+      "id": "MX.25836",
+      "sci": "Gavia stellata",
+      "fi": [
+        "kaakkuri"
+      ],
+      "abbr": [
+        "GAVSTE"
+      ],
+      "syn": [
+        "Colymbus stellatus"
+      ],
+      "obs_count": 20760
+    },
+    {
+      "id": "MX.25837",
+      "sci": "Gavia arctica",
+      "fi": [
+        "kuikka"
+      ],
+      "abbr": [
+        "GAVARC"
+      ],
+      "syn": [
+        "Colymbus arcticus"
+      ],
+      "obs_count": 40973
+    },
+    {
+      "id": "MX.25838",
+      "sci": "Gavia pacifica",
+      "fi": [
+        "tundrakuikka"
+      ],
+      "abbr": [
+        "GAVPAC"
+      ],
+      "syn": [],
+      "obs_count": 1
+    },
+    {
+      "id": "MX.25839",
+      "sci": "Gavia immer",
+      "fi": [
+        "amerikanjääkuikka"
+      ],
+      "abbr": [
+        "GAVIMM"
+      ],
+      "syn": [
+        "Colymbus immer"
+      ],
+      "obs_count": 102
+    },
+    {
+      "id": "MX.25840",
+      "sci": "Gavia adamsii",
+      "fi": [
+        "jääkuikka"
+      ],
+      "abbr": [
+        "GAVADA"
+      ],
+      "syn": [
+        "Colymbus adamsii"
+      ],
+      "obs_count": 210
+    },
+    {
+      "id": "MX.25844",
+      "sci": "Tachybaptus ruficollis",
+      "fi": [
+        "pikku-uikku"
+      ],
+      "abbr": [
+        "TACRUF"
+      ],
+      "syn": [
+        "Podiceps ruficollis",
+        "Poliocephalus ruficollis"
+      ],
+      "obs_count": 1496
+    },
+    {
+      "id": "MX.25860",
+      "sci": "Podiceps cristatus",
+      "fi": [
+        "silkkiuikku"
+      ],
+      "abbr": [
+        "PODCRI"
+      ],
+      "syn": [],
+      "obs_count": 49730
+    },
+    {
+      "id": "MX.25859",
+      "sci": "Podiceps grisegena",
+      "fi": [
+        "härkälintu"
+      ],
+      "abbr": [
+        "PODGRI"
+      ],
+      "syn": [
+        "Podiceps griseigena"
+      ],
+      "obs_count": 15296
+    },
+    {
+      "id": "MX.25861",
+      "sci": "Podiceps auritus",
+      "fi": [
+        "mustakurkku-uikku"
+      ],
+      "abbr": [
+        "PODAUR"
+      ],
+      "syn": [],
+      "obs_count": 12498
+    },
+    {
+      "id": "MX.25862",
+      "sci": "Podiceps nigricollis",
+      "fi": [
+        "mustakaulauikku"
+      ],
+      "abbr": [
+        "PODNIG"
+      ],
+      "syn": [],
+      "obs_count": 89
+    },
+    {
+      "id": "MX.25892",
+      "sci": "Fulmarus glacialis",
+      "fi": [
+        "myrskylintu"
+      ],
+      "abbr": [
+        "FULGLA"
+      ],
+      "syn": [],
+      "obs_count": 14
+    },
+    {
+      "id": "MX.25963",
+      "sci": "Ardenna grisea",
+      "fi": [
+        "nokiliitäjä"
+      ],
+      "abbr": [
+        "ARDGRI"
+      ],
+      "syn": [
+        "Puffinus griseus"
+      ],
+      "obs_count": 2
+    },
+    {
+      "id": "MX.25960",
+      "sci": "Ardenna gravis",
+      "fi": [
+        "isoliitäjä"
+      ],
+      "abbr": [
+        "ARDVIS"
+      ],
+      "syn": [
+        "Puffinus gravis"
+      ],
+      "obs_count": 27
+    },
+    {
+      "id": "MX.25967",
+      "sci": "Puffinus puffinus",
+      "fi": [
+        "pikkuliitäjä"
+      ],
+      "abbr": [
+        "PUFPUF"
+      ],
+      "syn": [],
+      "obs_count": 1
+    },
+    {
+      "id": "MX.25988",
+      "sci": "Hydrobates pelagicus",
+      "fi": [
+        "merikeiju"
+      ],
+      "abbr": [
+        "HYDPEL"
+      ],
+      "syn": [],
+      "obs_count": 2
+    },
+    {
+      "id": "MX.25994",
+      "sci": "Hydrobates leucorhous",
+      "fi": [
+        "myrskykeiju"
+      ],
+      "abbr": [
+        "HYDLEU"
+      ],
+      "syn": [
+        "Oceanodroma leucorhoa",
+        "Oceanodroma leucorrhoa"
+      ],
+      "obs_count": 7
+    },
+    {
+      "id": "MX.26027",
+      "sci": "Morus bassanus",
+      "fi": [
+        "suula"
+      ],
+      "abbr": [
+        "MORBAS"
+      ],
+      "syn": [
+        "Sula bassana"
+      ],
+      "obs_count": 37
+    },
+    {
+      "id": "MX.26071",
+      "sci": "Microcarbo pygmaeus",
+      "fi": [
+        "pikkumerimetso"
+      ],
+      "abbr": [
+        "MICPYG"
+      ],
+      "syn": [
+        "Phalacrocorax pygmaeus",
+        "Phalacrocorax pygmeus"
+      ],
+      "obs_count": 38
+    },
+    {
+      "id": "MX.26043",
+      "sci": "Phalacrocorax carbo",
+      "fi": [
+        "merimetso"
+      ],
+      "abbr": [
+        "PHACAR"
+      ],
+      "syn": [],
+      "obs_count": 91518
+    },
+    {
+      "id": "MX.26051",
+      "sci": "Gulosus aristotelis",
+      "fi": [
+        "karimetso"
+      ],
+      "abbr": [
+        "GULARI"
+      ],
+      "syn": [
+        "Phalacrocorax aristotelis"
+      ],
+      "obs_count": 4
+    },
+    {
+      "id": "MX.26017",
+      "sci": "Pelecanus onocrotalus",
+      "fi": [
+        "pelikaani"
+      ],
+      "abbr": [
+        "PELONO"
+      ],
+      "syn": [],
+      "obs_count": 5
+    },
+    {
+      "id": "MX.26021",
+      "sci": "Pelecanus crispus",
+      "fi": [
+        "kiharapelikaani"
+      ],
+      "abbr": [
+        "PELCRI"
+      ],
+      "syn": [],
+      "obs_count": 2
+    },
+    {
+      "id": "MX.26164",
+      "sci": "Botaurus stellaris",
+      "fi": [
+        "kaulushaikara"
+      ],
+      "abbr": [
+        "BOTSTE"
+      ],
+      "syn": [],
+      "obs_count": 13884
+    },
+    {
+      "id": "MX.26155",
+      "sci": "Botaurus minutus",
+      "fi": [
+        "pikkuhaikara"
+      ],
+      "abbr": [
+        "BOTMIN"
+      ],
+      "syn": [
+        "Ixobrychus minutus"
+      ],
+      "obs_count": 1
+    },
+    {
+      "id": "MX.26133",
+      "sci": "Nycticorax nycticorax",
+      "fi": [
+        "yöhaikara"
+      ],
+      "abbr": [
+        "NYCNYC"
+      ],
+      "syn": [],
+      "obs_count": 17
+    },
+    {
+      "id": "MX.26121",
+      "sci": "Ardeola ralloides",
+      "fi": [
+        "rääkkähaikara"
+      ],
+      "abbr": [
+        "ARDRAL"
+      ],
+      "syn": [
+        "Ardea ralloides"
+      ],
+      "obs_count": 21
+    },
+    {
+      "id": "MX.26115",
+      "sci": "Egretta garzetta",
+      "fi": [
+        "silkkihaikara"
+      ],
+      "abbr": [
+        "EGRGAR"
+      ],
+      "syn": [],
+      "obs_count": 35
+    },
+    {
+      "id": "MX.26105",
+      "sci": "Ardea alba",
+      "fi": [
+        "jalohaikara"
+      ],
+      "abbr": [
+        "ARDALB"
+      ],
+      "syn": [
+        "Egretta alba",
+        "Casmerodius albus"
+      ],
+      "obs_count": 5571
+    },
+    {
+      "id": "MX.26119",
+      "sci": "Ardea ibis",
+      "fi": [
+        "lehmähaikara"
+      ],
+      "abbr": [
+        "ARDIBI"
+      ],
+      "syn": [
+        "Bubulcus ibis"
+      ],
+      "obs_count": 40
+    },
+    {
+      "id": "MX.26103",
+      "sci": "Ardea purpurea",
+      "fi": [
+        "ruskohaikara"
+      ],
+      "abbr": [
+        "ARDPUR"
+      ],
+      "syn": [],
+      "obs_count": 6
+    },
+    {
+      "id": "MX.26094",
+      "sci": "Ardea cinerea",
+      "fi": [
+        "harmaahaikara"
+      ],
+      "abbr": [
+        "ARDCIN"
+      ],
+      "syn": [],
+      "obs_count": 39963
+    },
+    {
+      "id": "MX.26182",
+      "sci": "Ciconia nigra",
+      "fi": [
+        "mustahaikara"
+      ],
+      "abbr": [
+        "CICNIG"
+      ],
+      "syn": [],
+      "obs_count": 93
+    },
+    {
+      "id": "MX.26187",
+      "sci": "Ciconia ciconia",
+      "fi": [
+        "kattohaikara"
+      ],
+      "abbr": [
+        "CICCIC"
+      ],
+      "syn": [],
+      "obs_count": 765
+    },
+    {
+      "id": "MX.26234",
+      "sci": "Plegadis falcinellus",
+      "fi": [
+        "pronssi-iibis"
+      ],
+      "abbr": [
+        "PLEFAL"
+      ],
+      "syn": [],
+      "obs_count": 45
+    },
+    {
+      "id": "MX.26240",
+      "sci": "Platalea leucorodia",
+      "fi": [
+        "kapustahaikara"
+      ],
+      "abbr": [
+        "PLALEU"
+      ],
+      "syn": [],
+      "obs_count": 13
+    },
+    {
+      "id": "MX.26488",
+      "sci": "Pernis apivorus",
+      "fi": [
+        "mehiläishaukka"
+      ],
+      "abbr": [
+        "PERAPI"
+      ],
+      "syn": [],
+      "obs_count": 21071
+    },
+    {
+      "id": "MX.26489",
+      "sci": "Pernis ptilorhynchus",
+      "fi": [
+        "idänmehiläishaukka"
+      ],
+      "abbr": [
+        "PERPTI"
+      ],
+      "syn": [],
+      "obs_count": 6
+    },
+    {
+      "id": "MX.26518",
+      "sci": "Milvus migrans",
+      "fi": [
+        "haarahaukka"
+      ],
+      "abbr": [
+        "MILMIG"
+      ],
+      "syn": [],
+      "obs_count": 1552
+    },
+    {
+      "id": "MX.26519",
+      "sci": "Milvus milvus",
+      "fi": [
+        "isohaarahaukka"
+      ],
+      "abbr": [
+        "MILMIL"
+      ],
+      "syn": [],
+      "obs_count": 108
+    },
+    {
+      "id": "MX.26528",
+      "sci": "Haliaeetus leucoryphus",
+      "fi": [
+        "aromerikotka"
+      ],
+      "abbr": [
+        "HALLEU"
+      ],
+      "syn": [],
+      "obs_count": null
+    },
+    {
+      "id": "MX.26530",
+      "sci": "Haliaeetus albicilla",
+      "fi": [
+        "merikotka"
+      ],
+      "abbr": [
+        "HALALB"
+      ],
+      "syn": [
+        "Haliaetus albicilla"
+      ],
+      "obs_count": 133913
+    },
+    {
+      "id": "MX.26551",
+      "sci": "Neophron percnopterus",
+      "fi": [
+        "pikkukorppikotka"
+      ],
+      "abbr": [
+        "NEOPER"
+      ],
+      "syn": [],
+      "obs_count": 2
+    },
+    {
+      "id": "MX.26543",
+      "sci": "Gyps fulvus",
+      "fi": [
+        "hanhikorppikotka"
+      ],
+      "abbr": [
+        "GYPFUL"
+      ],
+      "syn": [],
+      "obs_count": 16
+    },
+    {
+      "id": "MX.26536",
+      "sci": "Aegypius monachus",
+      "fi": [
+        "munkkikorppikotka"
+      ],
+      "abbr": [
+        "AEGMON"
+      ],
+      "syn": [],
+      "obs_count": 20
+    },
+    {
+      "id": "MX.26557",
+      "sci": "Circaetus gallicus",
+      "fi": [
+        "käärmekotka"
+      ],
+      "abbr": [
+        "CIRGAL"
+      ],
+      "syn": [],
+      "obs_count": 40
+    },
+    {
+      "id": "MX.26597",
+      "sci": "Circus aeruginosus",
+      "fi": [
+        "ruskosuohaukka"
+      ],
+      "abbr": [
+        "CIRAER"
+      ],
+      "syn": [
+        "Circus aeroginosus"
+      ],
+      "obs_count": 34901
+    },
+    {
+      "id": "MX.26592",
+      "sci": "Circus cyaneus",
+      "fi": [
+        "sinisuohaukka"
+      ],
+      "abbr": [
+        "CIRCYA"
+      ],
+      "syn": [],
+      "obs_count": 17161
+    },
+    {
+      "id": "MX.26594",
+      "sci": "Circus macrourus",
+      "fi": [
+        "arosuohaukka"
+      ],
+      "abbr": [
+        "CIRMAC"
+      ],
+      "syn": [],
+      "obs_count": 1700
+    },
+    {
+      "id": "MX.26596",
+      "sci": "Circus pygargus",
+      "fi": [
+        "niittysuohaukka"
+      ],
+      "abbr": [
+        "CIRPYG"
+      ],
+      "syn": [],
+      "obs_count": 482
+    },
+    {
+      "id": "MX.26639",
+      "sci": "Accipiter nisus",
+      "fi": [
+        "varpushaukka"
+      ],
+      "abbr": [
+        "ACCNIS"
+      ],
+      "syn": [],
+      "obs_count": 143964
+    },
+    {
+      "id": "MX.26701",
+      "sci": "Buteo buteo",
+      "fi": [
+        "hiirihaukka"
+      ],
+      "abbr": [
+        "BUTBUT"
+      ],
+      "syn": [],
+      "obs_count": 79124
+    },
+    {
+      "id": "MX.26705",
+      "sci": "Buteo rufinus",
+      "fi": [
+        "arohiirihaukka"
+      ],
+      "abbr": [
+        "BUTRUF"
+      ],
+      "syn": [],
+      "obs_count": 21
+    },
+    {
+      "id": "MX.26704",
+      "sci": "Buteo lagopus",
+      "fi": [
+        "piekana"
+      ],
+      "abbr": [
+        "BUTLAG"
+      ],
+      "syn": [],
+      "obs_count": 19830
+    },
+    {
+      "id": "MX.26722",
+      "sci": "Clanga pomarina",
+      "fi": [
+        "pikkukiljukotka"
+      ],
+      "abbr": [
+        "CLAPOM"
+      ],
+      "syn": [
+        "Aquila pomarina"
+      ],
+      "obs_count": 105
+    },
+    {
+      "id": "MX.26723",
+      "sci": "Clanga clanga",
+      "fi": [
+        "kiljukotka"
+      ],
+      "abbr": [
+        "CLACLA"
+      ],
+      "syn": [
+        "Aquila clanga"
+      ],
+      "obs_count": 317
+    },
+    {
+      "id": "MX.26734",
+      "sci": "Hieraaetus pennatus",
+      "fi": [
+        "pikkukotka"
+      ],
+      "abbr": [
+        "HIEPEN"
+      ],
+      "syn": [
+        "Aquila pennata"
+      ],
+      "obs_count": 10
+    },
+    {
+      "id": "MX.73542",
+      "sci": "Aquila nipalensis",
+      "fi": [
+        "arokotka"
+      ],
+      "abbr": [
+        "AQUNIP"
+      ],
+      "syn": [],
+      "obs_count": 44
+    },
+    {
+      "id": "MX.26725",
+      "sci": "Aquila heliaca",
+      "fi": [
+        "keisarikotka"
+      ],
+      "abbr": [
+        "AQUHEL"
+      ],
+      "syn": [],
+      "obs_count": 24
+    },
+    {
+      "id": "MX.26727",
+      "sci": "Aquila chrysaetos",
+      "fi": [
+        "maakotka"
+      ],
+      "abbr": [
+        "AQUCHR"
+      ],
+      "syn": [],
+      "obs_count": 20334
+    },
+    {
+      "id": "MX.26647",
+      "sci": "Astur gentilis",
+      "fi": [
+        "kanahaukka"
+      ],
+      "abbr": [
+        "ASTGEN"
+      ],
+      "syn": [
+        "Accipiter gentilis"
+      ],
+      "obs_count": 168820
+    },
+    {
+      "id": "MX.26472",
+      "sci": "Pandion haliaetus",
+      "fi": [
+        "sääksi",
+        "kalasääski"
+      ],
+      "abbr": [
+        "PANHAL"
+      ],
+      "syn": [],
+      "obs_count": 202831
+    },
+    {
+      "id": "MX.26792",
+      "sci": "Falco naumanni",
+      "fi": [
+        "pikkutuulihaukka"
+      ],
+      "abbr": [
+        "FALNAU"
+      ],
+      "syn": [],
+      "obs_count": 13
+    },
+    {
+      "id": "MX.26796",
+      "sci": "Falco tinnunculus",
+      "fi": [
+        "tuulihaukka"
+      ],
+      "abbr": [
+        "FALTIN"
+      ],
+      "syn": [],
+      "obs_count": 419031
+    },
+    {
+      "id": "MX.26805",
+      "sci": "Falco vespertinus",
+      "fi": [
+        "punajalkahaukka"
+      ],
+      "abbr": [
+        "FALVES"
+      ],
+      "syn": [],
+      "obs_count": 492
+    },
+    {
+      "id": "MX.26808",
+      "sci": "Falco columbarius",
+      "fi": [
+        "ampuhaukka"
+      ],
+      "abbr": [
+        "FALCOL"
+      ],
+      "syn": [
+        "Falco colombarius"
+      ],
+      "obs_count": 16169
+    },
+    {
+      "id": "MX.26811",
+      "sci": "Falco subbuteo",
+      "fi": [
+        "nuolihaukka"
+      ],
+      "abbr": [
+        "FALSUB"
+      ],
+      "syn": [],
+      "obs_count": 29956
+    },
+    {
+      "id": "MX.26815",
+      "sci": "Falco eleonorae",
+      "fi": [
+        "välimerenhaukka"
+      ],
+      "abbr": [
+        "FALELE"
+      ],
+      "syn": [],
+      "obs_count": 3
+    },
+    {
+      "id": "MX.26824",
+      "sci": "Falco cherrug",
+      "fi": [
+        "aavikkohaukka"
+      ],
+      "abbr": [
+        "FALCHE"
+      ],
+      "syn": [],
+      "obs_count": 5
+    },
+    {
+      "id": "MX.26825",
+      "sci": "Falco rusticolus",
+      "fi": [
+        "tunturihaukka"
+      ],
+      "abbr": [
+        "FALRUS"
+      ],
+      "syn": [],
+      "obs_count": 570
+    },
+    {
+      "id": "MX.26828",
+      "sci": "Falco peregrinus",
+      "fi": [
+        "muuttohaukka"
+      ],
+      "abbr": [
+        "FALPER"
+      ],
+      "syn": [],
+      "obs_count": 16542
+    },
+    {
+      "id": "MX.27276",
+      "sci": "Rallus aquaticus",
+      "fi": [
+        "luhtakana"
+      ],
+      "abbr": [
+        "RALAQU"
+      ],
+      "syn": [],
+      "obs_count": 7069
+    },
+    {
+      "id": "MX.27345",
+      "sci": "Porzana porzana",
+      "fi": [
+        "luhtahuitti"
+      ],
+      "abbr": [
+        "PORPOR"
+      ],
+      "syn": [],
+      "obs_count": 3950
+    },
+    {
+      "id": "MX.27342",
+      "sci": "Zapornia parva",
+      "fi": [
+        "pikkuhuitti"
+      ],
+      "abbr": [
+        "ZAPPAR"
+      ],
+      "syn": [
+        "Porzana parva"
+      ],
+      "obs_count": 243
+    },
+    {
+      "id": "MX.27343",
+      "sci": "Zapornia pusilla",
+      "fi": [
+        "kääpiöhuitti"
+      ],
+      "abbr": [
+        "ZAPPUS"
+      ],
+      "syn": [
+        "Porzana pusilla"
+      ],
+      "obs_count": 36
+    },
+    {
+      "id": "MX.27328",
+      "sci": "Crex crex",
+      "fi": [
+        "ruisrääkkä"
+      ],
+      "abbr": [
+        "CRECRE"
+      ],
+      "syn": [],
+      "obs_count": 17109
+    },
+    {
+      "id": "MX.27364",
+      "sci": "Gallinula chloropus",
+      "fi": [
+        "liejukana"
+      ],
+      "abbr": [
+        "GALCHL"
+      ],
+      "syn": [],
+      "obs_count": 6145
+    },
+    {
+      "id": "MX.27381",
+      "sci": "Fulica atra",
+      "fi": [
+        "nokikana"
+      ],
+      "abbr": [
+        "FULATR"
+      ],
+      "syn": [],
+      "obs_count": 27991
+    },
+    {
+      "id": "MX.27217",
+      "sci": "Antigone canadensis",
+      "fi": [
+        "hietakurki"
+      ],
+      "abbr": [
+        "ANTCAN"
+      ],
+      "syn": [
+        "Grus canadensis"
+      ],
+      "obs_count": 23
+    },
+    {
+      "id": "MX.27227",
+      "sci": "Grus virgo",
+      "fi": [
+        "neitokurki"
+      ],
+      "abbr": [
+        "GRUVIR"
+      ],
+      "syn": [
+        "Anthropoides virgo"
+      ],
+      "obs_count": 23
+    },
+    {
+      "id": "MX.27214",
+      "sci": "Grus grus",
+      "fi": [
+        "kurki"
+      ],
+      "abbr": [
+        "GRUGRU"
+      ],
+      "syn": [],
+      "obs_count": 93756
+    },
+    {
+      "id": "MX.27403",
+      "sci": "Tetrax tetrax",
+      "fi": [
+        "pikkutrappi"
+      ],
+      "abbr": [
+        "TETTET"
+      ],
+      "syn": [
+        "Otis tetrax"
+      ],
+      "obs_count": 27
+    },
+    {
+      "id": "MX.73562",
+      "sci": "Chlamydotis macqueenii",
+      "fi": [
+        "idänkaulustrappi"
+      ],
+      "abbr": [
+        "CHLMAC"
+      ],
+      "syn": [
+        "Chlamydotis undulata"
+      ],
+      "obs_count": 1
+    },
+    {
+      "id": "MX.27418",
+      "sci": "Otis tarda",
+      "fi": [
+        "isotrappi"
+      ],
+      "abbr": [
+        "OTITAR"
+      ],
+      "syn": [],
+      "obs_count": 5
+    },
+    {
+      "id": "MX.27492",
+      "sci": "Burhinus oedicnemus",
+      "fi": [
+        "paksujalka"
+      ],
+      "abbr": [
+        "BUROED"
+      ],
+      "syn": [],
+      "obs_count": 54
+    },
+    {
+      "id": "MX.27475",
+      "sci": "Himantopus himantopus",
+      "fi": [
+        "pitkäjalka"
+      ],
+      "abbr": [
+        "HIMHIM"
+      ],
+      "syn": [],
+      "obs_count": 28
+    },
+    {
+      "id": "MX.27486",
+      "sci": "Recurvirostra avosetta",
+      "fi": [
+        "avosetti"
+      ],
+      "abbr": [
+        "RECAVO"
+      ],
+      "syn": [
+        "Recurvirostra avocetta"
+      ],
+      "obs_count": 240
+    },
+    {
+      "id": "MX.27459",
+      "sci": "Haematopus ostralegus",
+      "fi": [
+        "meriharakka"
+      ],
+      "abbr": [
+        "HAEOST"
+      ],
+      "syn": [],
+      "obs_count": 38645
+    },
+    {
+      "id": "MX.27555",
+      "sci": "Pluvialis fulva",
+      "fi": [
+        "siperiankurmitsa"
+      ],
+      "abbr": [
+        "PLUFUL"
+      ],
+      "syn": [],
+      "obs_count": 24
+    },
+    {
+      "id": "MX.27554",
+      "sci": "Pluvialis dominica",
+      "fi": [
+        "amerikankurmitsa"
+      ],
+      "abbr": [
+        "PLUDOM"
+      ],
+      "syn": [],
+      "obs_count": 23
+    },
+    {
+      "id": "MX.27553",
+      "sci": "Pluvialis apricaria",
+      "fi": [
+        "kapustarinta"
+      ],
+      "abbr": [
+        "PLUAPR"
+      ],
+      "syn": [
+        "Charadrius apricarius",
+        "Anarhynchus atrifrons"
+      ],
+      "obs_count": 26873
+    },
+    {
+      "id": "MX.27556",
+      "sci": "Pluvialis squatarola",
+      "fi": [
+        "tundrakurmitsa"
+      ],
+      "abbr": [
+        "PLUSQU"
+      ],
+      "syn": [
+        "Squatarola squatarola",
+        "Charadrius squatarola"
+      ],
+      "obs_count": 4167
+    },
+    {
+      "id": "MX.27540",
+      "sci": "Vanellus gregarius",
+      "fi": [
+        "arohyyppä"
+      ],
+      "abbr": [
+        "VANGRE"
+      ],
+      "syn": [],
+      "obs_count": 91
+    },
+    {
+      "id": "MX.27541",
+      "sci": "Vanellus leucurus",
+      "fi": [
+        "suohyyppä"
+      ],
+      "abbr": [
+        "VANLEU"
+      ],
+      "syn": [],
+      "obs_count": 24
+    },
+    {
+      "id": "MX.27527",
+      "sci": "Vanellus vanellus",
+      "fi": [
+        "töyhtöhyyppä"
+      ],
+      "abbr": [
+        "VANVAN"
+      ],
+      "syn": [],
+      "obs_count": 146521
+    },
+    {
+      "id": "MX.27582",
+      "sci": "Anarhynchus asiaticus",
+      "fi": [
+        "kaspiantylli"
+      ],
+      "abbr": [
+        "ANAASI"
+      ],
+      "syn": [
+        "Charadrius asiaticus"
+      ],
+      "obs_count": 13
+    },
+    {
+      "id": "MX.27583",
+      "sci": "Anarhynchus veredus",
+      "fi": [
+        "gobintylli"
+      ],
+      "abbr": [
+        "ANAVER"
+      ],
+      "syn": [
+        "Charadrius veredus"
+      ],
+      "obs_count": 2
+    },
+    {
+      "id": "MX.5126825",
+      "sci": "Anarhynchus atrifons",
+      "fi": [
+        "ylänkötylli"
+      ],
+      "abbr": [
+        "ANAATR"
+      ],
+      "syn": [],
+      "obs_count": 2
+    },
+    {
+      "id": "MX.27581",
+      "sci": "Anarhynchus leschenaultii",
+      "fi": [
+        "aavikkotylli"
+      ],
+      "abbr": [
+        "ANALES"
+      ],
+      "syn": [
+        "Charadrius leschenaultii"
+      ],
+      "obs_count": 7
+    },
+    {
+      "id": "MX.27570",
+      "sci": "Anarhynchus alexandrinus",
+      "fi": [
+        "mustajalkatylli"
+      ],
+      "abbr": [
+        "ANAALE"
+      ],
+      "syn": [
+        "Charadrius alexandrinus"
+      ],
+      "obs_count": 60
+    },
+    {
+      "id": "MX.27559",
+      "sci": "Charadrius hiaticula",
+      "fi": [
+        "tylli"
+      ],
+      "abbr": [
+        "CHAHIA"
+      ],
+      "syn": [],
+      "obs_count": 39504
+    },
+    {
+      "id": "MX.27597",
+      "sci": "Eudromias morinellus",
+      "fi": [
+        "keräkurmitsa"
+      ],
+      "abbr": [
+        "EUDMOR"
+      ],
+      "syn": [
+        "Charadrius morinellus"
+      ],
+      "obs_count": 3407
+    },
+    {
+      "id": "MX.27562",
+      "sci": "Thinornis dubius",
+      "fi": [
+        "pikkutylli"
+      ],
+      "abbr": [
+        "THIDUB"
+      ],
+      "syn": [
+        "Charadrius dubius"
+      ],
+      "obs_count": 37963
+    },
+    {
+      "id": "MX.27617",
+      "sci": "Bartramia longicauda",
+      "fi": [
+        "preeriakahlaaja"
+      ],
+      "abbr": [
+        "BARLON"
+      ],
+      "syn": [],
+      "obs_count": 10
+    },
+    {
+      "id": "MX.27608",
+      "sci": "Numenius minutus",
+      "fi": [
+        "taigakuovi"
+      ],
+      "abbr": [
+        "NUMMIN"
+      ],
+      "syn": [],
+      "obs_count": 3
+    },
+    {
+      "id": "MX.27610",
+      "sci": "Numenius phaeopus",
+      "fi": [
+        "pikkukuovi"
+      ],
+      "abbr": [
+        "NUMPHA"
+      ],
+      "syn": [],
+      "obs_count": 21493
+    },
+    {
+      "id": "MX.27613",
+      "sci": "Numenius arquata",
+      "fi": [
+        "kuovi",
+        "isokuovi"
+      ],
+      "abbr": [
+        "NUMARQ"
+      ],
+      "syn": [
+        "Numenius arcuata"
+      ],
+      "obs_count": 96684
+    },
+    {
+      "id": "MX.27603",
+      "sci": "Limosa limosa",
+      "fi": [
+        "mustapyrstökuiri"
+      ],
+      "abbr": [
+        "LIMLIM"
+      ],
+      "syn": [],
+      "obs_count": 7314
+    },
+    {
+      "id": "MX.27605",
+      "sci": "Limosa lapponica",
+      "fi": [
+        "punakuiri"
+      ],
+      "abbr": [
+        "LIMLAP"
+      ],
+      "syn": [],
+      "obs_count": 4751
+    },
+    {
+      "id": "MX.27642",
+      "sci": "Arenaria interpres",
+      "fi": [
+        "karikukko"
+      ],
+      "abbr": [
+        "AREINT"
+      ],
+      "syn": [],
+      "obs_count": 18669
+    },
+    {
+      "id": "MX.27682",
+      "sci": "Calidris canutus",
+      "fi": [
+        "isosirri"
+      ],
+      "abbr": [
+        "CALCAN"
+      ],
+      "syn": [],
+      "obs_count": 3186
+    },
+    {
+      "id": "MX.27710",
+      "sci": "Calidris pugnax",
+      "fi": [
+        "suokukko"
+      ],
+      "abbr": [
+        "CALPUG"
+      ],
+      "syn": [
+        "Philomachus pugnax",
+        "Tringa pugnax"
+      ],
+      "obs_count": 47082
+    },
+    {
+      "id": "MX.27695",
+      "sci": "Calidris acuminata",
+      "fi": [
+        "suippopyrstösirri"
+      ],
+      "abbr": [
+        "CALACU"
+      ],
+      "syn": [],
+      "obs_count": 14
+    },
+    {
+      "id": "MX.27704",
+      "sci": "Calidris falcinellus",
+      "fi": [
+        "jänkäsirriäinen"
+      ],
+      "abbr": [
+        "CALFAL"
+      ],
+      "syn": [
+        "Limicola falcinellus"
+      ],
+      "obs_count": 4680
+    },
+    {
+      "id": "MX.27700",
+      "sci": "Calidris ferruginea",
+      "fi": [
+        "kuovisirri"
+      ],
+      "abbr": [
+        "CALFER"
+      ],
+      "syn": [],
+      "obs_count": 4639
+    },
+    {
+      "id": "MX.27706",
+      "sci": "Calidris himantopus",
+      "fi": [
+        "pitkäkoipisirri"
+      ],
+      "abbr": [
+        "CALHIM"
+      ],
+      "syn": [
+        "Micropalama himantopus"
+      ],
+      "obs_count": 1
+    },
+    {
+      "id": "MX.27687",
+      "sci": "Calidris ruficollis",
+      "fi": [
+        "rusokaulasirri"
+      ],
+      "abbr": [
+        "CALRUF"
+      ],
+      "syn": [],
+      "obs_count": 2
+    },
+    {
+      "id": "MX.27690",
+      "sci": "Calidris subminuta",
+      "fi": [
+        "siperiansirri"
+      ],
+      "abbr": [
+        "CALSMI"
+      ],
+      "syn": [],
+      "obs_count": 9
+    },
+    {
+      "id": "MX.27689",
+      "sci": "Calidris temminckii",
+      "fi": [
+        "lapinsirri"
+      ],
+      "abbr": [
+        "CALTEM"
+      ],
+      "syn": [],
+      "obs_count": 15155
+    },
+    {
+      "id": "MX.27684",
+      "sci": "Calidris alba",
+      "fi": [
+        "pulmussirri"
+      ],
+      "abbr": [
+        "CALALB"
+      ],
+      "syn": [
+        "Crocethia alba"
+      ],
+      "obs_count": 987
+    },
+    {
+      "id": "MX.27699",
+      "sci": "Calidris alpina",
+      "fi": [
+        "suosirri"
+      ],
+      "abbr": [
+        "CALALP"
+      ],
+      "syn": [],
+      "obs_count": 78284
+    },
+    {
+      "id": "MX.27697",
+      "sci": "Calidris maritima",
+      "fi": [
+        "merisirri"
+      ],
+      "abbr": [
+        "CALMAR"
+      ],
+      "syn": [],
+      "obs_count": 2858
+    },
+    {
+      "id": "MX.27693",
+      "sci": "Calidris bairdii",
+      "fi": [
+        "eskimosirri"
+      ],
+      "abbr": [
+        "CALBAI"
+      ],
+      "syn": [],
+      "obs_count": 10
+    },
+    {
+      "id": "MX.27688",
+      "sci": "Calidris minuta",
+      "fi": [
+        "pikkusirri"
+      ],
+      "abbr": [
+        "CALMIN"
+      ],
+      "syn": [],
+      "obs_count": 13364
+    },
+    {
+      "id": "MX.27692",
+      "sci": "Calidris fuscicollis",
+      "fi": [
+        "valkoperäsirri"
+      ],
+      "abbr": [
+        "CALFUS"
+      ],
+      "syn": [],
+      "obs_count": 10
+    },
+    {
+      "id": "MX.27691",
+      "sci": "Calidris minutilla",
+      "fi": [
+        "amerikansirri"
+      ],
+      "abbr": [
+        "CALLLA"
+      ],
+      "syn": [],
+      "obs_count": 1
+    },
+    {
+      "id": "MX.27708",
+      "sci": "Calidris subruficollis",
+      "fi": [
+        "tundravikla"
+      ],
+      "abbr": [
+        "CALSRU"
+      ],
+      "syn": [
+        "Tryngites subruficollis"
+      ],
+      "obs_count": 60
+    },
+    {
+      "id": "MX.27694",
+      "sci": "Calidris melanotos",
+      "fi": [
+        "palsasirri"
+      ],
+      "abbr": [
+        "CALMEL"
+      ],
+      "syn": [],
+      "obs_count": 150
+    },
+    {
+      "id": "MX.27645",
+      "sci": "Phalaropus tricolor",
+      "fi": [
+        "amerikanvesipääsky"
+      ],
+      "abbr": [
+        "PHATRI"
+      ],
+      "syn": [
+        "Steganopus tricolor"
+      ],
+      "obs_count": 6
+    },
+    {
+      "id": "MX.27646",
+      "sci": "Phalaropus lobatus",
+      "fi": [
+        "vesipääsky"
+      ],
+      "abbr": [
+        "PHALOB"
+      ],
+      "syn": [
+        "Lobipes lobatus"
+      ],
+      "obs_count": 5588
+    },
+    {
+      "id": "MX.27647",
+      "sci": "Phalaropus fulicarius",
+      "fi": [
+        "isovesipääsky"
+      ],
+      "abbr": [
+        "PHAFUL"
+      ],
+      "syn": [],
+      "obs_count": 81
+    },
+    {
+      "id": "MX.27632",
+      "sci": "Xenus cinereus",
+      "fi": [
+        "rantakurvi"
+      ],
+      "abbr": [
+        "XENCIN"
+      ],
+      "syn": [],
+      "obs_count": 1616
+    },
+    {
+      "id": "MX.27634",
+      "sci": "Actitis hypoleucos",
+      "fi": [
+        "rantasipi"
+      ],
+      "abbr": [
+        "ACTHYP"
+      ],
+      "syn": [
+        "Tringa hypoleucos"
+      ],
+      "obs_count": 69264
+    },
+    {
+      "id": "MX.27635",
+      "sci": "Actitis macularius",
+      "fi": [
+        "amerikansipi"
+      ],
+      "abbr": [
+        "ACTMAC"
+      ],
+      "syn": [
+        "Actitis macularia"
+      ],
+      "obs_count": 5
+    },
+    {
+      "id": "MX.27626",
+      "sci": "Tringa ochropus",
+      "fi": [
+        "metsäviklo"
+      ],
+      "abbr": [
+        "TRIOCH"
+      ],
+      "syn": [],
+      "obs_count": 43261
+    },
+    {
+      "id": "MX.27619",
+      "sci": "Tringa erythropus",
+      "fi": [
+        "mustaviklo"
+      ],
+      "abbr": [
+        "TRIERY"
+      ],
+      "syn": [],
+      "obs_count": 12986
+    },
+    {
+      "id": "MX.27622",
+      "sci": "Tringa nebularia",
+      "fi": [
+        "valkoviklo"
+      ],
+      "abbr": [
+        "TRINEB"
+      ],
+      "syn": [
+        "Totanus glottis"
+      ],
+      "obs_count": 44053
+    },
+    {
+      "id": "MX.27625",
+      "sci": "Tringa flavipes",
+      "fi": [
+        "keltajalkaviklo"
+      ],
+      "abbr": [
+        "TRIFLA"
+      ],
+      "syn": [],
+      "obs_count": 64
+    },
+    {
+      "id": "MX.27621",
+      "sci": "Tringa stagnatilis",
+      "fi": [
+        "lampiviklo"
+      ],
+      "abbr": [
+        "TRISTA"
+      ],
+      "syn": [],
+      "obs_count": 448
+    },
+    {
+      "id": "MX.27628",
+      "sci": "Tringa glareola",
+      "fi": [
+        "liro"
+      ],
+      "abbr": [
+        "TRIGLA"
+      ],
+      "syn": [],
+      "obs_count": 86027
+    },
+    {
+      "id": "MX.27620",
+      "sci": "Tringa totanus",
+      "fi": [
+        "punajalkaviklo"
+      ],
+      "abbr": [
+        "TRITOT"
+      ],
+      "syn": [
+        "Totanus calidris"
+      ],
+      "obs_count": 35754
+    },
+    {
+      "id": "MX.27674",
+      "sci": "Lymnocryptes minimus",
+      "fi": [
+        "jänkäkurppa"
+      ],
+      "abbr": [
+        "LYMMIN"
+      ],
+      "syn": [
+        "Lymnocryptes minima"
+      ],
+      "obs_count": 9181
+    },
+    {
+      "id": "MX.27677",
+      "sci": "Limnodromus scolopaceus",
+      "fi": [
+        "tundrakurppelo"
+      ],
+      "abbr": [
+        "LIMSCO"
+      ],
+      "syn": [],
+      "obs_count": 54
+    },
+    {
+      "id": "MX.27649",
+      "sci": "Scolopax rusticola",
+      "fi": [
+        "lehtokurppa"
+      ],
+      "abbr": [
+        "SCORUS"
+      ],
+      "syn": [],
+      "obs_count": 38093
+    },
+    {
+      "id": "MX.27666",
+      "sci": "Gallinago gallinago",
+      "fi": [
+        "taivaanvuohi"
+      ],
+      "abbr": [
+        "GALGAL"
+      ],
+      "syn": [
+        "Capella gallinago"
+      ],
+      "obs_count": 67795
+    },
+    {
+      "id": "MX.73576",
+      "sci": "Gallinago delicata",
+      "fi": [
+        "amerikantaivaanvuohi"
+      ],
+      "abbr": [
+        "GALDEL"
+      ],
+      "syn": [],
+      "obs_count": 50
+    },
+    {
+      "id": "MX.27665",
+      "sci": "Gallinago media",
+      "fi": [
+        "heinäkurppa"
+      ],
+      "abbr": [
+        "GALMED"
+      ],
+      "syn": [],
+      "obs_count": 1103
+    },
+    {
+      "id": "MX.27662",
+      "sci": "Gallinago megala",
+      "fi": [
+        "siperiankurppa"
+      ],
+      "abbr": [
+        "GALMEG"
+      ],
+      "syn": [
+        "Capella megala"
+      ],
+      "obs_count": 32
+    },
+    {
+      "id": "MX.27518",
+      "sci": "Glareola pratincola",
+      "fi": [
+        "pääskykahlaaja"
+      ],
+      "abbr": [
+        "GLAPRA"
+      ],
+      "syn": [],
+      "obs_count": 19
+    },
+    {
+      "id": "MX.27519",
+      "sci": "Glareola maldivarum",
+      "fi": [
+        "aasianpääskykahlaaja",
+        "Eastern Collared Pratincole"
+      ],
+      "abbr": [
+        "GLAMAL"
+      ],
+      "syn": [],
+      "obs_count": 16
+    },
+    {
+      "id": "MX.27520",
+      "sci": "Glareola nordmanni",
+      "fi": [
+        "aropääskykahlaaja"
+      ],
+      "abbr": [
+        "GLANOR"
+      ],
+      "syn": [],
+      "obs_count": 25
+    },
+    {
+      "id": "MX.27506",
+      "sci": "Cursorius cursor",
+      "fi": [
+        "aavikkojuoksija"
+      ],
+      "abbr": [
+        "CURSOR"
+      ],
+      "syn": [],
+      "obs_count": 4
+    },
+    {
+      "id": "MX.27729",
+      "sci": "Stercorarius pomarinus",
+      "fi": [
+        "leveäpyrstökihu"
+      ],
+      "abbr": [
+        "STEPOM"
+      ],
+      "syn": [],
+      "obs_count": 258
+    },
+    {
+      "id": "MX.27730",
+      "sci": "Stercorarius parasiticus",
+      "fi": [
+        "merikihu"
+      ],
+      "abbr": [
+        "STECUS"
+      ],
+      "syn": [],
+      "obs_count": 14431
+    },
+    {
+      "id": "MX.27731",
+      "sci": "Stercorarius longicaudus",
+      "fi": [
+        "tunturikihu"
+      ],
+      "abbr": [
+        "STELON"
+      ],
+      "syn": [],
+      "obs_count": 3260
+    },
+    {
+      "id": "MX.27724",
+      "sci": "Stercorarius skua",
+      "fi": [
+        "isokihu"
+      ],
+      "abbr": [
+        "STESKU"
+      ],
+      "syn": [
+        "Catharacta skua"
+      ],
+      "obs_count": 12
+    },
+    {
+      "id": "MX.27877",
+      "sci": "Fratercula arctica",
+      "fi": [
+        "lunni"
+      ],
+      "abbr": [
+        "FRAARC"
+      ],
+      "syn": [],
+      "obs_count": 34
+    },
+    {
+      "id": "MX.27855",
+      "sci": "Cepphus grylle",
+      "fi": [
+        "riskilä"
+      ],
+      "abbr": [
+        "CEPGRY"
+      ],
+      "syn": [],
+      "obs_count": 39973
+    },
+    {
+      "id": "MX.27864",
+      "sci": "Synthliboramphus antiquus",
+      "fi": [
+        "mustakurkkumurri"
+      ],
+      "abbr": [
+        "SYNANT"
+      ],
+      "syn": [],
+      "obs_count": 6
+    },
+    {
+      "id": "MX.27850",
+      "sci": "Alca torda",
+      "fi": [
+        "ruokki"
+      ],
+      "abbr": [
+        "ALCTOR"
+      ],
+      "syn": [],
+      "obs_count": 40112
+    },
+    {
+      "id": "MX.27848",
+      "sci": "Alle alle",
+      "fi": [
+        "pikkuruokki"
+      ],
+      "abbr": [
+        "ALLALL"
+      ],
+      "syn": [
+        "Plautus alle"
+      ],
+      "obs_count": 132
+    },
+    {
+      "id": "MX.27853",
+      "sci": "Uria aalge",
+      "fi": [
+        "etelänkiisla"
+      ],
+      "abbr": [
+        "URIAAL"
+      ],
+      "syn": [],
+      "obs_count": 3437
+    },
+    {
+      "id": "MX.27852",
+      "sci": "Uria lomvia",
+      "fi": [
+        "pohjankiisla"
+      ],
+      "abbr": [
+        "URILOM"
+      ],
+      "syn": [],
+      "obs_count": 24
+    },
+    {
+      "id": "MX.27821",
+      "sci": "Sternula albifrons",
+      "fi": [
+        "pikkutiira"
+      ],
+      "abbr": [
+        "STEALB"
+      ],
+      "syn": [
+        "Sterna albifrons"
+      ],
+      "obs_count": 3300
+    },
+    {
+      "id": "MX.27795",
+      "sci": "Gelochelidon nilotica",
+      "fi": [
+        "hietatiira"
+      ],
+      "abbr": [
+        "GELNIL"
+      ],
+      "syn": [],
+      "obs_count": 36
+    },
+    {
+      "id": "MX.27797",
+      "sci": "Hydroprogne caspia",
+      "fi": [
+        "räyskä"
+      ],
+      "abbr": [
+        "HYDCAS"
+      ],
+      "syn": [
+        "Sterna caspia",
+        "Hydroprogne tschegrava",
+        "Helopus caspius"
+      ],
+      "obs_count": 63830
+    },
+    {
+      "id": "MX.27789",
+      "sci": "Chlidonias hybrida",
+      "fi": [
+        "valkoposkitiira"
+      ],
+      "abbr": [
+        "CHLHYB"
+      ],
+      "syn": [
+        "Chlidonias hybridus"
+      ],
+      "obs_count": 13
+    },
+    {
+      "id": "MX.27791",
+      "sci": "Chlidonias niger",
+      "fi": [
+        "mustatiira"
+      ],
+      "abbr": [
+        "CHLNIG"
+      ],
+      "syn": [
+        "Chlidonias nigra",
+        "Chilidonias niger"
+      ],
+      "obs_count": 1159
+    },
+    {
+      "id": "MX.27790",
+      "sci": "Chlidonias leucopterus",
+      "fi": [
+        "valkosiipitiira"
+      ],
+      "abbr": [
+        "CHLLEU"
+      ],
+      "syn": [
+        "Chlidonias leucoptera"
+      ],
+      "obs_count": 107
+    },
+    {
+      "id": "MX.27802",
+      "sci": "Sterna paradisaea",
+      "fi": [
+        "lapintiira"
+      ],
+      "abbr": [
+        "STEAEA"
+      ],
+      "syn": [
+        "Sterna macrura",
+        "Sterna paradisea"
+      ],
+      "obs_count": 142716
+    },
+    {
+      "id": "MX.27801",
+      "sci": "Sterna hirundo",
+      "fi": [
+        "kalatiira"
+      ],
+      "abbr": [
+        "STEHIR"
+      ],
+      "syn": [],
+      "obs_count": 217596
+    },
+    {
+      "id": "MX.27830",
+      "sci": "Thalasseus sandvicensis",
+      "fi": [
+        "riuttatiira"
+      ],
+      "abbr": [
+        "THASAN"
+      ],
+      "syn": [
+        "Sterna sandvicensis"
+      ],
+      "obs_count": 198
+    },
+    {
+      "id": "MX.27777",
+      "sci": "Hydrocoloeus minutus",
+      "fi": [
+        "pikkulokki"
+      ],
+      "abbr": [
+        "HYDMIN"
+      ],
+      "syn": [
+        "Larus minutus"
+      ],
+      "obs_count": 28192
+    },
+    {
+      "id": "MX.27780",
+      "sci": "Rhodostethia rosea",
+      "fi": [
+        "ruusulokki"
+      ],
+      "abbr": [
+        "RHOROS"
+      ],
+      "syn": [],
+      "obs_count": 17
+    },
+    {
+      "id": "MX.27737",
+      "sci": "Pagophila eburnea",
+      "fi": [
+        "jäälokki"
+      ],
+      "abbr": [
+        "PAGEBU"
+      ],
+      "syn": [],
+      "obs_count": 6
+    },
+    {
+      "id": "MX.27787",
+      "sci": "Xema sabini",
+      "fi": [
+        "tiiralokki"
+      ],
+      "abbr": [
+        "XEMSAB"
+      ],
+      "syn": [
+        "Larus sabini"
+      ],
+      "obs_count": 19
+    },
+    {
+      "id": "MX.27782",
+      "sci": "Rissa tridactyla",
+      "fi": [
+        "pikkukajava"
+      ],
+      "abbr": [
+        "RISTRI"
+      ],
+      "syn": [],
+      "obs_count": 414
+    },
+    {
+      "id": "MX.27775",
+      "sci": "Chroicocephalus genei",
+      "fi": [
+        "kaitanokkalokki"
+      ],
+      "abbr": [
+        "CHRGEN"
+      ],
+      "syn": [
+        "Larus genei"
+      ],
+      "obs_count": 7
+    },
+    {
+      "id": "MX.27774",
+      "sci": "Chroicocephalus ridibundus",
+      "fi": [
+        "naurulokki"
+      ],
+      "abbr": [
+        "CHRRID"
+      ],
+      "syn": [
+        "Larus ridibundus"
+      ],
+      "obs_count": 515524
+    },
+    {
+      "id": "MX.27764",
+      "sci": "Leucophaeus atricilla",
+      "fi": [
+        "nokisiipilokki"
+      ],
+      "abbr": [
+        "LEUATR"
+      ],
+      "syn": [
+        "Larus atricilla"
+      ],
+      "obs_count": 12
+    },
+    {
+      "id": "MX.27768",
+      "sci": "Leucophaeus pipixcan",
+      "fi": [
+        "preerianaurulokki"
+      ],
+      "abbr": [
+        "LEUPIP"
+      ],
+      "syn": [
+        "Larus pipixcan"
+      ],
+      "obs_count": 12
+    },
+    {
+      "id": "MX.27746",
+      "sci": "Ichthyaetus audouinii",
+      "fi": [
+        "välimerenlokki"
+      ],
+      "abbr": [
+        "ICHAUD"
+      ],
+      "syn": [
+        "Larus audouinii"
+      ],
+      "obs_count": null
+    },
+    {
+      "id": "MX.27770",
+      "sci": "Ichthyaetus melanocephalus",
+      "fi": [
+        "mustanmerenlokki"
+      ],
+      "abbr": [
+        "ICHMEL"
+      ],
+      "syn": [
+        "Larus melanocephalus"
+      ],
+      "obs_count": 102
+    },
+    {
+      "id": "MX.27748",
+      "sci": "Larus canus",
+      "fi": [
+        "kalalokki"
+      ],
+      "abbr": [
+        "LARCAN"
+      ],
+      "syn": [],
+      "obs_count": 309171
+    },
+    {
+      "id": "MX.73583",
+      "sci": "Larus cachinnans",
+      "fi": [
+        "aroharmaalokki"
+      ],
+      "abbr": [
+        "LARCAC"
+      ],
+      "syn": [],
+      "obs_count": 247
+    },
+    {
+      "id": "MX.27750",
+      "sci": "Larus argentatus",
+      "fi": [
+        "harmaalokki"
+      ],
+      "abbr": [
+        "LARARG"
+      ],
+      "syn": [],
+      "obs_count": 542135
+    },
+    {
+      "id": "MX.73584",
+      "sci": "Larus michahellis",
+      "fi": [
+        "etelänharmaalokki"
+      ],
+      "abbr": [
+        "LARMIC"
+      ],
+      "syn": [
+        "Larus michaellis"
+      ],
+      "obs_count": 20
+    },
+    {
+      "id": "MX.27759",
+      "sci": "Larus marinus",
+      "fi": [
+        "merilokki"
+      ],
+      "abbr": [
+        "LARMAR"
+      ],
+      "syn": [],
+      "obs_count": 71329
+    },
+    {
+      "id": "MX.27761",
+      "sci": "Larus hyperboreus",
+      "fi": [
+        "isolokki"
+      ],
+      "abbr": [
+        "LARHYP"
+      ],
+      "syn": [],
+      "obs_count": 677
+    },
+    {
+      "id": "MX.27753",
+      "sci": "Larus fuscus",
+      "fi": [
+        "selkälokki"
+      ],
+      "abbr": [
+        "LARFUS"
+      ],
+      "syn": [],
+      "obs_count": 222883
+    },
+    {
+      "id": "MX.27758",
+      "sci": "Larus schistisagus",
+      "fi": [
+        "ohotanlokki"
+      ],
+      "abbr": [
+        "LARSCH"
+      ],
+      "syn": [],
+      "obs_count": 30
+    },
+    {
+      "id": "MX.27762",
+      "sci": "Larus glaucoides",
+      "fi": [
+        "grönlanninlokki"
+      ],
+      "abbr": [
+        "LARGLA"
+      ],
+      "syn": [],
+      "obs_count": 50
+    },
+    {
+      "id": "MX.27885",
+      "sci": "Syrrhaptes paradoxus",
+      "fi": [
+        "arokyyhky"
+      ],
+      "abbr": [
+        "SYRPAR"
+      ],
+      "syn": [],
+      "obs_count": 19
+    },
+    {
+      "id": "MX.27903",
+      "sci": "Columba livia",
+      "fi": [
+        "kalliokyyhky",
+        "kesykyyhky"
+      ],
+      "abbr": [
+        "COLLIV"
+      ],
+      "syn": [],
+      "obs_count": 69273
+    },
+    {
+      "id": "MX.27908",
+      "sci": "Columba oenas",
+      "fi": [
+        "uuttukyyhky"
+      ],
+      "abbr": [
+        "COLOEN"
+      ],
+      "syn": [],
+      "obs_count": 48353
+    },
+    {
+      "id": "MX.27911",
+      "sci": "Columba palumbus",
+      "fi": [
+        "sepelkyyhky"
+      ],
+      "abbr": [
+        "COLPAL"
+      ],
+      "syn": [],
+      "obs_count": 152532
+    },
+    {
+      "id": "MX.27960",
+      "sci": "Streptopelia decaocto",
+      "fi": [
+        "turkinkyyhky"
+      ],
+      "abbr": [
+        "STRDEC"
+      ],
+      "syn": [],
+      "obs_count": 5455
+    },
+    {
+      "id": "MX.27955",
+      "sci": "Streptopelia turtur",
+      "fi": [
+        "turturikyyhky"
+      ],
+      "abbr": [
+        "STRTUR"
+      ],
+      "syn": [],
+      "obs_count": 609
+    },
+    {
+      "id": "MX.27958",
+      "sci": "Streptopelia orientalis",
+      "fi": [
+        "idänturturikyyhky"
+      ],
+      "abbr": [
+        "STRORI"
+      ],
+      "syn": [],
+      "obs_count": 90
+    },
+    {
+      "id": "MX.28699",
+      "sci": "Clamator glandarius",
+      "fi": [
+        "harakkakäki"
+      ],
+      "abbr": [
+        "CLAGLA"
+      ],
+      "syn": [],
+      "obs_count": 4
+    },
+    {
+      "id": "MX.28715",
+      "sci": "Cuculus canorus",
+      "fi": [
+        "käki"
+      ],
+      "abbr": [
+        "CUCCAN"
+      ],
+      "syn": [],
+      "obs_count": 98647
+    },
+    {
+      "id": "MX.5006517",
+      "sci": "Cuculus optatus",
+      "fi": [
+        "idänkäki"
+      ],
+      "abbr": [
+        "CUCOPT"
+      ],
+      "syn": [],
+      "obs_count": 17
+    },
+    {
+      "id": "MX.28881",
+      "sci": "Tyto alba",
+      "fi": [
+        "tornipöllö"
+      ],
+      "abbr": [
+        "TYTALB"
+      ],
+      "syn": [],
+      "obs_count": 15
+    },
+    {
+      "id": "MX.28914",
+      "sci": "Otus scops",
+      "fi": [
+        "kyläpöllönen"
+      ],
+      "abbr": [
+        "OTUSCO"
+      ],
+      "syn": [],
+      "obs_count": 23
+    },
+    {
+      "id": "MX.28965",
+      "sci": "Bubo bubo",
+      "fi": [
+        "huuhkaja"
+      ],
+      "abbr": [
+        "BUBBUB"
+      ],
+      "syn": [],
+      "obs_count": 39298
+    },
+    {
+      "id": "MX.28987",
+      "sci": "Bubo scandiacus",
+      "fi": [
+        "tunturipöllö"
+      ],
+      "abbr": [
+        "BUBSCA"
+      ],
+      "syn": [
+        "Nyctea scandiaca"
+      ],
+      "obs_count": 938
+    },
+    {
+      "id": "MX.29008",
+      "sci": "Surnia ulula",
+      "fi": [
+        "hiiripöllö"
+      ],
+      "abbr": [
+        "SURULU"
+      ],
+      "syn": [],
+      "obs_count": 11482
+    },
+    {
+      "id": "MX.29011",
+      "sci": "Glaucidium passerinum",
+      "fi": [
+        "varpuspöllö"
+      ],
+      "abbr": [
+        "GLAPAS"
+      ],
+      "syn": [],
+      "obs_count": 94813
+    },
+    {
+      "id": "MX.29033",
+      "sci": "Athene noctua",
+      "fi": [
+        "minervanpöllö"
+      ],
+      "abbr": [
+        "ATHNOC"
+      ],
+      "syn": [],
+      "obs_count": 3
+    },
+    {
+      "id": "MX.28998",
+      "sci": "Strix aluco",
+      "fi": [
+        "lehtopöllö"
+      ],
+      "abbr": [
+        "STRALU"
+      ],
+      "syn": [],
+      "obs_count": 116346
+    },
+    {
+      "id": "MX.29003",
+      "sci": "Strix uralensis",
+      "fi": [
+        "viirupöllö"
+      ],
+      "abbr": [
+        "STRURA"
+      ],
+      "syn": [],
+      "obs_count": 147572
+    },
+    {
+      "id": "MX.29004",
+      "sci": "Strix nebulosa",
+      "fi": [
+        "lapinpöllö"
+      ],
+      "abbr": [
+        "STRNEB"
+      ],
+      "syn": [],
+      "obs_count": 10962
+    },
+    {
+      "id": "MX.29068",
+      "sci": "Asio otus",
+      "fi": [
+        "sarvipöllö"
+      ],
+      "abbr": [
+        "ASIOTU"
+      ],
+      "syn": [],
+      "obs_count": 38569
+    },
+    {
+      "id": "MX.29072",
+      "sci": "Asio flammeus",
+      "fi": [
+        "suopöllö"
+      ],
+      "abbr": [
+        "ASIFLA"
+      ],
+      "syn": [],
+      "obs_count": 20495
+    },
+    {
+      "id": "MX.29038",
+      "sci": "Aegolius funereus",
+      "fi": [
+        "helmipöllö"
+      ],
+      "abbr": [
+        "AEGFUN"
+      ],
+      "syn": [],
+      "obs_count": 202291
+    },
+    {
+      "id": "MX.29172",
+      "sci": "Caprimulgus europaeus",
+      "fi": [
+        "kehrääjä"
+      ],
+      "abbr": [
+        "CAPEUR"
+      ],
+      "syn": [],
+      "obs_count": 23474
+    },
+    {
+      "id": "MX.29286",
+      "sci": "Hirundapus caudacutus",
+      "fi": [
+        "piikkipyrstökiitäjä"
+      ],
+      "abbr": [
+        "HIRCAU"
+      ],
+      "syn": [
+        "Hirundapus caudacuta"
+      ],
+      "obs_count": 2
+    },
+    {
+      "id": "MX.29315",
+      "sci": "Tachymarptis melba",
+      "fi": [
+        "alppikiitäjä"
+      ],
+      "abbr": [
+        "TACMEL"
+      ],
+      "syn": [
+        "Apus melba"
+      ],
+      "obs_count": null
+    },
+    {
+      "id": "MX.29330",
+      "sci": "Apus caffer",
+      "fi": [
+        "häätökiitäjä",
+        "kafferikiitäjä",
+        "kafferseglare"
+      ],
+      "abbr": [
+        "APUCAF"
+      ],
+      "syn": [],
+      "obs_count": 1
+    },
+    {
+      "id": "MX.29324",
+      "sci": "Apus apus",
+      "fi": [
+        "tervapääsky"
+      ],
+      "abbr": [
+        "APUAPU"
+      ],
+      "syn": [],
+      "obs_count": 118506
+    },
+    {
+      "id": "MX.29323",
+      "sci": "Apus pallidus",
+      "fi": [
+        "vaaleakiitäjä"
+      ],
+      "abbr": [
+        "APUPAL"
+      ],
+      "syn": [],
+      "obs_count": 12
+    },
+    {
+      "id": "MX.29860",
+      "sci": "Alcedo atthis",
+      "fi": [
+        "kuningaskalastaja"
+      ],
+      "abbr": [
+        "ALCATT"
+      ],
+      "syn": [],
+      "obs_count": 1451
+    },
+    {
+      "id": "MX.29998",
+      "sci": "Merops apiaster",
+      "fi": [
+        "mehiläissyöjä"
+      ],
+      "abbr": [
+        "MERAPI"
+      ],
+      "syn": [],
+      "obs_count": 75
+    },
+    {
+      "id": "MX.29996",
+      "sci": "Merops persicus",
+      "fi": [
+        "vihermehiläissyöjä"
+      ],
+      "abbr": [
+        "MERPER"
+      ],
+      "syn": [
+        "Merops superciliosus"
+      ],
+      "obs_count": 25
+    },
+    {
+      "id": "MX.30004",
+      "sci": "Coracias garrulus",
+      "fi": [
+        "sininärhi"
+      ],
+      "abbr": [
+        "CORGAR"
+      ],
+      "syn": [],
+      "obs_count": 120
+    },
+    {
+      "id": "MX.30031",
+      "sci": "Upupa epops",
+      "fi": [
+        "harjalintu"
+      ],
+      "abbr": [
+        "UPUEPO"
+      ],
+      "syn": [],
+      "obs_count": 673
+    },
+    {
+      "id": "MX.30333",
+      "sci": "Jynx torquilla",
+      "fi": [
+        "käenpiika"
+      ],
+      "abbr": [
+        "JYNTOR"
+      ],
+      "syn": [],
+      "obs_count": 61235
+    },
+    {
+      "id": "MX.30530",
+      "sci": "Picus canus",
+      "fi": [
+        "harmaapäätikka"
+      ],
+      "abbr": [
+        "PICCAN"
+      ],
+      "syn": [],
+      "obs_count": 39424
+    },
+    {
+      "id": "MX.30527",
+      "sci": "Picus viridis",
+      "fi": [
+        "vihertikka"
+      ],
+      "abbr": [
+        "PICVIR"
+      ],
+      "syn": [],
+      "obs_count": 5
+    },
+    {
+      "id": "MX.30504",
+      "sci": "Dryocopus martius",
+      "fi": [
+        "palokärki"
+      ],
+      "abbr": [
+        "DRYMAR"
+      ],
+      "syn": [],
+      "obs_count": 82429
+    },
+    {
+      "id": "MX.30438",
+      "sci": "Dendrocopos leucotos",
+      "fi": [
+        "valkoselkätikka"
+      ],
+      "abbr": [
+        "DENLEU"
+      ],
+      "syn": [
+        "Picoides leucotos"
+      ],
+      "obs_count": 17992
+    },
+    {
+      "id": "MX.30443",
+      "sci": "Dendrocopos major",
+      "fi": [
+        "käpytikka"
+      ],
+      "abbr": [
+        "DENMAJ"
+      ],
+      "syn": [
+        "Picoides major",
+        "Dryobates major",
+        "Dendrocopus major",
+        "Picus major"
+      ],
+      "obs_count": 314003
+    },
+    {
+      "id": "MX.30453",
+      "sci": "Picoides tridactylus",
+      "fi": [
+        "pohjantikka"
+      ],
+      "abbr": [
+        "PICTRI"
+      ],
+      "syn": [],
+      "obs_count": 16013
+    },
+    {
+      "id": "MX.30437",
+      "sci": "Dendrocoptes medius",
+      "fi": [
+        "tammitikka"
+      ],
+      "abbr": [
+        "DENMED"
+      ],
+      "syn": [
+        "Picoides medius",
+        "Dendrocopos medius",
+        "Leiopicus medius"
+      ],
+      "obs_count": 24
+    },
+    {
+      "id": "MX.30428",
+      "sci": "Dryobates minor",
+      "fi": [
+        "pikkutikka"
+      ],
+      "abbr": [
+        "DRYMIN"
+      ],
+      "syn": [
+        "Picoides minor",
+        "Dendrocopos minor",
+        "Dendrocopus minor"
+      ],
+      "obs_count": 28364
+    },
+    {
+      "id": "MX.33629",
+      "sci": "Locustella lanceolata",
+      "fi": [
+        "viirusirkkalintu"
+      ],
+      "abbr": [
+        "LOCLAN"
+      ],
+      "syn": [],
+      "obs_count": 176
+    },
+    {
+      "id": "MX.33630",
+      "sci": "Locustella naevia",
+      "fi": [
+        "pensassirkkalintu"
+      ],
+      "abbr": [
+        "LOCNAE"
+      ],
+      "syn": [],
+      "obs_count": 10147
+    },
+    {
+      "id": "MX.33634",
+      "sci": "Locustella fluviatilis",
+      "fi": [
+        "viitasirkkalintu"
+      ],
+      "abbr": [
+        "LOCFLU"
+      ],
+      "syn": [],
+      "obs_count": 4641
+    },
+    {
+      "id": "MX.33635",
+      "sci": "Locustella luscinioides",
+      "fi": [
+        "ruokosirkkalintu"
+      ],
+      "abbr": [
+        "LOCLUS"
+      ],
+      "syn": [],
+      "obs_count": 736
+    },
+    {
+      "id": "MX.33631",
+      "sci": "Helopsaltes certhiola",
+      "fi": [
+        "sarasirkkalintu"
+      ],
+      "abbr": [
+        "HELCER"
+      ],
+      "syn": [
+        "Locustella certhiola"
+      ],
+      "obs_count": 2
+    },
+    {
+      "id": "MX.33666",
+      "sci": "Arundinax aedon",
+      "fi": [
+        "paksunokkakerttunen"
+      ],
+      "abbr": [
+        "ARUAED"
+      ],
+      "syn": [
+        "Acrocephalus aedon",
+        "Iduna aedon"
+      ],
+      "obs_count": null
+    },
+    {
+      "id": "MX.35207",
+      "sci": "Junco hyemalis",
+      "fi": [
+        "tummajunkko"
+      ],
+      "abbr": [
+        "JUNHYE"
+      ],
+      "syn": [],
+      "obs_count": 14
+    },
+    {
+      "id": "MX.32020",
+      "sci": "Melanocorypha calandra",
+      "fi": [
+        "arokiuru"
+      ],
+      "abbr": [
+        "MELCAL"
+      ],
+      "syn": [],
+      "obs_count": 34
+    },
+    {
+      "id": "MX.32021",
+      "sci": "Melanocorypha bimaculata",
+      "fi": [
+        "ylänkökiuru"
+      ],
+      "abbr": [
+        "MELBIM"
+      ],
+      "syn": [],
+      "obs_count": 12
+    },
+    {
+      "id": "MX.32025",
+      "sci": "Melanocorypha yeltoniensis",
+      "fi": [
+        "mustakiuru"
+      ],
+      "abbr": [
+        "MELYEL"
+      ],
+      "syn": [],
+      "obs_count": null
+    },
+    {
+      "id": "MX.32033",
+      "sci": "Calandrella brachydactyla",
+      "fi": [
+        "lyhytvarvaskiuru"
+      ],
+      "abbr": [
+        "CALBRA"
+      ],
+      "syn": [],
+      "obs_count": 111
+    },
+    {
+      "id": "MX.32056",
+      "sci": "Galerida cristata",
+      "fi": [
+        "töyhtökiuru"
+      ],
+      "abbr": [
+        "GALCRI"
+      ],
+      "syn": [],
+      "obs_count": 210
+    },
+    {
+      "id": "MX.32063",
+      "sci": "Lullula arborea",
+      "fi": [
+        "kangaskiuru"
+      ],
+      "abbr": [
+        "LULARB"
+      ],
+      "syn": [],
+      "obs_count": 9824
+    },
+    {
+      "id": "MX.5124941",
+      "sci": "Alaudala heinei",
+      "fi": [
+        "kaspianpikkukiuru"
+      ],
+      "abbr": [
+        "ALAHEI"
+      ],
+      "syn": [],
+      "obs_count": 6
+    },
+    {
+      "id": "MX.32024",
+      "sci": "Alauda leucoptera",
+      "fi": [
+        "valkosiipikiuru"
+      ],
+      "abbr": [
+        "ALALEU"
+      ],
+      "syn": [
+        "Melanocorypha leucoptera"
+      ],
+      "obs_count": 7
+    },
+    {
+      "id": "MX.32065",
+      "sci": "Alauda arvensis",
+      "fi": [
+        "kiuru"
+      ],
+      "abbr": [
+        "ALAARV"
+      ],
+      "syn": [],
+      "obs_count": 82090
+    },
+    {
+      "id": "MX.32076",
+      "sci": "Eremophila alpestris",
+      "fi": [
+        "tunturikiuru"
+      ],
+      "abbr": [
+        "EREALP"
+      ],
+      "syn": [],
+      "obs_count": 824
+    },
+    {
+      "id": "MX.32120",
+      "sci": "Riparia riparia",
+      "fi": [
+        "törmäpääsky"
+      ],
+      "abbr": [
+        "RIPRIP"
+      ],
+      "syn": [],
+      "obs_count": 131102
+    },
+    {
+      "id": "MX.32128",
+      "sci": "Ptyonoprogne rupestris",
+      "fi": [
+        "kalliopääsky"
+      ],
+      "abbr": [
+        "PTYRUP"
+      ],
+      "syn": [
+        "Hirundo rupestris"
+      ],
+      "obs_count": 6
+    },
+    {
+      "id": "MX.32132",
+      "sci": "Hirundo rustica",
+      "fi": [
+        "haarapääsky"
+      ],
+      "abbr": [
+        "HIRRUS"
+      ],
+      "syn": [],
+      "obs_count": 468287
+    },
+    {
+      "id": "MX.32163",
+      "sci": "Delichon urbicum",
+      "fi": [
+        "räystäspääsky"
+      ],
+      "abbr": [
+        "DELURB"
+      ],
+      "syn": [
+        "Delichon urbica"
+      ],
+      "obs_count": 75985
+    },
+    {
+      "id": "MX.32149",
+      "sci": "Cecropis daurica",
+      "fi": [
+        "aasianruostepääsky"
+      ],
+      "abbr": [
+        "CECDAU"
+      ],
+      "syn": [
+        "Hirundo daurica"
+      ],
+      "obs_count": 10
+    },
+    {
+      "id": "MX.5084069",
+      "sci": "Cecropis rufula",
+      "fi": [
+        "ruostepääsky"
+      ],
+      "abbr": [
+        "CECRUF"
+      ],
+      "syn": [
+        "Cecropis daurica",
+        "Hirundo rufula"
+      ],
+      "obs_count": 52
+    },
+    {
+      "id": "MX.32204",
+      "sci": "Anthus richardi",
+      "fi": [
+        "isokirvinen"
+      ],
+      "abbr": [
+        "ANTRIC"
+      ],
+      "syn": [
+        "Anthus novaeseelandiae"
+      ],
+      "obs_count": 167
+    },
+    {
+      "id": "MX.32206",
+      "sci": "Anthus godlewskii",
+      "fi": [
+        "mongoliankirvinen"
+      ],
+      "abbr": [
+        "ANTGOD"
+      ],
+      "syn": [],
+      "obs_count": 53
+    },
+    {
+      "id": "MX.32207",
+      "sci": "Anthus campestris",
+      "fi": [
+        "nummikirvinen"
+      ],
+      "abbr": [
+        "ANTCAM"
+      ],
+      "syn": [],
+      "obs_count": 79
+    },
+    {
+      "id": "MX.32215",
+      "sci": "Anthus hodgsoni",
+      "fi": [
+        "taigakirvinen"
+      ],
+      "abbr": [
+        "ANTHOD"
+      ],
+      "syn": [],
+      "obs_count": 71
+    },
+    {
+      "id": "MX.32214",
+      "sci": "Anthus trivialis",
+      "fi": [
+        "metsäkirvinen"
+      ],
+      "abbr": [
+        "ANTTRI"
+      ],
+      "syn": [],
+      "obs_count": 222465
+    },
+    {
+      "id": "MX.32218",
+      "sci": "Anthus gustavi",
+      "fi": [
+        "tundrakirvinen"
+      ],
+      "abbr": [
+        "ANTGUS"
+      ],
+      "syn": [],
+      "obs_count": 1
+    },
+    {
+      "id": "MX.32213",
+      "sci": "Anthus pratensis",
+      "fi": [
+        "niittykirvinen"
+      ],
+      "abbr": [
+        "ANTPRA"
+      ],
+      "syn": [],
+      "obs_count": 97435
+    },
+    {
+      "id": "MX.32217",
+      "sci": "Anthus cervinus",
+      "fi": [
+        "lapinkirvinen"
+      ],
+      "abbr": [
+        "ANTCER"
+      ],
+      "syn": [],
+      "obs_count": 4272
+    },
+    {
+      "id": "MX.32221",
+      "sci": "Anthus petrosus",
+      "fi": [
+        "luotokirvinen"
+      ],
+      "abbr": [
+        "ANTPET"
+      ],
+      "syn": [],
+      "obs_count": 7085
+    },
+    {
+      "id": "MX.32180",
+      "sci": "Motacilla flava",
+      "fi": [
+        "keltavästäräkki"
+      ],
+      "abbr": [
+        "MOTFLA"
+      ],
+      "syn": [],
+      "obs_count": 100530
+    },
+    {
+      "id": "MX.32181",
+      "sci": "Motacilla citreola",
+      "fi": [
+        "sitruunavästäräkki"
+      ],
+      "abbr": [
+        "MOTCIT"
+      ],
+      "syn": [],
+      "obs_count": 986
+    },
+    {
+      "id": "MX.5007358",
+      "sci": "Motacilla tschutschensis",
+      "fi": [
+        "aasiankeltavästäräkki"
+      ],
+      "abbr": [
+        "MOTTSC"
+      ],
+      "syn": [
+        "Motacilla flava"
+      ],
+      "obs_count": 1
+    },
+    {
+      "id": "MX.32182",
+      "sci": "Motacilla cinerea",
+      "fi": [
+        "virtavästäräkki"
+      ],
+      "abbr": [
+        "MOTCIN"
+      ],
+      "syn": [],
+      "obs_count": 2233
+    },
+    {
+      "id": "MX.32183",
+      "sci": "Motacilla alba",
+      "fi": [
+        "västäräkki"
+      ],
+      "abbr": [
+        "MOTALB"
+      ],
+      "syn": [],
+      "obs_count": 265449
+    },
+    {
+      "id": "MX.32608",
+      "sci": "Bombycilla garrulus",
+      "fi": [
+        "tilhi"
+      ],
+      "abbr": [
+        "BOMGAR"
+      ],
+      "syn": [],
+      "obs_count": 171792
+    },
+    {
+      "id": "MX.32625",
+      "sci": "Cinclus cinclus",
+      "fi": [
+        "koskikara"
+      ],
+      "abbr": [
+        "CINCIN"
+      ],
+      "syn": [],
+      "obs_count": 47236
+    },
+    {
+      "id": "MX.32696",
+      "sci": "Troglodytes troglodytes",
+      "fi": [
+        "peukaloinen"
+      ],
+      "abbr": [
+        "TROTRO"
+      ],
+      "syn": [
+        "Nannus troglodytes"
+      ],
+      "obs_count": 77048
+    },
+    {
+      "id": "MX.32772",
+      "sci": "Prunella modularis",
+      "fi": [
+        "rautiainen"
+      ],
+      "abbr": [
+        "PRUMOD"
+      ],
+      "syn": [],
+      "obs_count": 261775
+    },
+    {
+      "id": "MX.32767",
+      "sci": "Prunella montanella",
+      "fi": [
+        "taigarautiainen"
+      ],
+      "abbr": [
+        "PRUMON"
+      ],
+      "syn": [],
+      "obs_count": 91
+    },
+    {
+      "id": "MX.32770",
+      "sci": "Prunella atrogularis",
+      "fi": [
+        "mustakurkkurautiainen"
+      ],
+      "abbr": [
+        "PRUATR"
+      ],
+      "syn": [],
+      "obs_count": 43
+    },
+    {
+      "id": "MX.32763",
+      "sci": "Prunella collaris",
+      "fi": [
+        "alppirautiainen"
+      ],
+      "abbr": [
+        "PRUCOL"
+      ],
+      "syn": [],
+      "obs_count": 5
+    },
+    {
+      "id": "MX.32878",
+      "sci": "Cercotrichas galactotes",
+      "fi": [
+        "ruostepyrstö"
+      ],
+      "abbr": [
+        "CERGAL"
+      ],
+      "syn": [],
+      "obs_count": 11
+    },
+    {
+      "id": "MX.32801",
+      "sci": "Erithacus rubecula",
+      "fi": [
+        "punarinta"
+      ],
+      "abbr": [
+        "ERIRUB"
+      ],
+      "syn": [],
+      "obs_count": 737597
+    },
+    {
+      "id": "MX.32819",
+      "sci": "Luscinia luscinia",
+      "fi": [
+        "satakieli"
+      ],
+      "abbr": [
+        "LUSLUS"
+      ],
+      "syn": [],
+      "obs_count": 45587
+    },
+    {
+      "id": "MX.32820",
+      "sci": "Luscinia megarhynchos",
+      "fi": [
+        "etelänsatakieli"
+      ],
+      "abbr": [
+        "LUSMEG"
+      ],
+      "syn": [],
+      "obs_count": 112
+    },
+    {
+      "id": "MX.32821",
+      "sci": "Luscinia svecica",
+      "fi": [
+        "sinirinta"
+      ],
+      "abbr": [
+        "LUSSVE"
+      ],
+      "syn": [
+        "Luscinia svecicus",
+        "Cyanecula svecica"
+      ],
+      "obs_count": 66741
+    },
+    {
+      "id": "MX.32805",
+      "sci": "Calliope calliope",
+      "fi": [
+        "rubiinisatakieli"
+      ],
+      "abbr": [
+        "CALCAL"
+      ],
+      "syn": [
+        "Erithacus calliope",
+        "Luscinia calliope"
+      ],
+      "obs_count": 2
+    },
+    {
+      "id": "MX.32816",
+      "sci": "Tarsiger cyanurus",
+      "fi": [
+        "sinipyrstö"
+      ],
+      "abbr": [
+        "TARCYA"
+      ],
+      "syn": [
+        "Erithacus cyanurus"
+      ],
+      "obs_count": 5686
+    },
+    {
+      "id": "MX.32832",
+      "sci": "Irania gutturalis",
+      "fi": [
+        "kivikkosatakieli"
+      ],
+      "abbr": [
+        "IRAGUT"
+      ],
+      "syn": [],
+      "obs_count": 1
+    },
+    {
+      "id": "MX.32894",
+      "sci": "Phoenicurus ochruros",
+      "fi": [
+        "mustaleppälintu"
+      ],
+      "abbr": [
+        "PHOOCH"
+      ],
+      "syn": [],
+      "obs_count": 1667
+    },
+    {
+      "id": "MX.32895",
+      "sci": "Phoenicurus phoenicurus",
+      "fi": [
+        "leppälintu"
+      ],
+      "abbr": [
+        "PHOPHO"
+      ],
+      "syn": [],
+      "obs_count": 255852
+    },
+    {
+      "id": "MX.32949",
+      "sci": "Saxicola rubetra",
+      "fi": [
+        "pensastasku"
+      ],
+      "abbr": [
+        "SAXRUB"
+      ],
+      "syn": [],
+      "obs_count": 104373
+    },
+    {
+      "id": "MX.32956",
+      "sci": "Saxicola caprata",
+      "fi": [
+        "nokitasku"
+      ],
+      "abbr": [
+        "SAXCAP"
+      ],
+      "syn": [],
+      "obs_count": 34
+    },
+    {
+      "id": "MX.200001",
+      "sci": "Saxicola maurus",
+      "fi": [
+        "sepeltasku"
+      ],
+      "abbr": [
+        "SAXMAU"
+      ],
+      "syn": [],
+      "obs_count": 166
+    },
+    {
+      "id": "MX.32953",
+      "sci": "Saxicola rubicola",
+      "fi": [
+        "mustapäätasku"
+      ],
+      "abbr": [
+        "SAXOLA"
+      ],
+      "syn": [],
+      "obs_count": 143
+    },
+    {
+      "id": "MX.32979",
+      "sci": "Oenanthe isabellina",
+      "fi": [
+        "arotasku"
+      ],
+      "abbr": [
+        "OENISA"
+      ],
+      "syn": [],
+      "obs_count": 104
+    },
+    {
+      "id": "MX.32966",
+      "sci": "Oenanthe oenanthe",
+      "fi": [
+        "kivitasku"
+      ],
+      "abbr": [
+        "OENOEN"
+      ],
+      "syn": [],
+      "obs_count": 62058
+    },
+    {
+      "id": "MX.32971",
+      "sci": "Oenanthe pleschanka",
+      "fi": [
+        "nunnatasku"
+      ],
+      "abbr": [
+        "OENPLE"
+      ],
+      "syn": [],
+      "obs_count": 57
+    },
+    {
+      "id": "MX.5084144",
+      "sci": "Oenanthe melanoleuca",
+      "fi": [
+        "kirjotasku"
+      ],
+      "abbr": [
+        "OENMEL"
+      ],
+      "syn": [
+        "Oenanthe hispanica"
+      ],
+      "obs_count": 11
+    },
+    {
+      "id": "MX.32976",
+      "sci": "Oenanthe deserti",
+      "fi": [
+        "aavikkotasku"
+      ],
+      "abbr": [
+        "OENDES"
+      ],
+      "syn": [],
+      "obs_count": 75
+    },
+    {
+      "id": "MX.33010",
+      "sci": "Monticola saxatilis",
+      "fi": [
+        "kivikkorastas"
+      ],
+      "abbr": [
+        "MONSAX"
+      ],
+      "syn": [],
+      "obs_count": 9
+    },
+    {
+      "id": "MX.33015",
+      "sci": "Monticola solitarius",
+      "fi": [
+        "sinirastas"
+      ],
+      "abbr": [
+        "MONSOL"
+      ],
+      "syn": [],
+      "obs_count": 4
+    },
+    {
+      "id": "MX.33051",
+      "sci": "Zoothera aurea",
+      "fi": [
+        "kirjorastas"
+      ],
+      "abbr": [
+        "ZOOAUR"
+      ],
+      "syn": [],
+      "obs_count": 25
+    },
+    {
+      "id": "MX.33081",
+      "sci": "Catharus ustulatus",
+      "fi": [
+        "korpirastas"
+      ],
+      "abbr": [
+        "CATUST"
+      ],
+      "syn": [],
+      "obs_count": null
+    },
+    {
+      "id": "MX.33104",
+      "sci": "Turdus torquatus",
+      "fi": [
+        "sepelrastas"
+      ],
+      "abbr": [
+        "TURTOR"
+      ],
+      "syn": [],
+      "obs_count": 1778
+    },
+    {
+      "id": "MX.33106",
+      "sci": "Turdus merula",
+      "fi": [
+        "mustarastas"
+      ],
+      "abbr": [
+        "TURMER"
+      ],
+      "syn": [],
+      "obs_count": 349226
+    },
+    {
+      "id": "MX.33114",
+      "sci": "Turdus obscurus",
+      "fi": [
+        "harmaakurkkurastas"
+      ],
+      "abbr": [
+        "TUROBS"
+      ],
+      "syn": [],
+      "obs_count": 12
+    },
+    {
+      "id": "MX.33116",
+      "sci": "Turdus naumanni",
+      "fi": [
+        "ruosterastas"
+      ],
+      "abbr": [
+        "TURNAU"
+      ],
+      "syn": [],
+      "obs_count": 15
+    },
+    {
+      "id": "MX.200002",
+      "sci": "Turdus eunomus",
+      "fi": [
+        "ruostesiipirastas"
+      ],
+      "abbr": [
+        "TUREUN"
+      ],
+      "syn": [],
+      "obs_count": 16
+    },
+    {
+      "id": "MX.33115",
+      "sci": "Turdus atrogularis",
+      "fi": [
+        "mustakaularastas"
+      ],
+      "abbr": [
+        "TURATR"
+      ],
+      "syn": [],
+      "obs_count": 165
+    },
+    {
+      "id": "MX.33117",
+      "sci": "Turdus pilaris",
+      "fi": [
+        "räkättirastas"
+      ],
+      "abbr": [
+        "TURPIL"
+      ],
+      "syn": [],
+      "obs_count": 415655
+    },
+    {
+      "id": "MX.33119",
+      "sci": "Turdus philomelos",
+      "fi": [
+        "laulurastas"
+      ],
+      "abbr": [
+        "TURPHI"
+      ],
+      "syn": [
+        "Turdus ericetorum"
+      ],
+      "obs_count": 260245
+    },
+    {
+      "id": "MX.33118",
+      "sci": "Turdus iliacus",
+      "fi": [
+        "punakylkirastas"
+      ],
+      "abbr": [
+        "TURILI"
+      ],
+      "syn": [
+        "Turdus musicus"
+      ],
+      "obs_count": 405877
+    },
+    {
+      "id": "MX.33121",
+      "sci": "Turdus viscivorus",
+      "fi": [
+        "kulorastas"
+      ],
+      "abbr": [
+        "TURVIS"
+      ],
+      "syn": [],
+      "obs_count": 46713
+    },
+    {
+      "id": "MX.33939",
+      "sci": "Curruca nisoria",
+      "fi": [
+        "kirjokerttu"
+      ],
+      "abbr": [
+        "CURNIS"
+      ],
+      "syn": [
+        "Sylvia nisoria"
+      ],
+      "obs_count": 4013
+    },
+    {
+      "id": "MX.33937",
+      "sci": "Curruca curruca",
+      "fi": [
+        "hernekerttu"
+      ],
+      "abbr": [
+        "CURCUR"
+      ],
+      "syn": [
+        "Sylvia curruca"
+      ],
+      "obs_count": 153643
+    },
+    {
+      "id": "MX.33938",
+      "sci": "Curruca nana",
+      "fi": [
+        "kääpiökerttu"
+      ],
+      "abbr": [
+        "CURNAN"
+      ],
+      "syn": [
+        "Sylvia nana"
+      ],
+      "obs_count": 29
+    },
+    {
+      "id": "MX.33936",
+      "sci": "Curruca communis",
+      "fi": [
+        "pensaskerttu"
+      ],
+      "abbr": [
+        "CURCOM"
+      ],
+      "syn": [
+        "Sylvia communis"
+      ],
+      "obs_count": 135859
+    },
+    {
+      "id": "MX.33949",
+      "sci": "Curruca undata",
+      "fi": [
+        "ruskokerttu"
+      ],
+      "abbr": [
+        "CURUND"
+      ],
+      "syn": [
+        "Sylvia undata"
+      ],
+      "obs_count": 1
+    },
+    {
+      "id": "MX.33942",
+      "sci": "Curruca ruppeli",
+      "fi": [
+        "mustakurkkukerttu"
+      ],
+      "abbr": [
+        "CURRUP"
+      ],
+      "syn": [
+        "Sylvia ruppeli",
+        "Sylvia rueppelli"
+      ],
+      "obs_count": null
+    },
+    {
+      "id": "MX.33943",
+      "sci": "Curruca melanocephala",
+      "fi": [
+        "samettipääkerttu"
+      ],
+      "abbr": [
+        "CURMEL"
+      ],
+      "syn": [
+        "Sylvia melanocephala"
+      ],
+      "obs_count": 17
+    },
+    {
+      "id": "MX.5007634",
+      "sci": "Curruca inornata",
+      "fi": [
+        "lännenrusokerttu"
+      ],
+      "abbr": [
+        "CURIBE"
+      ],
+      "syn": [],
+      "obs_count": null
+    },
+    {
+      "id": "MX.33946",
+      "sci": "Curruca cantillans",
+      "fi": [
+        "idänrusokerttu"
+      ],
+      "abbr": [
+        "CURCAN"
+      ],
+      "syn": [
+        "Sylvia cantillans"
+      ],
+      "obs_count": 58
+    },
+    {
+      "id": "MX.33671",
+      "sci": "Iduna caligata",
+      "fi": [
+        "pikkukultarinta"
+      ],
+      "abbr": [
+        "IDUCAL"
+      ],
+      "syn": [
+        "Hippolais caligata"
+      ],
+      "obs_count": 361
+    },
+    {
+      "id": "MX.73578",
+      "sci": "Iduna rama",
+      "fi": [
+        "aavikkokultarinta"
+      ],
+      "abbr": [
+        "IDURAM"
+      ],
+      "syn": [],
+      "obs_count": 3
+    },
+    {
+      "id": "MX.33672",
+      "sci": "Iduna pallida",
+      "fi": [
+        "vaaleakultarinta"
+      ],
+      "abbr": [
+        "IDUPAL"
+      ],
+      "syn": [
+        "Hippolais pallida"
+      ],
+      "obs_count": 14
+    },
+    {
+      "id": "MX.33676",
+      "sci": "Hippolais icterina",
+      "fi": [
+        "kultarinta"
+      ],
+      "abbr": [
+        "HIPICT"
+      ],
+      "syn": [],
+      "obs_count": 22668
+    },
+    {
+      "id": "MX.33640",
+      "sci": "Acrocephalus paludicola",
+      "fi": [
+        "sarakerttunen"
+      ],
+      "abbr": [
+        "ACROLA"
+      ],
+      "syn": [],
+      "obs_count": 2
+    },
+    {
+      "id": "MX.33641",
+      "sci": "Acrocephalus schoenobaenus",
+      "fi": [
+        "ruokokerttunen"
+      ],
+      "abbr": [
+        "ACRSCH"
+      ],
+      "syn": [
+        "Acrocephalus scheonobaenus"
+      ],
+      "obs_count": 487202
+    },
+    {
+      "id": "MX.33644",
+      "sci": "Acrocephalus agricola",
+      "fi": [
+        "kenttäkerttunen"
+      ],
+      "abbr": [
+        "ACRAGR"
+      ],
+      "syn": [],
+      "obs_count": 117
+    },
+    {
+      "id": "MX.33650",
+      "sci": "Acrocephalus dumetorum",
+      "fi": [
+        "viitakerttunen"
+      ],
+      "abbr": [
+        "ACRDUM"
+      ],
+      "syn": [],
+      "obs_count": 34524
+    },
+    {
+      "id": "MX.33649",
+      "sci": "Acrocephalus palustris",
+      "fi": [
+        "luhtakerttunen"
+      ],
+      "abbr": [
+        "ACRPAL"
+      ],
+      "syn": [],
+      "obs_count": 21828
+    },
+    {
+      "id": "MX.33646",
+      "sci": "Acrocephalus scirpaceus",
+      "fi": [
+        "rytikerttunen"
+      ],
+      "abbr": [
+        "ACRSCI"
+      ],
+      "syn": [],
+      "obs_count": 77981
+    },
+    {
+      "id": "MX.33651",
+      "sci": "Acrocephalus arundinaceus",
+      "fi": [
+        "rastaskerttunen"
+      ],
+      "abbr": [
+        "ACRARU"
+      ],
+      "syn": [],
+      "obs_count": 3134
+    },
+    {
+      "id": "MX.33935",
+      "sci": "Sylvia borin",
+      "fi": [
+        "lehtokerttu"
+      ],
+      "abbr": [
+        "SYLBOR"
+      ],
+      "syn": [],
+      "obs_count": 215278
+    },
+    {
+      "id": "MX.33934",
+      "sci": "Sylvia atricapilla",
+      "fi": [
+        "mustapääkerttu"
+      ],
+      "abbr": [
+        "SYLATR"
+      ],
+      "syn": [],
+      "obs_count": 106268
+    },
+    {
+      "id": "MX.33899",
+      "sci": "Phylloscopus coronatus",
+      "fi": [
+        "amurinuunilintu"
+      ],
+      "abbr": [
+        "PHYCOR"
+      ],
+      "syn": [
+        "Seicercus coronatus"
+      ],
+      "obs_count": 2
+    },
+    {
+      "id": "MX.33892",
+      "sci": "Phylloscopus nitidus",
+      "fi": [
+        "kaukasianuunilintu"
+      ],
+      "abbr": [
+        "PHYNIT"
+      ],
+      "syn": [
+        "Seicercus nitidus"
+      ],
+      "obs_count": null
+    },
+    {
+      "id": "MX.33893",
+      "sci": "Phylloscopus plumbeitarsus",
+      "fi": [
+        "burjatianuunilintu"
+      ],
+      "abbr": [
+        "PHYPLU"
+      ],
+      "syn": [
+        "Seicercus plumbeitarsus"
+      ],
+      "obs_count": 3
+    },
+    {
+      "id": "MX.33891",
+      "sci": "Phylloscopus trochiloides",
+      "fi": [
+        "idänuunilintu"
+      ],
+      "abbr": [
+        "PHYDES"
+      ],
+      "syn": [
+        "Seicercus trochiloides"
+      ],
+      "obs_count": 6184
+    },
+    {
+      "id": "MX.33890",
+      "sci": "Phylloscopus borealis",
+      "fi": [
+        "lapinuunilintu"
+      ],
+      "abbr": [
+        "PHYBOR"
+      ],
+      "syn": [
+        "Seicercus borealis"
+      ],
+      "obs_count": 829
+    },
+    {
+      "id": "MX.33887",
+      "sci": "Phylloscopus proregulus",
+      "fi": [
+        "hippiäisuunilintu"
+      ],
+      "abbr": [
+        "PHYPRO"
+      ],
+      "syn": [
+        "Abrornis proregulus"
+      ],
+      "obs_count": 664
+    },
+    {
+      "id": "MX.33889",
+      "sci": "Phylloscopus inornatus",
+      "fi": [
+        "taigauunilintu"
+      ],
+      "abbr": [
+        "PHYINO"
+      ],
+      "syn": [
+        "Abrornis inornatus"
+      ],
+      "obs_count": 1557
+    },
+    {
+      "id": "MX.73589",
+      "sci": "Phylloscopus humei",
+      "fi": [
+        "kashmirinuunilintu"
+      ],
+      "abbr": [
+        "PHYHUM"
+      ],
+      "syn": [
+        "Abrornis humei"
+      ],
+      "obs_count": 117
+    },
+    {
+      "id": "MX.33884",
+      "sci": "Phylloscopus schwarzi",
+      "fi": [
+        "siperianuunilintu"
+      ],
+      "abbr": [
+        "PHYSCH"
+      ],
+      "syn": [],
+      "obs_count": 36
+    },
+    {
+      "id": "MX.33879",
+      "sci": "Phylloscopus fuscatus",
+      "fi": [
+        "ruskouunilintu"
+      ],
+      "abbr": [
+        "PHYFUS"
+      ],
+      "syn": [],
+      "obs_count": 134
+    },
+    {
+      "id": "MX.33877",
+      "sci": "Phylloscopus bonelli",
+      "fi": [
+        "vuoriuunilintu"
+      ],
+      "abbr": [
+        "PHYBON"
+      ],
+      "syn": [
+        "Rhadina bonelli"
+      ],
+      "obs_count": 49
+    },
+    {
+      "id": "MX.73591",
+      "sci": "Phylloscopus orientalis",
+      "fi": [
+        "balkaninuunilintu"
+      ],
+      "abbr": [
+        "PHYORI"
+      ],
+      "syn": [
+        "Phylloscopus orientalis",
+        "Rhadina orientalis"
+      ],
+      "obs_count": 5
+    },
+    {
+      "id": "MX.33878",
+      "sci": "Phylloscopus sibilatrix",
+      "fi": [
+        "sirittäjä"
+      ],
+      "abbr": [
+        "PHYSIB"
+      ],
+      "syn": [
+        "Rhadina sibilatrix"
+      ],
+      "obs_count": 59649
+    },
+    {
+      "id": "MX.33874",
+      "sci": "Phylloscopus collybita",
+      "fi": [
+        "tiltaltti"
+      ],
+      "abbr": [
+        "PHYCOL"
+      ],
+      "syn": [
+        "Phylloscopus collybitus"
+      ],
+      "obs_count": 166385
+    },
+    {
+      "id": "MX.73590",
+      "sci": "Phylloscopus ibericus",
+      "fi": [
+        "iberiantiltaltti"
+      ],
+      "abbr": [
+        "PHYIBE"
+      ],
+      "syn": [],
+      "obs_count": 9
+    },
+    {
+      "id": "MX.33873",
+      "sci": "Phylloscopus trochilus",
+      "fi": [
+        "pajulintu"
+      ],
+      "abbr": [
+        "PHYLUS"
+      ],
+      "syn": [],
+      "obs_count": 1192189
+    },
+    {
+      "id": "MX.5007615",
+      "sci": "Phylloscopus examinandus",
+      "fi": [
+        "kamtšatkanuunilintu",
+        "katshatkanuunilintu"
+      ],
+      "abbr": [
+        "PHYEXA"
+      ],
+      "syn": [],
+      "obs_count": 5
+    },
+    {
+      "id": "MX.33954",
+      "sci": "Regulus regulus",
+      "fi": [
+        "hippiäinen"
+      ],
+      "abbr": [
+        "REGREG"
+      ],
+      "syn": [],
+      "obs_count": 722523
+    },
+    {
+      "id": "MX.33952",
+      "sci": "Regulus ignicapilla",
+      "fi": [
+        "tulipäähippiäinen"
+      ],
+      "abbr": [
+        "REGIGN"
+      ],
+      "syn": [
+        "Regulus ignicapillus"
+      ],
+      "obs_count": 619
+    },
+    {
+      "id": "MX.33989",
+      "sci": "Muscicapa striata",
+      "fi": [
+        "harmaasieppo"
+      ],
+      "abbr": [
+        "MUSSTR"
+      ],
+      "syn": [],
+      "obs_count": 204231
+    },
+    {
+      "id": "MX.34029",
+      "sci": "Ficedula parva",
+      "fi": [
+        "pikkusieppo"
+      ],
+      "abbr": [
+        "FICPAR"
+      ],
+      "syn": [],
+      "obs_count": 11098
+    },
+    {
+      "id": "MX.4887361",
+      "sci": "Ficedula albicilla",
+      "fi": [
+        "idänpikkusieppo"
+      ],
+      "abbr": [
+        "FICLLA"
+      ],
+      "syn": [],
+      "obs_count": 20
+    },
+    {
+      "id": "MX.34022",
+      "sci": "Ficedula albicollis",
+      "fi": [
+        "sepelsieppo"
+      ],
+      "abbr": [
+        "FICALB"
+      ],
+      "syn": [],
+      "obs_count": 360
+    },
+    {
+      "id": "MX.34021",
+      "sci": "Ficedula hypoleuca",
+      "fi": [
+        "kirjosieppo"
+      ],
+      "abbr": [
+        "FICHYP"
+      ],
+      "syn": [
+        "Muscicapa hypoleuca"
+      ],
+      "obs_count": 1159866
+    },
+    {
+      "id": "MX.33492",
+      "sci": "Panurus biarmicus",
+      "fi": [
+        "viiksitimali"
+      ],
+      "abbr": [
+        "PANBIA"
+      ],
+      "syn": [],
+      "obs_count": 12584
+    },
+    {
+      "id": "MX.34505",
+      "sci": "Aegithalos caudatus",
+      "fi": [
+        "pyrstötiainen"
+      ],
+      "abbr": [
+        "AEGCAU"
+      ],
+      "syn": [],
+      "obs_count": 156921
+    },
+    {
+      "id": "MX.34575",
+      "sci": "Cyanistes cyanus",
+      "fi": [
+        "valkopäätiainen"
+      ],
+      "abbr": [
+        "CYACYA"
+      ],
+      "syn": [
+        "Parus cyanus"
+      ],
+      "obs_count": 159
+    },
+    {
+      "id": "MX.34574",
+      "sci": "Cyanistes caeruleus",
+      "fi": [
+        "sinitiainen"
+      ],
+      "abbr": [
+        "CYACAE"
+      ],
+      "syn": [
+        "Parus caeruleus"
+      ],
+      "obs_count": 1328717
+    },
+    {
+      "id": "MX.34567",
+      "sci": "Parus major",
+      "fi": [
+        "talitiainen"
+      ],
+      "abbr": [
+        "PARMAJ"
+      ],
+      "syn": [],
+      "obs_count": 2201521
+    },
+    {
+      "id": "MX.34549",
+      "sci": "Periparus ater",
+      "fi": [
+        "kuusitiainen"
+      ],
+      "abbr": [
+        "PERATE"
+      ],
+      "syn": [
+        "Parus ater"
+      ],
+      "obs_count": 292429
+    },
+    {
+      "id": "MX.34553",
+      "sci": "Lophophanes cristatus",
+      "fi": [
+        "töyhtötiainen"
+      ],
+      "abbr": [
+        "LOPCRI"
+      ],
+      "syn": [
+        "Parus cristatus"
+      ],
+      "obs_count": 144833
+    },
+    {
+      "id": "MX.34532",
+      "sci": "Poecile palustris",
+      "fi": [
+        "viitatiainen"
+      ],
+      "abbr": [
+        "POEPAL"
+      ],
+      "syn": [
+        "Parus palustris"
+      ],
+      "obs_count": 407
+    },
+    {
+      "id": "MX.34535",
+      "sci": "Poecile montanus",
+      "fi": [
+        "hömötiainen"
+      ],
+      "abbr": [
+        "POEMON"
+      ],
+      "syn": [
+        "Parus montanus",
+        "Parus songarus"
+      ],
+      "obs_count": 425614
+    },
+    {
+      "id": "MX.34542",
+      "sci": "Poecile cinctus",
+      "fi": [
+        "lapintiainen"
+      ],
+      "abbr": [
+        "POECIN"
+      ],
+      "syn": [
+        "Parus cinctus"
+      ],
+      "obs_count": 49077
+    },
+    {
+      "id": "MX.34586",
+      "sci": "Sitta europaea",
+      "fi": [
+        "pähkinänakkeli"
+      ],
+      "abbr": [
+        "SITEUR"
+      ],
+      "syn": [],
+      "obs_count": 10455
+    },
+    {
+      "id": "MX.34616",
+      "sci": "Certhia familiaris",
+      "fi": [
+        "puukiipijä"
+      ],
+      "abbr": [
+        "CERFAM"
+      ],
+      "syn": [],
+      "obs_count": 198254
+    },
+    {
+      "id": "MX.34517",
+      "sci": "Remiz pendulinus",
+      "fi": [
+        "pussitiainen"
+      ],
+      "abbr": [
+        "REMPEN"
+      ],
+      "syn": [],
+      "obs_count": 354
+    },
+    {
+      "id": "MX.36871",
+      "sci": "Oriolus oriolus",
+      "fi": [
+        "kuhankeittäjä"
+      ],
+      "abbr": [
+        "ORIORI"
+      ],
+      "syn": [],
+      "obs_count": 3107
+    },
+    {
+      "id": "MX.32560",
+      "sci": "Lanius cristatus",
+      "fi": [
+        "siperianlepinkäinen"
+      ],
+      "abbr": [
+        "LANCRI"
+      ],
+      "syn": [],
+      "obs_count": 52
+    },
+    {
+      "id": "MX.73581",
+      "sci": "Lanius isabellinus",
+      "fi": [
+        "punapyrstölepinkäinen"
+      ],
+      "abbr": [
+        "LANISA"
+      ],
+      "syn": [],
+      "obs_count": 20
+    },
+    {
+      "id": "MX.32561",
+      "sci": "Lanius collurio",
+      "fi": [
+        "pikkulepinkäinen"
+      ],
+      "abbr": [
+        "LANCOL"
+      ],
+      "syn": [],
+      "obs_count": 75475
+    },
+    {
+      "id": "MX.32568",
+      "sci": "Lanius minor",
+      "fi": [
+        "mustaotsalepinkäinen"
+      ],
+      "abbr": [
+        "LANMIN"
+      ],
+      "syn": [],
+      "obs_count": 212
+    },
+    {
+      "id": "MX.32570",
+      "sci": "Lanius excubitor",
+      "fi": [
+        "isolepinkäinen"
+      ],
+      "abbr": [
+        "LANEXC"
+      ],
+      "syn": [],
+      "obs_count": 23803
+    },
+    {
+      "id": "MX.32578",
+      "sci": "Lanius senator",
+      "fi": [
+        "punapäälepinkäinen"
+      ],
+      "abbr": [
+        "LANSEN"
+      ],
+      "syn": [],
+      "obs_count": 59
+    },
+    {
+      "id": "MX.32579",
+      "sci": "Lanius nubicus",
+      "fi": [
+        "valko-otsalepinkäinen"
+      ],
+      "abbr": [
+        "LANNUB"
+      ],
+      "syn": [],
+      "obs_count": 28
+    },
+    {
+      "id": "MX.5007237",
+      "sci": "Lanius phoenicuroides",
+      "fi": [
+        "ruostepäälepinkäinen"
+      ],
+      "abbr": [
+        "LANPHO"
+      ],
+      "syn": [],
+      "obs_count": 8
+    },
+    {
+      "id": "MX.5007241",
+      "sci": "Lanius borealis",
+      "fi": [
+        "taigaisolepinkäinen"
+      ],
+      "abbr": [
+        "LANBOR"
+      ],
+      "syn": [],
+      "obs_count": 9
+    },
+    {
+      "id": "MX.37090",
+      "sci": "Garrulus glandarius",
+      "fi": [
+        "närhi"
+      ],
+      "abbr": [
+        "GARGLA"
+      ],
+      "syn": [],
+      "obs_count": 175989
+    },
+    {
+      "id": "MX.37095",
+      "sci": "Perisoreus infaustus",
+      "fi": [
+        "kuukkeli"
+      ],
+      "abbr": [
+        "PERINF"
+      ],
+      "syn": [],
+      "obs_count": 53643
+    },
+    {
+      "id": "MX.37122",
+      "sci": "Pica pica",
+      "fi": [
+        "harakka"
+      ],
+      "abbr": [
+        "PICPIC"
+      ],
+      "syn": [],
+      "obs_count": 297502
+    },
+    {
+      "id": "MX.37135",
+      "sci": "Nucifraga caryocatactes",
+      "fi": [
+        "pähkinähakki"
+      ],
+      "abbr": [
+        "NUCCAR"
+      ],
+      "syn": [],
+      "obs_count": 32814
+    },
+    {
+      "id": "MX.37156",
+      "sci": "Corvus frugilegus",
+      "fi": [
+        "mustavaris"
+      ],
+      "abbr": [
+        "CORFRU"
+      ],
+      "syn": [],
+      "obs_count": 16768
+    },
+    {
+      "id": "MX.73566",
+      "sci": "Corvus corone",
+      "fi": [
+        "varis"
+      ],
+      "abbr": [
+        "CORONE"
+      ],
+      "syn": [],
+      "obs_count": 315399
+    },
+    {
+      "id": "MX.37178",
+      "sci": "Corvus corax",
+      "fi": [
+        "korppi",
+        "kaarne"
+      ],
+      "abbr": [
+        "CORRAX"
+      ],
+      "syn": [],
+      "obs_count": 149040
+    },
+    {
+      "id": "MX.37143",
+      "sci": "Coloeus dauuricus",
+      "fi": [
+        "idännaakka"
+      ],
+      "abbr": [
+        "COLDAU"
+      ],
+      "syn": [
+        "Corvus dauuricus"
+      ],
+      "obs_count": 3
+    },
+    {
+      "id": "MX.37142",
+      "sci": "Coloeus monedula",
+      "fi": [
+        "naakka"
+      ],
+      "abbr": [
+        "COLMON"
+      ],
+      "syn": [
+        "Corvus monedula"
+      ],
+      "obs_count": 205960
+    },
+    {
+      "id": "MX.36817",
+      "sci": "Sturnus vulgaris",
+      "fi": [
+        "kottarainen"
+      ],
+      "abbr": [
+        "STUVUL"
+      ],
+      "syn": [],
+      "obs_count": 343419
+    },
+    {
+      "id": "MX.36816",
+      "sci": "Pastor roseus",
+      "fi": [
+        "punakottarainen"
+      ],
+      "abbr": [
+        "PASROS"
+      ],
+      "syn": [
+        "Sturnus roseus"
+      ],
+      "obs_count": 104
+    },
+    {
+      "id": "MX.36573",
+      "sci": "Passer domesticus",
+      "fi": [
+        "varpunen"
+      ],
+      "abbr": [
+        "PASDOM"
+      ],
+      "syn": [],
+      "obs_count": 216471
+    },
+    {
+      "id": "MX.36574",
+      "sci": "Passer hispaniolensis",
+      "fi": [
+        "pensasvarpunen"
+      ],
+      "abbr": [
+        "PASHIS"
+      ],
+      "syn": [],
+      "obs_count": null
+    },
+    {
+      "id": "MX.36589",
+      "sci": "Passer montanus",
+      "fi": [
+        "pikkuvarpunen"
+      ],
+      "abbr": [
+        "PASMON"
+      ],
+      "syn": [],
+      "obs_count": 171833
+    },
+    {
+      "id": "MX.36237",
+      "sci": "Fringilla coelebs",
+      "fi": [
+        "peippo"
+      ],
+      "abbr": [
+        "FRICOE"
+      ],
+      "syn": [],
+      "obs_count": 702095
+    },
+    {
+      "id": "MX.36239",
+      "sci": "Fringilla montifringilla",
+      "fi": [
+        "järripeippo"
+      ],
+      "abbr": [
+        "FRIMON"
+      ],
+      "syn": [],
+      "obs_count": 225258
+    },
+    {
+      "id": "MX.36242",
+      "sci": "Serinus serinus",
+      "fi": [
+        "keltahemppo"
+      ],
+      "abbr": [
+        "SERSER"
+      ],
+      "syn": [],
+      "obs_count": 413
+    },
+    {
+      "id": "MX.36245",
+      "sci": "Carduelis citrinella",
+      "fi": [
+        "sitruunahemppo"
+      ],
+      "abbr": [
+        "CARCIT"
+      ],
+      "syn": [
+        "Serinus citrinella"
+      ],
+      "obs_count": 10
+    },
+    {
+      "id": "MX.36306",
+      "sci": "Carduelis carduelis",
+      "fi": [
+        "tikli"
+      ],
+      "abbr": [
+        "CARCAR"
+      ],
+      "syn": [],
+      "obs_count": 55497
+    },
+    {
+      "id": "MX.36359",
+      "sci": "Loxia leucoptera",
+      "fi": [
+        "kirjosiipikäpylintu"
+      ],
+      "abbr": [
+        "LOXLEU"
+      ],
+      "syn": [],
+      "obs_count": 3826
+    },
+    {
+      "id": "MX.36358",
+      "sci": "Loxia curvirostra",
+      "fi": [
+        "pikkukäpylintu"
+      ],
+      "abbr": [
+        "LOXCUR"
+      ],
+      "syn": [],
+      "obs_count": 68297
+    },
+    {
+      "id": "MX.36356",
+      "sci": "Loxia pytyopsittacus",
+      "fi": [
+        "isokäpylintu"
+      ],
+      "abbr": [
+        "LOXPYT"
+      ],
+      "syn": [],
+      "obs_count": 15616
+    },
+    {
+      "id": "MX.36283",
+      "sci": "Chloris chloris",
+      "fi": [
+        "viherpeippo"
+      ],
+      "abbr": [
+        "CHLCHL"
+      ],
+      "syn": [
+        "Carduelis chloris"
+      ],
+      "obs_count": 510272
+    },
+    {
+      "id": "MX.36309",
+      "sci": "Linaria flavirostris",
+      "fi": [
+        "vuorihemppo"
+      ],
+      "abbr": [
+        "LINFLA"
+      ],
+      "syn": [
+        "Carduelis flavirostris"
+      ],
+      "obs_count": 1357
+    },
+    {
+      "id": "MX.36310",
+      "sci": "Linaria cannabina",
+      "fi": [
+        "hemppo"
+      ],
+      "abbr": [
+        "LINCAN"
+      ],
+      "syn": [
+        "Carduelis cannabina",
+        "Linaria vulgaris",
+        "Acanthis cannabina"
+      ],
+      "obs_count": 34057
+    },
+    {
+      "id": "MX.36308",
+      "sci": "Acanthis flammea",
+      "fi": [
+        "urpiainen"
+      ],
+      "abbr": [
+        "ACAFLA"
+      ],
+      "syn": [
+        "Carduelis flammea"
+      ],
+      "obs_count": 670130
+    },
+    {
+      "id": "MX.36287",
+      "sci": "Spinus spinus",
+      "fi": [
+        "vihervarpunen"
+      ],
+      "abbr": [
+        "SPISPI"
+      ],
+      "syn": [
+        "Carduelis spinus"
+      ],
+      "obs_count": 438270
+    },
+    {
+      "id": "MX.36331",
+      "sci": "Carpodacus erythrinus",
+      "fi": [
+        "punavarpunen"
+      ],
+      "abbr": [
+        "CARERY"
+      ],
+      "syn": [
+        "Erythrina erythrina"
+      ],
+      "obs_count": 82431
+    },
+    {
+      "id": "MX.36321",
+      "sci": "Bucanetes githagineus",
+      "fi": [
+        "aavikkotulkku"
+      ],
+      "abbr": [
+        "BUCGIT"
+      ],
+      "syn": [
+        "Rhodopechys githaginea"
+      ],
+      "obs_count": 3
+    },
+    {
+      "id": "MX.36351",
+      "sci": "Pinicola enucleator",
+      "fi": [
+        "taviokuurna"
+      ],
+      "abbr": [
+        "PINENU"
+      ],
+      "syn": [],
+      "obs_count": 28531
+    },
+    {
+      "id": "MX.36366",
+      "sci": "Pyrrhula pyrrhula",
+      "fi": [
+        "punatulkku"
+      ],
+      "abbr": [
+        "PYRPYR"
+      ],
+      "syn": [],
+      "obs_count": 419530
+    },
+    {
+      "id": "MX.36368",
+      "sci": "Coccothraustes coccothraustes",
+      "fi": [
+        "nokkavarpunen"
+      ],
+      "abbr": [
+        "COCCOC"
+      ],
+      "syn": [],
+      "obs_count": 11022
+    },
+    {
+      "id": "MX.35921",
+      "sci": "Setophaga striata",
+      "fi": [
+        "viirukerttuli"
+      ],
+      "abbr": [
+        "SETSTR"
+      ],
+      "syn": [
+        "Dendroica striata"
+      ],
+      "obs_count": 1
+    },
+    {
+      "id": "MX.35194",
+      "sci": "Passerella iliaca",
+      "fi": [
+        "kettusirkku"
+      ],
+      "abbr": [
+        "PASILI"
+      ],
+      "syn": [],
+      "obs_count": 9
+    },
+    {
+      "id": "MX.35203",
+      "sci": "Zonotrichia albicollis",
+      "fi": [
+        "valkokurkkusirkku"
+      ],
+      "abbr": [
+        "ZONALB"
+      ],
+      "syn": [],
+      "obs_count": 2
+    },
+    {
+      "id": "MX.35185",
+      "sci": "Calcarius lapponicus",
+      "fi": [
+        "lapinsirkku"
+      ],
+      "abbr": [
+        "CALLAP"
+      ],
+      "syn": [],
+      "obs_count": 11779
+    },
+    {
+      "id": "MX.35189",
+      "sci": "Plectrophenax nivalis",
+      "fi": [
+        "pulmunen"
+      ],
+      "abbr": [
+        "PLENIV"
+      ],
+      "syn": [],
+      "obs_count": 14236
+    },
+    {
+      "id": "MX.35179",
+      "sci": "Emberiza spodocephala",
+      "fi": [
+        "harmaapääsirkku"
+      ],
+      "abbr": [
+        "EMBSPO"
+      ],
+      "syn": [
+        "Schoeniclus spodocephala"
+      ],
+      "obs_count": 2
+    },
+    {
+      "id": "MX.35147",
+      "sci": "Emberiza leucocephalos",
+      "fi": [
+        "mäntysirkku"
+      ],
+      "abbr": [
+        "EMBLEU"
+      ],
+      "syn": [
+        "Emberiza leucocephala"
+      ],
+      "obs_count": 78
+    },
+    {
+      "id": "MX.35146",
+      "sci": "Emberiza citrinella",
+      "fi": [
+        "keltasirkku"
+      ],
+      "abbr": [
+        "EMBCIT"
+      ],
+      "syn": [],
+      "obs_count": 334505
+    },
+    {
+      "id": "MX.35154",
+      "sci": "Emberiza hortulana",
+      "fi": [
+        "peltosirkku"
+      ],
+      "abbr": [
+        "EMBHOR"
+      ],
+      "syn": [],
+      "obs_count": 13525
+    },
+    {
+      "id": "MX.35151",
+      "sci": "Emberiza buchanani",
+      "fi": [
+        "kivikkosirkku"
+      ],
+      "abbr": [
+        "EMBBUC"
+      ],
+      "syn": [],
+      "obs_count": 1
+    },
+    {
+      "id": "MX.35155",
+      "sci": "Emberiza caesia",
+      "fi": [
+        "ruostekurkkusirkku"
+      ],
+      "abbr": [
+        "EMBCAE"
+      ],
+      "syn": [],
+      "obs_count": 11
+    },
+    {
+      "id": "MX.35167",
+      "sci": "Emberiza rustica",
+      "fi": [
+        "pohjansirkku"
+      ],
+      "abbr": [
+        "EMBRUS"
+      ],
+      "syn": [
+        "Schoeniclus rusticus"
+      ],
+      "obs_count": 44163
+    },
+    {
+      "id": "MX.35165",
+      "sci": "Emberiza pusilla",
+      "fi": [
+        "pikkusirkku"
+      ],
+      "abbr": [
+        "EMBPUS"
+      ],
+      "syn": [
+        "Schoeniclus pusillus"
+      ],
+      "obs_count": 3791
+    },
+    {
+      "id": "MX.35174",
+      "sci": "Emberiza rutila",
+      "fi": [
+        "kastanjasirkku"
+      ],
+      "abbr": [
+        "EMBRUT"
+      ],
+      "syn": [
+        "Schoeniclus rutilus"
+      ],
+      "obs_count": 4
+    },
+    {
+      "id": "MX.35169",
+      "sci": "Emberiza aureola",
+      "fi": [
+        "kultasirkku"
+      ],
+      "abbr": [
+        "EMBAUR"
+      ],
+      "syn": [
+        "Schoeniclus aureolus"
+      ],
+      "obs_count": 1919
+    },
+    {
+      "id": "MX.35182",
+      "sci": "Emberiza schoeniclus",
+      "fi": [
+        "pajusirkku"
+      ],
+      "abbr": [
+        "EMBSCH"
+      ],
+      "syn": [
+        "Schoeniclus schoeniclus"
+      ],
+      "obs_count": 288403
+    },
+    {
+      "id": "MX.35181",
+      "sci": "Emberiza pallasi",
+      "fi": [
+        "pikkupajusirkku"
+      ],
+      "abbr": [
+        "EMBPAL"
+      ],
+      "syn": [
+        "Schoeniclus pallasi"
+      ],
+      "obs_count": 12
+    },
+    {
+      "id": "MX.35177",
+      "sci": "Emberiza bruniceps",
+      "fi": [
+        "ruskopääsirkku"
+      ],
+      "abbr": [
+        "EMBBRU"
+      ],
+      "syn": [
+        "Granativora bruniceps"
+      ],
+      "obs_count": 18
+    },
+    {
+      "id": "MX.35176",
+      "sci": "Emberiza melanocephala",
+      "fi": [
+        "mustapääsirkku"
+      ],
+      "abbr": [
+        "EMBMEL"
+      ],
+      "syn": [
+        "Granativora melanocephala",
+        "Melophus melanocephalus"
+      ],
+      "obs_count": 23
+    },
+    {
+      "id": "MX.35145",
+      "sci": "Emberiza calandra",
+      "fi": [
+        "harmaasirkku"
+      ],
+      "abbr": [
+        "EMBCAL"
+      ],
+      "syn": [
+        "Miliaria calandra"
+      ],
+      "obs_count": 94
+    },
+    {
+      "id": "MX.35166",
+      "sci": "Emberiza chrysophrys",
+      "fi": [
+        "kultakulmasirkku"
+      ],
+      "abbr": [
+        "EMBCHR"
+      ],
+      "syn": [
+        "Schoeniclus chrysophrys"
+      ],
+      "obs_count": 1
+    }
+  ]
+}

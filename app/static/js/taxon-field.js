@@ -1,14 +1,21 @@
-// Taxon name field. Suggestions come from Terra's autocomplete route.
+// Taxon name field. A and C use Terra's autocomplete route. B uses local birds.
 
 import * as api from "./api.js";
-import { autocompleteCacheMs, getSetting } from "./settings.js";
+import { searchBirds } from "./birds.js";
+import { autocompleteCacheMs, getSetting, setSetting } from "./settings.js";
 import { readAutocomplete, writeAutocomplete } from "./taxon-cache.js";
 
 const DEBOUNCE_MS = 300;
 const MIN_INTERVAL_MS = 1000;
 const MIN_QUERY_LENGTH = 2;
+const SEARCH_MODES = ["A", "B", "C"];
+const SEARCH_MODE_LABEL = {
+    A: "All taxa",
+    B: "Birds",
+    C: "Custom groups",
+};
 
-export function attachTaxonField(input, list, dialog, onAdvance) {
+export function attachTaxonField(input, list, dialog, onAdvance, modeButton) {
     let timer = null;
     let controller = null;
     let seq = 0;
@@ -149,7 +156,22 @@ export function attachTaxonField(input, list, dialog, onAdvance) {
         if (!stillCurrent(mySeq, query)) {
             return;
         }
-        const groups = getSetting("informalTaxonGroupIds");
+        const mode = getSetting("taxonSearchMode");
+        if (mode === "B") {
+            try {
+                const results = await searchBirds(query);
+                if (!stillCurrent(mySeq, query)) {
+                    return;
+                }
+                render(results);
+            } catch (_error) {
+                if (stillCurrent(mySeq, query)) {
+                    clearList();
+                }
+            }
+            return;
+        }
+        const groups = mode === "A" ? [] : getSetting("informalTaxonGroupIds");
         const maxAgeMs = autocompleteCacheMs(getSetting("autocompleteCache"));
         if (maxAgeMs > 0) {
             try {
@@ -245,8 +267,26 @@ export function attachTaxonField(input, list, dialog, onAdvance) {
         });
     }
 
+    function paintSearchMode() {
+        const mode = getSetting("taxonSearchMode");
+        modeButton.textContent = mode;
+        modeButton.setAttribute("aria-label", "Taxon search: " + SEARCH_MODE_LABEL[mode]);
+    }
+
+    if (modeButton) {
+        paintSearchMode();
+        modeButton.addEventListener("click", () => {
+            const current = getSetting("taxonSearchMode");
+            const index = SEARCH_MODES.indexOf(current);
+            const next = SEARCH_MODES[(index + 1) % SEARCH_MODES.length];
+            setSetting("taxonSearchMode", next);
+            paintSearchMode();
+            schedule();
+        });
+    }
+
     document.addEventListener("click", (event) => {
-        if (event.target === input || list.contains(event.target)) {
+        if (event.target === input || event.target === modeButton || list.contains(event.target)) {
             return;
         }
         hideList();

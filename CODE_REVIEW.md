@@ -14,7 +14,7 @@ The items most worth acting on:
 |---|---------|------|--------|
 | S1 | Species name is rendered as HTML in the Leaflet tooltip (fixed) | Security (XSS) | Minutes |
 | S2 | Upstream timeouts exceed the Cloud Run timeout; a retry can create a duplicate document (fixed) | Data integrity | Small |
-| S3 | No request body size limit | Security (DoS) | One line |
+| S3 | No request body size limit (fixed) | Security (DoS) | One line |
 | S4 | No Content-Security-Policy or other security headers | Security (hardening) | Small |
 | E1 | Observation accuracy is collected but silently dropped on submit | Bug / extensibility | Small |
 | E2 | The session bundle is assembled by hand in four places | Extensibility | Small |
@@ -26,17 +26,7 @@ The items most worth acting on:
 
 ### S2. Timeouts are longer than Cloud Run allows; retries can duplicate documents (fixed)
 
-### S3. No request body size limit (low)
-
-`app/main.py`
-
-`MAX_CONTENT_LENGTH` is not set, so `/api/sessions/submit` reads a JSON body of any size into memory before `parse_submission` applies its limits. The instance has 512 MiB. A legitimate maximum payload (300 observations, 2000 route points) is well under 1 MB.
-
-```python
-app.config["MAX_CONTENT_LENGTH"] = 2 * 1024 * 1024
-```
-
-The autocomplete `query` parameter also has no length cap before it is sent upstream. Truncating or rejecting above about 100 characters is enough.
+### S3. No request body size limit (fixed)
 
 ### S4. No Content-Security-Policy or other security headers (low, cheap hardening)
 

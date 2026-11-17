@@ -40,6 +40,12 @@ class AutocompleteTaxaGroupsTest(unittest.TestCase):
         query = get.call_args.kwargs["query"]
         self.assertNotIn("informalTaxonGroups", query)
 
+    @patch("finbif.taxon.get", return_value=(200, []))
+    def test_truncates_a_long_query(self, get):
+        autocomplete_taxa("  " + "a" * 80)
+        query = get.call_args.kwargs["query"]
+        self.assertEqual("a" * 64, query["query"])
+
 
 class TaxonSuggestionTest(unittest.TestCase):
     def test_pairs_finnish_and_scientific_names(self):

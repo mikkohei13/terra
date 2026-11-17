@@ -27,6 +27,8 @@ app.secret_key = config.FLASK_SECRET_KEY
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["SESSION_COOKIE_SECURE"] = config.SESSION_COOKIE_SECURE
+# A full submission is under 1 MB. Reject anything larger before it is read.
+app.config["MAX_CONTENT_LENGTH"] = 2 * 1024 * 1024
 
 
 @app.after_request
@@ -240,6 +242,15 @@ def logout():
     # so it must not be revoked here.
     session.clear()
     return redirect(url_for("index"), code=303)
+
+
+@app.errorhandler(413)
+def request_too_large(_error):
+    # JSON, so the phone does not treat a rejected submit as maybe already saved.
+    message = "The submission is too large."
+    if request.path.startswith("/api/"):
+        return jsonify({"message": message}), 413
+    return render_template("simple.html", title="Too large", content=message), 413
 
 
 @app.errorhandler(404)

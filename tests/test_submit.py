@@ -73,6 +73,22 @@ class SubmitTimeoutTest(unittest.TestCase):
         self.assertFalse(caught.exception.maybe_saved)
         self.assertEqual(caught.exception.message, "No.")
 
+    def test_route_rejects_an_oversized_body(self):
+        main.app.config["TESTING"] = True
+        client = main.app.test_client()
+        with client.session_transaction() as sess:
+            sess["person_token"] = "t"
+            sess["person_id"] = "MA.1"
+        response = client.post(
+            "/api/sessions/submit",
+            data=b'{"x":"' + b"a" * (2 * 1024 * 1024) + b'"}',
+            content_type="application/json",
+        )
+        self.assertEqual(413, response.status_code)
+        body = response.get_json()
+        self.assertEqual("The submission is too large.", body["message"])
+        self.assertNotIn("maybeSaved", body)
+
     def test_route_tells_the_phone_the_document_may_exist(self):
         main.app.config["TESTING"] = True
         client = main.app.test_client()

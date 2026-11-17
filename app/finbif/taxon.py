@@ -10,6 +10,9 @@ from finbif.client import FinbifError, get
 # Same ids as INFORMAL_TAXON_GROUPS in static/js/settings.js.
 INFORMAL_TAXON_GROUP_IDS = ("MVL.1", "MVL.232", "MVL.343", "MVL.233")
 
+# A species search is short. Longer text is not forwarded to FinBIF.
+_MAX_QUERY_LENGTH = 64
+
 _TAXON_ID = re.compile(r"^MX\.\d+$")
 
 
@@ -20,7 +23,7 @@ def autocomplete_taxa(
     person_token: Optional[str] = None,
     informal_taxon_groups: Optional[list[str]] = None,
 ) -> list[dict[str, Any]]:
-    query = (query or "").strip()
+    query = (query or "").strip()[:_MAX_QUERY_LENGTH]
     if not query:
         return []
 

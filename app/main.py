@@ -18,9 +18,15 @@ from flask import (
 )
 
 import config
+from finbif import document as finbif_document
 from finbif.client import FinbifError, fetch_person
 from finbif.submit import submit_session
-from finbif.taxon import allowed_informal_taxon_groups, autocomplete_taxa, taxon_suggestion
+from finbif.taxon import (
+    INFORMAL_TAXON_GROUPS,
+    allowed_informal_taxon_groups,
+    autocomplete_taxa,
+    taxon_suggestion,
+)
 
 app = Flask(__name__)
 app.secret_key = config.FLASK_SECRET_KEY
@@ -53,6 +59,26 @@ def _security_headers(response):
     return response
 
 
+def client_config() -> dict:
+    """Limits and taxon groups for the page. One place shared with JS and HTML."""
+    return {
+        "limits": {
+            "routePoints": finbif_document.MAX_ROUTE_POINTS,
+            "keywords": finbif_document.MAX_KEYWORDS,
+            "keywordLength": finbif_document.MAX_KEYWORD_LENGTH,
+            "locality": finbif_document.MAX_LOCALITY_LENGTH,
+            "taxon": finbif_document.MAX_TAXON_LENGTH,
+            "count": finbif_document.MAX_COUNT_LENGTH,
+            "notes": finbif_document.MAX_NOTES_LENGTH,
+        },
+        "defaultKeywords": list(finbif_document.DEFAULT_KEYWORDS),
+        "informalTaxonGroups": [
+            {"id": group["id"], "name": group["name"]}
+            for group in INFORMAL_TAXON_GROUPS
+        ],
+    }
+
+
 @app.context_processor
 def inject_user():
     return {
@@ -60,6 +86,7 @@ def inject_user():
         "person_name": session.get("person_name"),
         "person_id": session.get("person_id"),
         "havistin_url": config.HAVISTIN_URL,
+        "client_config": client_config(),
     }
 
 

@@ -175,6 +175,8 @@ export function createObserve({
         deleteObsButton.hidden = !on;
     }
 
+    // A new form field is filled here, cleared in clearCountNotesAndAccuracy,
+    // and written in saveObservation. The server reads it in _parse_observation.
     function fillForm(obs) {
         taxonField.setValue(obs.taxon || "", obs.taxonId || null);
         countInput.value = obs.count || "";

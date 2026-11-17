@@ -2,11 +2,12 @@
 // Compared only with the previous stored point, so a return visit may sit
 // next to an older point.
 
+import { limits } from "./config.js";
 import { MIN_DISTANCE_M_DEFAULT } from "./settings.js";
 
 export const MAX_ACCURACY_M = 100;
 export const MIN_DISTANCE_M = MIN_DISTANCE_M_DEFAULT;
-export const MAX_ROUTE_POINTS = 2000;
+export const MAX_ROUTE_POINTS = limits.routePoints;
 
 const EARTH_RADIUS_M = 6371000;
 

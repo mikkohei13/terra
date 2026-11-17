@@ -24,14 +24,15 @@ from finbif.taxon import normalize_taxon_id
 
 _STAMP = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$")
 _MAX_OBSERVATIONS = 300
-_MAX_ROUTE_POINTS = 2000
-_MAX_TAXON_LENGTH = 300
-_MAX_COUNT_LENGTH = 300
-_MAX_NOTES_LENGTH = 2000
-_MAX_KEYWORDS = 30
-_MAX_KEYWORD_LENGTH = 100
-_MAX_LOCALITY_LENGTH = 64
-_DEFAULT_KEYWORDS = ("new",)
+# Limits the page also uses. Keep names without a leading underscore.
+MAX_ROUTE_POINTS = 2000
+MAX_TAXON_LENGTH = 300
+MAX_COUNT_LENGTH = 300
+MAX_NOTES_LENGTH = 2000
+MAX_KEYWORDS = 30
+MAX_KEYWORD_LENGTH = 100
+MAX_LOCALITY_LENGTH = 64
+DEFAULT_KEYWORDS = ("new",)
 
 
 def _stamp(value: Any, label: str) -> str:
@@ -67,8 +68,8 @@ def _parse_points(raw_session: dict[str, Any]) -> list[tuple[float, float]]:
         return []
     if not isinstance(raw_points, list):
         raise ValueError("Route points must be a list.")
-    if len(raw_points) > _MAX_ROUTE_POINTS:
-        raise ValueError(f"A route can contain at most {_MAX_ROUTE_POINTS} points.")
+    if len(raw_points) > MAX_ROUTE_POINTS:
+        raise ValueError(f"A route can contain at most {MAX_ROUTE_POINTS} points.")
     points: list[tuple[float, float]] = []
     for raw in raw_points:
         if not isinstance(raw, dict):
@@ -174,7 +175,7 @@ def _parse_observation(
     taxon = str(raw.get("taxon") or "").strip()
     if not taxon:
         raise ValueError("Each observation needs a species name.")
-    if len(taxon) > _MAX_TAXON_LENGTH:
+    if len(taxon) > MAX_TAXON_LENGTH:
         raise ValueError("A species name is too long.")
     seq = raw.get("seq")
     if not isinstance(seq, int):
@@ -190,10 +191,10 @@ def _parse_observation(
     taxon_id = _taxon_id(raw.get("taxonId"))
     if taxon_id:
         observation["taxonId"] = taxon_id
-    count = _optional_text(raw.get("count"), "Count", _MAX_COUNT_LENGTH)
+    count = _optional_text(raw.get("count"), "Count", MAX_COUNT_LENGTH)
     if count:
         observation["count"] = count
-    notes = _optional_text(raw.get("notes"), "Notes", _MAX_NOTES_LENGTH)
+    notes = _optional_text(raw.get("notes"), "Notes", MAX_NOTES_LENGTH)
     if notes:
         observation["notes"] = notes
     return observation
@@ -201,11 +202,11 @@ def _parse_observation(
 
 def _parse_keywords(value: Any) -> list[str]:
     if value is None:
-        return list(_DEFAULT_KEYWORDS)
+        return list(DEFAULT_KEYWORDS)
     if not isinstance(value, list):
         raise ValueError("Keywords must be a list.")
-    if len(value) > _MAX_KEYWORDS:
-        raise ValueError(f"A document can contain at most {_MAX_KEYWORDS} keywords.")
+    if len(value) > MAX_KEYWORDS:
+        raise ValueError(f"A document can contain at most {MAX_KEYWORDS} keywords.")
     keywords: list[str] = []
     for item in value:
         if not isinstance(item, str):
@@ -213,7 +214,7 @@ def _parse_keywords(value: Any) -> list[str]:
         text = item.strip()
         if not text:
             raise ValueError("A keyword is empty.")
-        if len(text) > _MAX_KEYWORD_LENGTH:
+        if len(text) > MAX_KEYWORD_LENGTH:
             raise ValueError("A keyword is too long.")
         keywords.append(text)
     return keywords
@@ -227,11 +228,11 @@ def _parse_header(body: dict[str, Any]) -> dict[str, Any]:
     """
     raw = body.get("document")
     if raw is None:
-        return {"keywords": list(_DEFAULT_KEYWORDS)}
+        return {"keywords": list(DEFAULT_KEYWORDS)}
     if not isinstance(raw, dict):
         raise ValueError("Document details must be an object.")
     header: dict[str, Any] = {"keywords": _parse_keywords(raw.get("keywords"))}
-    locality = _optional_text(raw.get("locality"), "Locality name", _MAX_LOCALITY_LENGTH)
+    locality = _optional_text(raw.get("locality"), "Locality name", MAX_LOCALITY_LENGTH)
     if locality:
         header["locality"] = locality
     return header

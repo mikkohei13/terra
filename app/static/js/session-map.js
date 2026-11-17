@@ -5,27 +5,10 @@ import * as db from "./db.js";
 import * as devdots from "./devdots.js"; // devdots
 import { MAX_ROUTE_POINTS, shouldRecordPoint } from "./route.js";
 import { getSetting } from "./settings.js";
+import { round6, sessionIsUsable } from "./session.js";
 
 const USER_MARKER_INTERVAL_MS = 5000;
 const WATCH_RETRY_MS = 30000;
-
-export function localStamp(date = new Date()) {
-    const pad = (n) => String(n).padStart(2, "0");
-    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
-}
-
-export function round6(n) {
-    return Math.round(n * 1e6) / 1e6;
-}
-
-export function sessionIsUsable(session) {
-    return Boolean(
-        session
-        && typeof session.startedAt === "string"
-        && typeof session.lat === "number"
-        && typeof session.lon === "number"
-    );
-}
 
 export function currentPosition() {
     if (!navigator.geolocation) {

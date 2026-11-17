@@ -1,14 +1,11 @@
 // User settings for this browser. One JSON document in localStorage.
 // This module does not touch the DOM or the network.
 
+import { informalTaxonGroups } from "./config.js";
+
 const STORAGE_KEY = "terra.settings";
 
-export const INFORMAL_TAXON_GROUPS = [
-    { id: "MVL.1", name: "Birds" },
-    { id: "MVL.232", name: "Insects and arachnids" },
-    { id: "MVL.343", name: "Vascular plants" },
-    { id: "MVL.233", name: "Fungi and lichens" },
-];
+export const INFORMAL_TAXON_GROUPS = informalTaxonGroups;
 
 const INFORMAL_TAXON_GROUP_IDS = INFORMAL_TAXON_GROUPS.map((group) => group.id);
 

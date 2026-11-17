@@ -7,8 +7,14 @@ from typing import Any, Optional
 
 from finbif.client import FinbifError, get
 
-# Same ids as INFORMAL_TAXON_GROUPS in static/js/settings.js.
-INFORMAL_TAXON_GROUP_IDS = ("MVL.1", "MVL.232", "MVL.343", "MVL.233")
+# Allowed informal taxon groups. Names are shown in Settings.
+INFORMAL_TAXON_GROUPS = (
+    {"id": "MVL.1", "name": "Birds"},
+    {"id": "MVL.232", "name": "Insects and arachnids"},
+    {"id": "MVL.343", "name": "Vascular plants"},
+    {"id": "MVL.233", "name": "Fungi and lichens"},
+)
+INFORMAL_TAXON_GROUP_IDS = tuple(group["id"] for group in INFORMAL_TAXON_GROUPS)
 
 # A species search is short. Longer text is not forwarded to FinBIF.
 _MAX_QUERY_LENGTH = 64

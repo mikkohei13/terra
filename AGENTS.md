@@ -4,21 +4,33 @@ This web app "Terra" is maintained by a single person. Favor simple solutions.
 
 The app uses Python/Flask, vanilla JavaScript, and CSS. Implement business rules, server-side validation, and data processing in Python. Use JavaScript for UI behavior, IndexedDB, and browser or device APIs. For other work, default to Python unless running it in the browser provides a concrete benefit, such as offline operation or immediate feedback.
 
-The app is run locally with Docker and Docker Compose. Running it with plain Python will fail, so don't try that.  Do not use Node, as it not available on this computer.
-
 The production app is deployed to Google Cloud Run. See Makefile for details.
 
 Keep e2e and browser testing to minimum. I will do UI testing.
 
 Add unit tests only for the most important parts of the backend code.
 
-terra-spec.md provides guidelines and high-level ideas for the app. Do not edit it unless asked.
-
 The app is still under development, so backwards compatibility e.g with IndexedDB is not a concern.
 
 If something is unclear, ask instead of making assumptions.
 
-# Local testing
+# Local run
 
-Local Compose sets `DEV_LOGIN=1`. Opening `http://127.0.0.1:85/dev/login` signs in with `DEV_PERSON_TOKEN` from `.env.dev`, which is not deployed.
+Use Docker Compose only. Plain Python and Node are not available.
+
+```
+make dev
+```
+
+App: `http://127.0.0.1:85`. `./app` is mounted; gunicorn reloads on changes.
+
+Compose sets `DEV_LOGIN=1`. Sign in at `http://127.0.0.1:85/dev/login` (`DEV_PERSON_TOKEN` in `.env.dev`, not deployed).
+
+# Tests
+
+`tests/` is not in the image. Mount it and override the entrypoint:
+
+```
+docker compose run --rm --entrypoint python -v ./tests:/terra/tests web -m unittest discover -s /terra/tests
+```
 

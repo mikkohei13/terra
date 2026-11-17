@@ -1,5 +1,7 @@
 // IndexedDB for the active field session. This module does not call the network.
 
+import { sessionFields } from "./session.js";
+
 const DB_NAME = "terra";
 const DB_VERSION = 3;
 const ACTIVE_KEY = "active";
@@ -140,10 +142,7 @@ export async function restoreUnsent(bundle) {
     const db = await databaseConnection();
     const tx = db.transaction(["session", "observations", UNSENT_STORE], "readwrite");
     const session = {
-        startedAt: bundle.startedAt,
-        lat: bundle.lat,
-        lon: bundle.lon,
-        points: Array.isArray(bundle.points) ? bundle.points : [],
+        ...sessionFields(bundle),
         unsentId: bundle.id,
     };
     if (bundle.document && typeof bundle.document === "object" && !Array.isArray(bundle.document)) {

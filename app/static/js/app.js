@@ -8,14 +8,18 @@ import {
     createSessionMap,
     currentPosition,
     fixFromPosition,
-    localStamp,
     positionMessage,
-    round6,
-    sessionIsUsable,
 } from "./session-map.js";
+import { defaultKeywords, limits } from "./config.js";
+import {
+    localStamp,
+    round6,
+    sessionFields,
+    sessionIsUsable,
+} from "./session.js";
 import { getSetting } from "./settings.js";
 
-const MAX_KEYWORDS = 30;
+const MAX_KEYWORDS = limits.keywords;
 
 const viewStart = document.getElementById("view-start");
 const viewSession = document.getElementById("view-session");
@@ -44,8 +48,9 @@ const unsentList = document.getElementById("unsent-list");
 
 let busy = false;
 let mapSessionKey = null;
+// mapApi callbacks below use observe; createObserve assigns it after createSessionMap.
 let observe;
-let keywords = ["new"];
+let keywords = defaultKeywords.slice();
 
 const mapApi = createSessionMap({
     isBusy: () => busy,
@@ -294,7 +299,7 @@ function fillDocumentForm(documentHeader) {
             .filter((keyword) => typeof keyword === "string" && keyword.trim())
             .map((keyword) => keyword.trim());
     } else {
-        keywords = ["new"];
+        keywords = defaultKeywords.slice();
     }
     keywordInput.value = "";
     renderKeywords();
@@ -452,13 +457,7 @@ async function discardSession() {
         const header = readDocumentForm();
         const endedAt = localStamp();
         const file = {
-            session: {
-                startedAt: session.startedAt,
-                endedAt,
-                lat: session.lat,
-                lon: session.lon,
-                points: Array.isArray(session.points) ? session.points : [],
-            },
+            session: { ...sessionFields(session), endedAt },
             observations,
             document: header,
         };
@@ -489,10 +488,7 @@ async function sendLater() {
             : crypto.randomUUID();
         await db.saveUnsent({
             id,
-            startedAt: session.startedAt,
-            lat: session.lat,
-            lon: session.lon,
-            points: Array.isArray(session.points) ? session.points : [],
+            ...sessionFields(session),
             document: header,
             observations,
         });

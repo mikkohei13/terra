@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from finbif.client import FinbifError, post_json
+from finbif.client import SUBMIT_TIMEOUT, FinbifError, post_json
 from finbif.document import build_document, parse_submission
 
 
@@ -39,18 +39,30 @@ def submit_session(
         query={"lang": "en"},
         person_token=person_token,
         accept_language="en",
+        timeout=SUBMIT_TIMEOUT,
     )
     if v_status not in (204, 201):
         raise _error_from_body("Validation failed.", v_status, v_body)
 
-    c_status, c_body = post_json(
-        "/documents",
-        document,
-        query={"lang": "en"},
-        person_token=person_token,
-        accept_language="en",
-    )
+    try:
+        c_status, c_body = post_json(
+            "/documents",
+            document,
+            query={"lang": "en"},
+            person_token=person_token,
+            accept_language="en",
+            timeout=SUBMIT_TIMEOUT,
+        )
+    except FinbifError as exc:
+        # The POST may have been saved before the response was lost.
+        if exc.error_code == "UPSTREAM_UNAVAILABLE":
+            exc.maybe_saved = True
+        raise
     if c_status != 201 or not isinstance(c_body, dict):
-        raise _error_from_body("Saving the document failed.", c_status, c_body)
+        error = _error_from_body("Saving the document failed.", c_status, c_body)
+        # 4xx is a rejection. Anything else may already be stored.
+        if c_status < 400 or c_status >= 500:
+            error.maybe_saved = True
+        raise error
 
     return {"document_id": c_body.get("id")}

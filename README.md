@@ -6,6 +6,11 @@ Mobile-first web app for recording nature observations on a phone and submitting
 
 Local: Docker Compose on `127.0.0.1:85` (`make dev`). Production: Google Cloud Run (`make deploy`). Required env vars are `FINBIF_API_TOKEN` and `FLASK_SECRET_KEY`.
 
+## Todo
+
+- Independent login.
+- Robustness againts api.laji.fi errors and downtime.
+
 ## Ideas
 
 - On observation form, have one-click button to remove informaltaxongroup setting from autocomplete, so that one can enter any taxon. This should affect only this observation this time, not touch settings.

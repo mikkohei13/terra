@@ -32,15 +32,22 @@ export async function submitSession(session, observations, document) {
     if (document && typeof document === "object" && !Array.isArray(document)) {
         payload.document = document;
     }
-    const response = await fetch("/api/sessions/submit", {
-        method: "POST",
-        credentials: "same-origin",
-        headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-    });
+    let response;
+    try {
+        response = await fetch("/api/sessions/submit", {
+            method: "POST",
+            credentials: "same-origin",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+        });
+    } catch (_error) {
+        const error = new Error("The submission did not finish.");
+        error.maybeSaved = true;
+        throw error;
+    }
 
     let body = null;
     try {
@@ -50,9 +57,15 @@ export async function submitSession(session, observations, document) {
     }
 
     if (!response.ok) {
-        const error = new Error((body && body.message) || "Submit failed.");
+        // No JSON means a proxy cut the request. The document may exist.
+        const maybeSaved = body ? Boolean(body.maybeSaved) : true;
+        const error = new Error(
+            (body && body.message)
+                || (maybeSaved ? "The submission did not finish." : "Submit failed.")
+        );
         error.details = body && body.details;
         error.loginRequired = Boolean(body && body.loginRequired);
+        error.maybeSaved = maybeSaved;
         throw error;
     }
     return body || {};

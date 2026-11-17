@@ -232,7 +232,11 @@ export function createSessionMap({ isBusy, isBlocked, isSessionVisible, onTap })
             const marker = hasAccuracy
                 ? L.circle([obs.lat, obs.lon], { ...style, radius: obs.accuracy })
                 : L.circleMarker([obs.lat, obs.lon], { ...style, radius: 8 });
-            marker.bindTooltip(obs.taxon || "Observation", { direction: "top" });
+            // Leaflet writes a string tooltip with innerHTML. A node keeps
+            // the species name as text, including names from autocomplete or cache.
+            const label = document.createElement("span");
+            label.textContent = obs.taxon || "Observation";
+            marker.bindTooltip(label, { direction: "top" });
             marker.addTo(savedLayer);
         }
         if (userMarker) {

@@ -109,6 +109,11 @@ function showProblem(id, error) {
     const message = document.createElement("p");
     message.textContent = (error && error.message) || "Something went wrong.";
     el.append(message);
+    if (error && error.maybeSaved) {
+        const note = document.createElement("p");
+        note.textContent = "The document may already be on laji.fi. Check there before sending again.";
+        el.append(note);
+    }
     if (error && error.details) {
         const pre = document.createElement("pre");
         pre.className = "details";

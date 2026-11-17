@@ -10,6 +10,17 @@ import requests
 import config
 
 
+# Autocomplete and /person. A slow search must not hold a worker for a whole submit.
+GET_TIMEOUT = 10
+
+# (connect seconds, response seconds) for document validate and create.
+# Those two calls run one after the other, so a submit can take about 60s.
+# gunicorn --timeout in the Dockerfile is 70s and Cloud Run --timeout in the
+# Makefile is 80s, both longer, so a slow FinBIF returns an error from here
+# instead of the platform cutting the request after the document was saved.
+SUBMIT_TIMEOUT = (5, 25)
+
+
 class FinbifError(Exception):
     """FinBIF API returned an error payload or unexpected status."""
 
@@ -19,12 +30,30 @@ class FinbifError(Exception):
         status_code: Optional[int] = None,
         error_code: Optional[str] = None,
         details: Any = None,
+        maybe_saved: bool = False,
     ):
         super().__init__(message)
         self.message = message
         self.status_code = status_code
         self.error_code = error_code
         self.details = details
+        # True when a create call timed out or never answered. The document
+        # may already exist, so the phone must not invite a blind retry.
+        self.maybe_saved = maybe_saved
+
+
+def _transport_error(exc: requests.RequestException) -> FinbifError:
+    if isinstance(exc, requests.Timeout):
+        return FinbifError(
+            "FinBIF did not respond in time.",
+            status_code=504,
+            error_code="UPSTREAM_UNAVAILABLE",
+        )
+    return FinbifError(
+        "Could not reach FinBIF.",
+        status_code=502,
+        error_code="UPSTREAM_UNAVAILABLE",
+    )
 
 
 def _headers(person_token: Optional[str] = None, accept_language: str = "fi") -> dict[str, str]:
@@ -72,13 +101,16 @@ def get(
     query: Optional[dict[str, Any]] = None,
     person_token: Optional[str] = None,
     accept_language: str = "fi",
-    timeout: int = 60,
+    timeout: int | tuple[float, float] = GET_TIMEOUT,
 ) -> tuple[int, Any]:
-    response = requests.get(
-        _url(path, query),
-        headers=_headers(person_token, accept_language),
-        timeout=timeout,
-    )
+    try:
+        response = requests.get(
+            _url(path, query),
+            headers=_headers(person_token, accept_language),
+            timeout=timeout,
+        )
+    except requests.RequestException as exc:
+        raise _transport_error(exc) from exc
     return _parse_response(response)
 
 
@@ -89,16 +121,19 @@ def post_json(
     query: Optional[dict[str, Any]] = None,
     person_token: Optional[str] = None,
     accept_language: str = "fi",
-    timeout: int = 120,
+    timeout: int | tuple[float, float] = SUBMIT_TIMEOUT,
 ) -> tuple[int, Any]:
     headers = _headers(person_token, accept_language)
     headers["Content-Type"] = "application/json"
-    response = requests.post(
-        _url(path, query),
-        headers=headers,
-        json=body,
-        timeout=timeout,
-    )
+    try:
+        response = requests.post(
+            _url(path, query),
+            headers=headers,
+            json=body,
+            timeout=timeout,
+        )
+    except requests.RequestException as exc:
+        raise _transport_error(exc) from exc
     return _parse_response(response)
 
 

@@ -17,4 +17,4 @@ COPY --chown=appuser:appuser ./app /terra/app
 USER appuser
 EXPOSE 8080
 
-CMD ["sh", "-c", "exec gunicorn --chdir /terra/app main:app -w 2 --threads 2 -b 0.0.0.0:${PORT:-8080}"]
+CMD ["sh", "-c", "exec gunicorn --chdir /terra/app main:app -w 2 --threads 2 --timeout 70 -b 0.0.0.0:${PORT:-8080}"]

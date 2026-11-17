@@ -86,6 +86,8 @@ def _api_error(exc: Exception, *, warning: str, failure: str, fallback: str):
         payload = {"message": exc.message or fallback}
         if exc.details:
             payload["details"] = exc.details
+        if exc.maybe_saved:
+            payload["maybeSaved"] = True
         return jsonify(payload), _error_status(exc)
     app.logger.exception("%s", failure)
     return jsonify({"message": fallback}), 502

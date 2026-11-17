@@ -8,18 +8,6 @@ Nothing was executed. The findings come from reading the code, so the line refer
 
 The codebase is in good shape for its size. Modules have clear, documented responsibilities, the server validates everything it forwards to FinBIF, DOM output uses `textContent` almost everywhere, tokens stay out of URLs and logs, and `.env` has never been committed.
 
-The items most worth acting on:
-
-| # | Finding | Kind | Effort |
-|---|---------|------|--------|
-| S1 | Species name is rendered as HTML in the Leaflet tooltip (fixed) | Security (XSS) | Minutes |
-| S2 | Upstream timeouts exceed the Cloud Run timeout; a retry can create a duplicate document (fixed) | Data integrity | Small |
-| S3 | No request body size limit (fixed) | Security (DoS) | One line |
-| S4 | No Content-Security-Policy or other security headers (fixed) | Security (hardening) | Small |
-| E1 | Observation accuracy is collected but silently dropped on submit | Bug / extensibility | Small |
-| E2 | The session bundle is assembled by hand in four places | Extensibility | Small |
-| E3 | Limits and taxon group ids are duplicated between Python, JS and HTML | Extensibility | Small |
-
 ## Security findings
 
 ### S1. Species name is rendered as HTML in the map tooltip (fixed)
@@ -81,53 +69,13 @@ This is the cost of the "unknown keys are ignored" rule: a field added on the cl
 - Add `accuracy` to `_parse_observation` (positive integer, with an upper bound) and map it to the matching FinBIF coordinate-accuracy field in `_build_unit`, with a test.
 - Make the omission loud in future. Either reject unknown observation keys with a 400, or keep ignoring them but add one test that posts every field the form stores and asserts each one appears in the built document.
 
-### E2. The session bundle is assembled by hand in four places
+### E2. The session bundle is assembled by hand in four places (fixed)
 
-- Submit payload: `app/static/js/app.js:403-407`
-- Discard file: `app/static/js/app.js:450-459`
-- Send later: `app/static/js/app.js:485-493`
-- Restore: `app/static/js/db.js:142-151`
+### E3. Limits and ids are duplicated across Python, JS and HTML (fixed)
 
-Each copies `startedAt`, `lat`, `lon`, `points` and `document` field by field. A new session-level field has to be added in all four, and missing one loses data only on that path, for example only after "Send later".
+### E4. Adding an observation field touches many places (fixed)
 
-Suggestion: one function that builds the bundle from the session, observations and header, and one that turns a bundle back into a session. Use the same shape for the unsent store, the discard file and the submit payload. A discarded file could then also be re-imported later with no extra format work.
-
-### E3. Limits and ids are duplicated across Python, JS and HTML
-
-| Value | Python | JS | HTML |
-|-------|--------|----|------|
-| Taxon group ids | `taxon.py:11` | `settings.js:6` | |
-| Max keywords (30) | `document.py:31` | `app.js:18` | |
-| Max route points (2000) | `document.py:27` | `route.js:9` | |
-| Taxon, count, notes, keyword, locality lengths | `document.py:28-33` | | `index.html` `maxlength` |
-
-AGENTS.md puts business rules in Python. Suggestion: keep the constants in Python only, pass them to the template, and render them where they are used: `maxlength="{{ limits.notes }}"` in the HTML, and one `<script type="application/json" id="terra-config">` block that JS reads at startup. This is compatible with the CSP in S4, because a JSON script block is not executed.
-
-### E4. Adding an observation field touches many places
-
-Today a new field means: the input in `index.html`, then `fillForm`, the clear function and `saveObservation` in `observe.js`, then `_parse_observation` and `_build_unit` in `document.py`. The server side is well documented in the module docstring. The client side is not.
-
-A small table in `observe.js` would make the common case a one-line change:
-
-```js
-const TEXT_FIELDS = [
-    { key: "count", input: countInput },
-    { key: "notes", input: notesInput },
-];
-```
-
-`fillForm`, the clear function and `saveObservation` then loop over it. Do this when the next field is added, not before.
-
-### E5. app.js is turning into the place where everything goes
-
-`app/static/js/app.js` is 699 lines and holds view switching, session start, the document form, keywords, discard, send later, the unsent list and all the wiring. `observe.js` and `session-map.js` show a pattern that works: a `create…` function that owns its DOM elements and receives callbacks.
-
-Suggestion: when one of these areas is next changed, move it out the same way. The document view (locality, keywords, submit, back) and the unsent sessions (list, send later, restore) are the natural pieces. That leaves `app.js` with views, boot and wiring.
-
-Two smaller things in the same area:
-
-- `localStamp`, `round6` and `sessionIsUsable` are exported from `session-map.js` but have nothing to do with the map. A small `session.js` is a better home, together with the bundle functions from E2.
-- `mapApi` is created at `app.js:50` with callbacks that use `observe`, which is assigned at line 606. It works because the callbacks run later, but it is an ordering trap. A one-line comment at the `let observe;` declaration would do.
+### E5. app.js is turning into the place where everything goes (fixed)
 
 ### E6. Dead code
 

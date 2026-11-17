@@ -82,8 +82,8 @@ export function createSessionMap({ isBusy, isBlocked, isSessionVisible, onTap })
     let watchRetryTimer = null;
 
     function pinIcon() {
-        // L.icon does not prefix Leaflet's own image folder. Icon.Default does,
-        // which turned these paths into unpkg URLs.
+        // L.icon uses these paths as given. Icon.Default prefixes Leaflet's
+        // image folder, which would miss the icons in /static/images/.
         return L.icon({
             iconUrl: "/static/images/marker-icon.png",
             iconRetinaUrl: "/static/images/marker-icon.png",
@@ -162,7 +162,7 @@ export function createSessionMap({ isBusy, isBlocked, isSessionVisible, onTap })
             return;
         }
         if (typeof L === "undefined") {
-            throw new Error("The map failed to load. Check the network and try again.");
+            throw new Error("The map failed to load.");
         }
         map = L.map("map");
         // The page policy is no-referrer so a person token cannot leak. OSM still

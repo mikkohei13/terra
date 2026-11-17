@@ -15,7 +15,7 @@ The items most worth acting on:
 | S1 | Species name is rendered as HTML in the Leaflet tooltip (fixed) | Security (XSS) | Minutes |
 | S2 | Upstream timeouts exceed the Cloud Run timeout; a retry can create a duplicate document (fixed) | Data integrity | Small |
 | S3 | No request body size limit (fixed) | Security (DoS) | One line |
-| S4 | No Content-Security-Policy or other security headers | Security (hardening) | Small |
+| S4 | No Content-Security-Policy or other security headers (fixed) | Security (hardening) | Small |
 | E1 | Observation accuracy is collected but silently dropped on submit | Bug / extensibility | Small |
 | E2 | The session bundle is assembled by hand in four places | Extensibility | Small |
 | E3 | Limits and taxon group ids are duplicated between Python, JS and HTML | Extensibility | Small |
@@ -28,27 +28,7 @@ The items most worth acting on:
 
 ### S3. No request body size limit (fixed)
 
-### S4. No Content-Security-Policy or other security headers (low, cheap hardening)
-
-`app/main.py:32-36` sets only `Referrer-Policy`.
-
-The templates have no inline scripts, so a strict CSP works without changes to the pages. It would also have neutralised S1. A starting point for the existing `after_request` hook:
-
-```python
-response.headers["Content-Security-Policy"] = (
-    "default-src 'self'; "
-    "script-src 'self' https://unpkg.com; "
-    "style-src 'self' https://unpkg.com; "
-    "img-src 'self' data: https://tile.openstreetmap.org; "
-    "frame-ancestors 'none'; base-uri 'none'; form-action 'self'"
-)
-response.headers["X-Content-Type-Options"] = "nosniff"
-response.headers["Strict-Transport-Security"] = "max-age=31536000"
-```
-
-`frame-ancestors 'none'` also closes clickjacking, which is currently open. Test this on the map screen, since Leaflet is the part most likely to need a tweak.
-
-If Leaflet is vendored into `app/static/` (see S7), the two `unpkg.com` entries go away and the policy is `'self'` only.
+### S4. No Content-Security-Policy or other security headers (fixed)
 
 ### S5. Upstream error bodies are forwarded to the browser (low)
 
@@ -66,11 +46,7 @@ Logout leaves the active session and the unsent sessions in IndexedDB, by design
 
 This matters little for a personal phone. If it should be handled: store `person_id` on the session and on each unsent bundle, expose the current id to JS (it is already in the template context), and at boot hide or warn about sessions that belong to someone else.
 
-### S7. Third-party script from a CDN (low)
-
-`app/templates/index.html:163-173`
-
-Leaflet loads from unpkg with SRI hashes, which is the right way to use a CDN. Vendoring the two files into `app/static/` would still be simpler overall: no third-party request, a `'self'`-only CSP, and no dependence on unpkg being reachable in the field. The marker images are already local.
+### S7. Third-party script from a CDN (fixed)
 
 ### S8. State-changing routes rely on SameSite=Lax alone (informational)
 

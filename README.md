@@ -10,6 +10,7 @@ Local: Docker Compose on `127.0.0.1:85` (`make dev`). Production: Google Cloud R
 
 - Independent login.
 - Robustness againts api.laji.fi errors and downtime.
+- Allow setting name and observation visibility. Currently on `app/finbif/document.py:298,303` every document is sent with `secureLevel: MX.secureLevelNone` and `legPublic: True`.
 
 ## Ideas
 

@@ -32,7 +32,22 @@ app.config["MAX_CONTENT_LENGTH"] = 2 * 1024 * 1024
 
 
 @app.after_request
-def _referrer_policy(response):
+def _security_headers(response):
+    # Leaflet writes style attributes to position panes and markers, so styles
+    # cannot be limited to files. Scripts stay same-origin.
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'self'; "
+        "script-src 'self'; "
+        "style-src 'self' 'unsafe-inline'; "
+        "img-src 'self' https://tile.openstreetmap.org; "
+        "frame-ancestors 'none'; "
+        "base-uri 'none'; "
+        "form-action 'self'"
+    )
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    # Browsers ignore this on the plain HTTP dev server. Cloud Run is HTTPS.
+    response.headers["Strict-Transport-Security"] = "max-age=31536000"
     # Keeps a person token from leaking via Referer if one ever appears in a URL.
     response.headers["Referrer-Policy"] = "no-referrer"
     return response

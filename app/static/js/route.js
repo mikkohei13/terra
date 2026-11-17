@@ -26,7 +26,6 @@ export function distanceMeters(a, b) {
 }
 
 const OBSERVATION_ACCURACY_MIN_M = 5;
-const OBSERVATION_ACCURACY_MAX_M = 5000;
 
 /** Suggested observation accuracy from observer→pin distance, or null. */
 export function suggestedObservationAccuracy(fix, point) {
@@ -52,7 +51,7 @@ export function suggestedObservationAccuracy(fix, point) {
         return null;
     }
     const meters = Math.round(distanceMeters(fix, point) / 10);
-    return Math.min(OBSERVATION_ACCURACY_MAX_M, Math.max(OBSERVATION_ACCURACY_MIN_M, meters));
+    return Math.min(limits.accuracy, Math.max(OBSERVATION_ACCURACY_MIN_M, meters));
 }
 
 export function shouldRecordPoint(previous, fix, minDistanceM = MIN_DISTANCE_M) {

@@ -2,6 +2,7 @@
 // The server decides which fields are valid.
 
 import * as db from "./db.js";
+import { limits } from "./config.js";
 import { attachTaxonField } from "./taxon-field.js";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -164,8 +165,8 @@ export function createObserve({
             throw new Error("Accuracy must be a whole number of meters.");
         }
         const value = Number(text);
-        if (!Number.isInteger(value) || value < 1) {
-            throw new Error("Accuracy must be a whole number of meters.");
+        if (!Number.isInteger(value) || value < 1 || value > limits.accuracy) {
+            throw new Error(`Accuracy must be between 1 and ${limits.accuracy} meters.`);
         }
         return value;
     }

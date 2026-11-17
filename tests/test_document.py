@@ -208,6 +208,40 @@ class DocumentPointsTest(unittest.TestCase):
         self.assertEqual(unit["notes"], "singing")
         self.assertEqual(unit["identifications"], [{"taxon": "Talitiainen"}])
 
+    def test_accuracy_is_sent_as_the_unit_geometry_radius(self):
+        observation = _observation()
+        observation["accuracy"] = 100
+        session, observations, header = parse_submission(_body([observation]))
+        document = build_document(session, observations, "MA.1", header)
+        gathering = document["gatherings"][0]
+        unit = gathering["units"][0]["unitGathering"]["geometry"]
+        self.assertEqual(observations[0]["accuracy"], 100)
+        self.assertEqual(
+            unit,
+            {"type": "Point", "coordinates": [24.941, 60.171], "radius": 100},
+        )
+        self.assertNotIn("radius", gathering["geometry"])
+
+    def test_missing_accuracy_leaves_the_radius_out(self):
+        observation = _observation()
+        observation["accuracy"] = None
+        session, observations, header = parse_submission(_body([observation]))
+        document = build_document(session, observations, "MA.1", header)
+        unit = document["gatherings"][0]["units"][0]["unitGathering"]["geometry"]
+        self.assertNotIn("accuracy", observations[0])
+        self.assertEqual(unit, {"type": "Point", "coordinates": [24.941, 60.171]})
+
+    def test_accuracy_must_be_a_whole_number_of_meters_within_bounds(self):
+        for value in (0, -1, 5001, 1.5, True, "100"):
+            observation = _observation()
+            observation["accuracy"] = value
+            with self.assertRaises(ValueError):
+                parse_submission(_body([observation]))
+        observation = _observation()
+        observation["accuracy"] = 5000
+        _session, observations, _header = parse_submission(_body([observation]))
+        self.assertEqual(observations[0]["accuracy"], 5000)
+
     def test_blank_count_and_notes_are_left_out(self):
         observation = _observation()
         observation["count"] = "  "

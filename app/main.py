@@ -70,6 +70,7 @@ def client_config() -> dict:
             "taxon": finbif_document.MAX_TAXON_LENGTH,
             "count": finbif_document.MAX_COUNT_LENGTH,
             "notes": finbif_document.MAX_NOTES_LENGTH,
+            "accuracy": finbif_document.MAX_ACCURACY_M,
         },
         "defaultKeywords": list(finbif_document.DEFAULT_KEYWORDS),
         "informalTaxonGroups": [

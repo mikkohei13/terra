@@ -7,3 +7,6 @@ deploy:
 		--max-instances=2 --concurrency=10 --memory=512Mi \
 		--timeout=80 --source . \
 		--env-vars-file=.env
+
+dup:
+	docker compose up; docker compose down;

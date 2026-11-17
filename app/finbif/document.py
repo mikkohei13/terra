@@ -2,15 +2,17 @@
 
 The gathering is the route: a LineString, or a Point when only one position
 remains. With no route points it is the session start. Each observation is a
-species name, an optional count, optional notes, a time, and its own point.
-Older observations without a point use the session point.
+species name, an optional count, optional notes, an optional accuracy in
+meters, a time, and its own point. Older observations without a point use the
+session point.
 
 A new observation field is read in _parse_observation and mapped in
 _build_unit. A document-level field, such as keywords or a locality name, is
 read in _parse_header and written in build_document. Locality is the
 gathering's locality. Unknown keys are ignored.
 A chosen taxon id is sent as unitFact.autocompleteSelectedTaxonID.
-Count is sent as unit.count and notes as unit.notes. Blank values are left out.
+Count is sent as unit.count and notes as unit.notes. Accuracy is sent as the
+unit gathering geometry radius in meters. Blank values are left out.
 """
 
 from __future__ import annotations
@@ -29,6 +31,7 @@ MAX_ROUTE_POINTS = 2000
 MAX_TAXON_LENGTH = 300
 MAX_COUNT_LENGTH = 300
 MAX_NOTES_LENGTH = 2000
+MAX_ACCURACY_M = 5000
 MAX_KEYWORDS = 30
 MAX_KEYWORD_LENGTH = 100
 MAX_LOCALITY_LENGTH = 64
@@ -57,9 +60,16 @@ def _coordinate(value: Any, label: str, low: float, high: float) -> float:
     return round(number, 6)
 
 
-def _point(latitude: float, longitude: float) -> dict[str, Any]:
-    # GeoJSON order is longitude, latitude.
-    return {"type": "Point", "coordinates": [longitude, latitude]}
+def _point(
+    latitude: float,
+    longitude: float,
+    radius: Optional[int] = None,
+) -> dict[str, Any]:
+    # GeoJSON order is longitude, latitude. radius is the accuracy in meters.
+    point: dict[str, Any] = {"type": "Point", "coordinates": [longitude, latitude]}
+    if radius is not None:
+        point["radius"] = radius
+    return point
 
 
 def _parse_points(raw_session: dict[str, Any]) -> list[tuple[float, float]]:
@@ -118,7 +128,7 @@ def _build_unit(obs: dict[str, Any]) -> dict[str, Any]:
     unit: dict[str, Any] = {
         "identifications": [{"taxon": obs["taxon"]}],
         "unitGathering": {
-            "geometry": _point(obs["lat"], obs["lon"]),
+            "geometry": _point(obs["lat"], obs["lon"], obs.get("accuracy")),
             "dateBegin": obs["at"],
         },
         "taxonConfidence": "MY.taxonConfidenceSure",
@@ -146,6 +156,17 @@ def _optional_text(value: Any, label: str, max_length: int) -> Optional[str]:
     if len(text) > max_length:
         raise ValueError(f"{label} is too long.")
     return text
+
+
+def _accuracy(value: Any) -> Optional[int]:
+    """Missing means no radius. Otherwise a whole number of meters, 1 to MAX_ACCURACY_M."""
+    if value is None:
+        return None
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise ValueError("Accuracy must be a whole number of meters.")
+    if not 1 <= value <= MAX_ACCURACY_M:
+        raise ValueError(f"Accuracy must be between 1 and {MAX_ACCURACY_M} meters.")
+    return value
 
 
 def _taxon_id(value: Any) -> Optional[str]:
@@ -197,6 +218,9 @@ def _parse_observation(
     notes = _optional_text(raw.get("notes"), "Notes", MAX_NOTES_LENGTH)
     if notes:
         observation["notes"] = notes
+    accuracy = _accuracy(raw.get("accuracy"))
+    if accuracy is not None:
+        observation["accuracy"] = accuracy
     return observation
 
 

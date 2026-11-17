@@ -30,7 +30,9 @@ Local Compose sets `DEV_LOGIN=1`: `http://127.0.0.1:85/dev/login` uses `DEV_PERS
 
 One active session in IndexedDB. Logout leaves local data on the phone.
 
-**Map.** Start takes a GPS fix. Tap places a pin; Add obs opens the observation dialog (taxon with FinBIF autocomplete, count, notes, accuracy in meters). Accuracy can be suggested from observer→pin distance and is drawn on the map; it is not yet included in the Vihko payload. Route points are thinned on the phone (`route.js`: GPS accuracy cap and `minDistanceM` from settings) while the session screen is open.
+**Map.** Start takes a GPS fix. Tap places a pin; Add obs opens the observation dialog (taxon, count, notes, accuracy in meters). Accuracy can be suggested from observer→pin distance and is drawn on the map; it is not yet included in the Vihko payload. Route points are thinned on the phone (`route.js`: GPS accuracy cap and `minDistanceM` from settings) while the session screen is open.
+
+**Taxon search.** The letter left of the name cycles A → B → C and is stored with the other browser settings. **A** asks FinBIF with no informal taxon group filter. **B** ranks local birds in `app/static/birds.json` on the phone (`birds.js`): prefix Levenshtein with Finnish QWERTY neighbour substitution costs from `key-neighbours.js` (built from `keys.csv`); returns the 5 cheapest taxa and puts the matched name (Finnish, scientific, abbreviation, or synonym) in the list and the field. **C** asks FinBIF with the groups chosen in Settings. C is the default.
 
 **Document step.** End session flushes the latest GPS fix, then opens locality + keywords (default `new`). Back to map saves the header on the session. Submit requires ≥1 observation, sets `endedAt`, `POST /api/sessions/submit`, and clears the active session on success.
 

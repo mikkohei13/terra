@@ -1,0 +1,43 @@
+﻿key,horizontally adjacent,vertically adjacent,diagonally adjacent
+1,2,q,w
+2,"1, 3",w,e
+3,"2, 4",e,r
+4,"3, 5",r,t
+5,"4, 6",t,y
+6,"5, 7",u,y
+7,"6, 8",i,u
+8,"7, 9",o,i
+9,"8, 0",p,o
+0,9,å,p
+q,w,"1, a",s
+w,"q, e","2, s","1, a, d"
+e,"w, r","3, d","2, s, f"
+r,"e, t","4, f","3, d, g"
+t,"r, y","5, g","4, f, h"
+y,"t, u",h,"5, 6, g, j"
+u,"y, i","6, j","7, h, k"
+i,"u, o","7, k","8, j, l"
+o,"i, p","8, l","9, k, ö"
+p,"o, å","9, ö","0, l, ä"
+å,p,"0, ä",ö
+a,s,q,w
+s,"a, d",w,"q, e, z"
+d,"s, f","e, z","w, r, x"
+f,"d, g","r, x","e, t, z, c"
+g,"f, h","t, c","r, y, x, v"
+h,"g, j","y, v","t, u, c, b"
+j,"h, k","u, b","y, i, v, n"
+k,"j, l","i, n","u, o, b, m"
+l,"k, ö","o, m","i, p, n"
+ö,"l, ä",p,"o, å, m"
+ä,ö,å,p
+z,x,",",space
+x,"z, c",space,","
+c,"x, v",space,
+v,"c, b",space,
+b,"v, n",space,
+n,"b, m",space,.
+m,n,.,space
+",",space,z,x
+space,",, .","x, c, v, b, n","z, m"
+.,space,m,n

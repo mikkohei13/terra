@@ -15,7 +15,7 @@ const SEARCH_MODE_LABEL = {
     C: "Custom groups",
 };
 
-export function attachTaxonField(input, list, dialog, onAdvance, modeButton) {
+export function attachTaxonField(input, list, dialog, onAdvance, modeButton, onNotes) {
     let timer = null;
     let controller = null;
     let seq = 0;
@@ -83,6 +83,9 @@ export function attachTaxonField(input, list, dialog, onAdvance, modeButton) {
         selected = { id: item.id, name };
         input.value = name;
         clearList();
+        if (typeof item.notes === "string" && item.notes && typeof onNotes === "function") {
+            onNotes(item.notes);
+        }
     }
 
     function advance() {
@@ -108,6 +111,9 @@ export function attachTaxonField(input, list, dialog, onAdvance, modeButton) {
             button.id = "taxon-option-" + index;
             button.dataset.id = item.id;
             button.dataset.value = fieldValue(item);
+            if (typeof item.notes === "string" && item.notes) {
+                button.dataset.notes = item.notes;
+            }
             button.setAttribute("role", "option");
             button.setAttribute("aria-selected", "false");
             button.textContent = item.name;
@@ -240,6 +246,7 @@ export function attachTaxonField(input, list, dialog, onAdvance, modeButton) {
                         id: button.dataset.id,
                         name: button.textContent,
                         value: button.dataset.value,
+                        notes: button.dataset.notes,
                     });
                 }
             }

@@ -1,6 +1,8 @@
 // Settings dialog. Opens from the header and does not touch the observation session.
 
 import {
+    ACCURACY_PROPORTION_MAX,
+    ACCURACY_PROPORTION_MIN,
     AUTOCOMPLETE_CACHE_OPTIONS,
     INFORMAL_TAXON_GROUPS,
     MIN_DISTANCE_M_MAX,
@@ -14,7 +16,12 @@ const dialog = document.getElementById("settings-dialog");
 const openButton = document.getElementById("open-settings");
 const sectionsRoot = document.getElementById("settings-sections");
 
-const sections = [taxonGroupSection, autocompleteCacheSection, minDistanceSection];
+const sections = [
+    taxonGroupSection,
+    autocompleteCacheSection,
+    minDistanceSection,
+    accuracyProportionSection,
+];
 
 if (dialog && openButton && sectionsRoot) {
     openButton.addEventListener("click", () => {
@@ -28,11 +35,13 @@ if (dialog && openButton && sectionsRoot) {
     });
     dialog.addEventListener("close", () => {
         commitMinDistance(false);
+        commitAccuracyProportion(false);
     });
     const form = document.getElementById("settings-form");
     if (form) {
         form.addEventListener("submit", () => {
             commitMinDistance(false);
+            commitAccuracyProportion(false);
         });
     }
 }
@@ -203,6 +212,77 @@ function commitMinDistance(onlyWhenValid) {
     if (!onlyWhenValid) {
         input.value = String(getSetting("minDistanceM"));
     }
+}
+
+function accuracyProportionSection() {
+    const fieldset = document.createElement("fieldset");
+    fieldset.className = "settings-section";
+    const legend = document.createElement("legend");
+    legend.textContent = "Accuracy";
+    fieldset.append(legend);
+
+    const label = document.createElement("label");
+    label.htmlFor = "setting-accuracy-proportion";
+    label.textContent = "Proportion of distance";
+    fieldset.append(label);
+
+    const input = document.createElement("input");
+    input.id = "setting-accuracy-proportion";
+    input.type = "number";
+    input.step = "any";
+    input.inputMode = "decimal";
+    input.autocomplete = "off";
+    input.value = String(getSetting("accuracyProportion"));
+    fieldset.append(input);
+
+    const hint = document.createElement("p");
+    hint.className = "settings-hint";
+    hint.textContent = "From 0 to 1. Fills accuracy with this share of the distance to the point. 0 uses 5 m.";
+    fieldset.append(hint);
+
+    input.addEventListener("input", () => {
+        commitAccuracyProportion(true);
+    });
+    input.addEventListener("blur", () => {
+        commitAccuracyProportion(false);
+    });
+    return fieldset;
+}
+
+// A decimal from 0 to 1 is stored immediately. Anything else is left until
+// the field is left, then the field snaps back to the stored value.
+function commitAccuracyProportion(onlyWhenValid) {
+    const input = document.getElementById("setting-accuracy-proportion");
+    if (!input) {
+        return;
+    }
+    const number = readAccuracyProportion(input);
+    if (number !== null) {
+        try {
+            const stored = setSetting("accuracyProportion", number);
+            if (!onlyWhenValid) {
+                input.value = String(stored);
+            }
+        } catch (_error) {
+            input.value = String(getSetting("accuracyProportion"));
+        }
+        return;
+    }
+    if (!onlyWhenValid) {
+        input.value = String(getSetting("accuracyProportion"));
+    }
+}
+
+function readAccuracyProportion(input) {
+    const raw = input.value.trim();
+    if (!/^(?:\d+\.?\d*|\.\d+)$/.test(raw)) {
+        return null;
+    }
+    const number = Number(raw);
+    if (!Number.isFinite(number) || number < ACCURACY_PROPORTION_MIN || number > ACCURACY_PROPORTION_MAX) {
+        return null;
+    }
+    return number;
 }
 
 function checkboxRow(fieldset, text, id) {

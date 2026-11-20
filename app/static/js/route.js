@@ -3,7 +3,11 @@
 // next to an older point.
 
 import { limits } from "./config.js";
-import { MIN_DISTANCE_M_DEFAULT } from "./settings.js";
+import {
+    ACCURACY_PROPORTION_DEFAULT,
+    MIN_DISTANCE_M_DEFAULT,
+    normalizeAccuracyProportion,
+} from "./settings.js";
 
 export const MAX_ACCURACY_M = 100;
 export const MIN_DISTANCE_M = MIN_DISTANCE_M_DEFAULT;
@@ -28,7 +32,7 @@ export function distanceMeters(a, b) {
 const OBSERVATION_ACCURACY_MIN_M = 5;
 
 /** Suggested observation accuracy from observer→pin distance, or null. */
-export function suggestedObservationAccuracy(fix, point) {
+export function suggestedObservationAccuracy(fix, point, proportion = ACCURACY_PROPORTION_DEFAULT) {
     if (!fix || !point) {
         return null;
     }
@@ -50,7 +54,8 @@ export function suggestedObservationAccuracy(fix, point) {
     if (!Number.isFinite(point.lat) || !Number.isFinite(point.lon)) {
         return null;
     }
-    const meters = Math.round(distanceMeters(fix, point) / 10);
+    // Share of the distance. Proportion 0 is below the 5 m floor, so it suggests 5 m.
+    const meters = Math.round(distanceMeters(fix, point) * normalizeAccuracyProportion(proportion));
     return Math.min(limits.accuracy, Math.max(OBSERVATION_ACCURACY_MIN_M, meters));
 }
 

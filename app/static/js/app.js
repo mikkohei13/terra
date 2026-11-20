@@ -620,7 +620,11 @@ observe = createObserve({
         mapApi.clearDraft();
     },
     suggestedAccuracy(point) {
-        return suggestedObservationAccuracy(mapApi.latestFix(), point);
+        return suggestedObservationAccuracy(
+            mapApi.latestFix(),
+            point,
+            getSetting("accuracyProportion"),
+        );
     },
 });
 

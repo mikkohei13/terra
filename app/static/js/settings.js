@@ -13,6 +13,10 @@ export const MIN_DISTANCE_M_DEFAULT = 100;
 export const MIN_DISTANCE_M_MIN = 20;
 export const MIN_DISTANCE_M_MAX = 1000;
 
+export const ACCURACY_PROPORTION_DEFAULT = 0.2;
+export const ACCURACY_PROPORTION_MIN = 0;
+export const ACCURACY_PROPORTION_MAX = 1;
+
 const HOUR_MS = 60 * 60 * 1000;
 const DAY_MS = 24 * HOUR_MS;
 
@@ -53,6 +57,21 @@ function normalizeMinDistanceM(value) {
     return number;
 }
 
+// A decimal from 0 to 1. Anything else, including a blank, becomes the default.
+export function normalizeAccuracyProportion(value) {
+    if (typeof value !== "number" && typeof value !== "string") {
+        return ACCURACY_PROPORTION_DEFAULT;
+    }
+    if (typeof value === "string" && value.trim() === "") {
+        return ACCURACY_PROPORTION_DEFAULT;
+    }
+    const number = typeof value === "number" ? value : Number(value.trim());
+    if (!Number.isFinite(number) || number < ACCURACY_PROPORTION_MIN || number > ACCURACY_PROPORTION_MAX) {
+        return ACCURACY_PROPORTION_DEFAULT;
+    }
+    return number;
+}
+
 function normalizeTaxonSearchMode(value) {
     if (value === "A" || value === "B" || value === "C") {
         return value;
@@ -69,6 +88,10 @@ const REGISTRY = {
     minDistanceM: {
         default: MIN_DISTANCE_M_DEFAULT,
         normalize: normalizeMinDistanceM,
+    },
+    accuracyProportion: {
+        default: ACCURACY_PROPORTION_DEFAULT,
+        normalize: normalizeAccuracyProportion,
     },
     autocompleteCache: {
         default: AUTOCOMPLETE_CACHE_DEFAULT,

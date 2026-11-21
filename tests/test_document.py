@@ -289,6 +289,7 @@ class DocumentPointsTest(unittest.TestCase):
         observation["movingStatus"] = ["p", "m", "p", "Ä"]
         observation["birdPlumage"] = "kpuk"
         observation["notes"] = "naaras puku"
+        observation["keywords"] = [" llm-interpreted ", "field"]
         observation["interpretationState"] = "done"
         session, observations, header = parse_submission(_body([observation]))
         document = build_document(session, observations, "MA.1", header)
@@ -298,6 +299,7 @@ class DocumentPointsTest(unittest.TestCase):
         self.assertEqual(observations[0]["femaleIndividualCount"], 2)
         self.assertEqual(observations[0]["movingStatus"], ["p", "m", "Ä"])
         self.assertEqual(observations[0]["birdPlumage"], "kpuk")
+        self.assertEqual(observations[0]["keywords"], ["llm-interpreted", "field"])
         self.assertNotIn("interpretationState", observations[0])
         self.assertEqual(unit["count"], "1,3")
         self.assertEqual(unit["maleIndividualCount"], 1)
@@ -305,7 +307,24 @@ class DocumentPointsTest(unittest.TestCase):
         self.assertEqual(unit["movingStatus"], ["p", "m", "Ä"])
         self.assertEqual(unit["birdPlumage"], "MY.birdPlumageKpuk")
         self.assertEqual(unit["notes"], "naaras puku")
+        self.assertEqual(unit["keywords"], ["llm-interpreted", "field"])
         self.assertNotIn("interpretationState", unit)
+
+    def test_blank_observation_keywords_are_left_out(self):
+        observation = _observation()
+        observation["keywords"] = []
+        session, observations, header = parse_submission(_body([observation]))
+        document = build_document(session, observations, "MA.1", header)
+        unit = document["gatherings"][0]["units"][0]
+        self.assertNotIn("keywords", observations[0])
+        self.assertNotIn("keywords", unit)
+
+    def test_bad_observation_keywords_are_rejected(self):
+        for value in ("llm-interpreted", [""], [1], ["x" * 101]):
+            observation = _observation()
+            observation["keywords"] = value
+            with self.assertRaises(ValueError):
+                parse_submission(_body([observation]))
 
     def test_each_plumage_code_maps_onto_the_unit(self):
         codes = {

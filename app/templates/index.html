@@ -203,6 +203,21 @@
                         <button type="button" class="choice" data-plumage="subad" aria-pressed="false">subad</button>
                     </div>
                 </div>
+                <span class="choice-label" id="obs-keyword-label">Keywords</span>
+                <ul id="obs-keyword-list" class="keyword-list" aria-labelledby="obs-keyword-label"></ul>
+                <div class="keyword-add">
+                    <input
+                        id="obs-keyword-input"
+                        name="obsKeyword"
+                        type="text"
+                        maxlength="{{ client_config.limits.keywordLength }}"
+                        autocomplete="off"
+                        enterkeyhint="done"
+                        placeholder="Keyword"
+                        aria-label="Observation keyword"
+                    >
+                    <button type="button" id="add-obs-keyword">Add</button>
+                </div>
                 <button type="submit" class="primary-action">Save</button>
                 <div id="observe-error" class="error" role="alert" hidden></div>
                 <button type="button" id="change-location" class="blue" hidden>Change location</button>

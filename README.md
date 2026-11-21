@@ -30,7 +30,7 @@ Local Compose sets `DEV_LOGIN=1`: `http://127.0.0.1:85/dev/login` uses `DEV_PERS
 
 One active session in IndexedDB. Logout leaves local data on the phone.
 
-**Map.** Start takes a GPS fix. Tap places a pin; Add obs opens the observation dialog (taxon, count, notes, accuracy in meters, then males, females, moving status, and plumage). Accuracy can be suggested from observer→pin distance, is drawn on the map, and is sent as the unit geometry radius. Route points are thinned on the phone (`route.js`: GPS accuracy cap and `minDistanceM` from settings) while the session screen is open.
+**Map.** Start takes a GPS fix. Tap places a pin; Add obs opens the observation dialog (taxon, count, notes, accuracy in meters, then males, females, moving status, plumage, and keywords). Accuracy can be suggested from observer→pin distance, is drawn on the map, and is sent as the unit geometry radius. Route points are thinned on the phone (`route.js`: GPS accuracy cap and `minDistanceM` from settings) while the session screen is open.
 
 **Taxon search.** The letter left of the name cycles A → B → C and is stored with the other browser settings. C is the default. Under 2 characters does not search. Input waits 300 ms, and a newer query cancels the one in flight.
 
@@ -40,13 +40,13 @@ One active session in IndexedDB. Logout leaves local data on the phone.
 
 A chosen id is kept only while the field still shows that name. Free text, or a name the user then edits, is saved with no `taxonId`.
 
-**Note interpretation.** Runs on the first save only, and only when the notes are non-blank and count, males, females, moving status, and plumage are all empty. The phone saves immediately with `interpretationState: "pending"`, closes the dialog, and returns to the map. If any of those fields was filled, it saves the typed values and the list shows a muted **Skipped**. An edit never starts a call. Changing the taxon or the notes, or filling a structured field, while the row is still pending clears the state so the old answer is dropped.
+**Note interpretation.** Runs on the first save only, and only when the notes are non-blank and count, males, females, moving status, and plumage are all empty. The phone saves immediately with `interpretationState: "pending"`, closes the dialog, and returns to the map. If any of those fields was filled, it saves the typed values and the list shows a muted **Skipped**. An edit never starts a call. While any row is pending, Edit, End session, Submit, and Send later are blocked with a short wait message. Discard and Back to map stay available.
 
-`interpret-runner.js` runs while the map or the document step is on screen, one request at a time: `POST /api/observations/interpret` with `{taxon, notes}` and a 20 s abort. A 200 object is written onto the row and marked done, including an object with no fields. Timeout, network error, 429, and 503 leave the row pending and the runner moves on, waiting 5 s when nothing else is pending. Anything else, including a body that is not an object, is **Not interpreted**. The notes stay visible. Pending adds a muted **Interpreting**. Submit does not wait; a still-pending row is sent without interpreted fields.
+`interpret-runner.js` runs while the map or the document step is on screen, one request at a time: `POST /api/observations/interpret` with `{notes}` and a 20 s abort. A 200 object is written onto the row and marked done, including an object with no fields, and the observation keyword `llm-interpreted` is appended when missing. Timeout, network error, 429, and 503 leave the row pending and the runner moves on, waiting 5 s when nothing else is pending. Anything else, including a body that is not an object, is **Not interpreted**. The notes stay visible. Pending adds a muted **Interpreting**. The observation dialog can add and remove keywords the same way as the document form.
 
-`app/interpret/` holds the prompt, the JSON schema, and the validator. It stores nothing. Before the model it rewrites `naaras puku`, `koiras puku`, and `juhla puku` into one word. The user message is the taxon, a space, and those notes. Model `gpt-6-luna`, reasoning effort low, 20 s. Unknown keys are ignored; a bad field is dropped and the rest stay. `countArray` of positive integers becomes text `count` (`1,3`). Sex counts accept an integer or a digit string and drop 0, negatives, and fractions. Moving status keeps `p`, `m`, `kiert`, `Ä`, `Än`, `än`, `ä`. Plumage keeps `ad`, `jp`, `juv`, `kpuk`, `npuk`, `pull`, `subad`. Empty or unusable model output fails the row. A missing `OPENAI_API_KEY` does not stop the app; the route returns 503. The image needs the `openai` package.
+`app/interpret/` holds the prompt, the JSON schema, and the validator. It stores nothing. Before the model it lowercases the notes except uppercase `Ä`, then rewrites `naaras puku`, `koiras puku`, and `juhla puku` into one word. The user message is those prepared notes only. Model `gpt-6-luna`, reasoning effort low, 20 s. Unknown keys are ignored; a bad field is dropped and the rest stay. `countArray` of positive integers becomes text `count` (`1,3`). Sex counts accept an integer or a digit string and drop 0, negatives, and fractions. Moving status and plumage keep only allowed values. Empty or unusable model output fails the row. A missing `OPENAI_API_KEY` does not stop the app; the route returns 503. The image needs the `openai` package.
 
-On the Vihko unit, sex counts are integers, `movingStatus` is those short codes, and `birdPlumage` is one `MY.birdPlumage*` value (`Ad`, `Jp`, `Juv`, `Kpuk`, `Npuk`, `Pull`, `Subad`). `interpretationState` is not sent.
+On the Vihko unit, sex counts are integers, `movingStatus` is those short codes, `birdPlumage` is one `MY.birdPlumage*` value (`Ad`, `Jp`, `Juv`, `Kpuk`, `Npuk`, `Pull`, `Subad`), and observation keywords become `unit.keywords`. `interpretationState` is not sent.
 
 **Document step.** End session flushes the latest GPS fix, then opens locality + keywords (default `new`). Back to map saves the header on the session. Submit requires ≥1 observation, sets `endedAt`, `POST /api/sessions/submit`, and clears the active session on success.
 
@@ -59,7 +59,7 @@ On the Vihko unit, sex counts are integers, `movingStatus` is those short codes,
 `app/finbif/document.py` is the field contract. It parses the posted draft and builds one Vihko document (collection `HR.1747`, form `JX.519`):
 
 - Gathering geometry = route (LineString, or Point if fewer than two positions; session start if empty).
-- One unit per observation at its pin (session point if missing). Optional count → `unit.count`, notes → `unit.notes`. Male and female counts are integers. `movingStatus` keeps the short codes. `birdPlumage` is one `MY.birdPlumage*` value. Chosen taxon id → `unitFact.autocompleteSelectedTaxonID`. `interpretationState` is ignored.
+- One unit per observation at its pin (session point if missing). Optional count → `unit.count`, notes → `unit.notes`. Male and female counts are integers. `movingStatus` keeps the short codes. `birdPlumage` is one `MY.birdPlumage*` value. Observation keywords → `unit.keywords`. Chosen taxon id → `unitFact.autocompleteSelectedTaxonID`. `interpretationState` is ignored.
 - Keywords and locality from the optional `document` object. Missing keywords → `new`. Blank locality omitted.
 
 Unknown keys are ignored. New observation fields: `_parse_observation` + `_build_unit`. New document fields: `_parse_header` + `build_document`.
@@ -95,7 +95,6 @@ Unknown keys are ignored. New observation fields: `_parse_observation` + `_build
 - When app is activated, wait for location to stabilize (max 10 seconds), only then record a location fix.
 - MML maps.
 - Finnish language.
-- Keyword llm to observations interpreted with AI.
 
 ## Removing devdots
 

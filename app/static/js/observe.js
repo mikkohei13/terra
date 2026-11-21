@@ -7,6 +7,8 @@ import { attachTaxonField } from "./taxon-field.js";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const NEARBY_TAP_PX = 48;
+const PENDING_EDIT_MESSAGE =
+    "Cannot edit while interpretation is in progress. This will take no more than 20 seconds.";
 
 export function formatStamp(stamp) {
     const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(stamp || "");
@@ -50,6 +52,9 @@ export function createObserve({
     const editListDialog = document.getElementById("edit-list-dialog");
     const editList = document.getElementById("edit-list");
     const closeEditListButton = document.getElementById("close-edit-list");
+    const obsKeywordList = document.getElementById("obs-keyword-list");
+    const obsKeywordInput = document.getElementById("obs-keyword-input");
+    const addObsKeywordButton = document.getElementById("add-obs-keyword");
     const taxonField = attachTaxonField(
         taxonInput,
         document.getElementById("taxon-results"),
@@ -68,6 +73,7 @@ export function createObserve({
     let editingObservation = null;
     let relocating = false;
     let pendingPoint = null;
+    let observationKeywords = [];
 
     function observationName(obs) {
         const taxon = obs.taxon || "Observation";
@@ -213,6 +219,55 @@ export function createObserve({
         maleInput.value = "";
         femaleInput.value = "";
         clearChoices();
+        observationKeywords = [];
+        obsKeywordInput.value = "";
+        renderObsKeywords();
+    }
+
+    function renderObsKeywords() {
+        obsKeywordList.replaceChildren();
+        observationKeywords.forEach((keyword, index) => {
+            const item = document.createElement("li");
+            item.className = "keyword-item";
+            const name = document.createElement("span");
+            name.textContent = keyword;
+            const remove = document.createElement("button");
+            remove.type = "button";
+            remove.className = "red";
+            remove.textContent = "Remove";
+            remove.addEventListener("click", () => {
+                observationKeywords.splice(index, 1);
+                renderObsKeywords();
+            });
+            item.append(name, remove);
+            obsKeywordList.append(item);
+        });
+    }
+
+    function addObsKeyword() {
+        const text = obsKeywordInput.value.trim();
+        if (!text) {
+            obsKeywordInput.value = "";
+            return;
+        }
+        if (observationKeywords.length >= limits.keywords) {
+            showProblem("observe-error", {
+                message: `An observation can contain at most ${limits.keywords} keywords.`,
+            });
+            return;
+        }
+        hideProblem("observe-error");
+        observationKeywords.push(text);
+        obsKeywordInput.value = "";
+        renderObsKeywords();
+    }
+
+    function writeKeywords(observation) {
+        if (observationKeywords.length) {
+            observation.keywords = observationKeywords.slice();
+        } else {
+            delete observation.keywords;
+        }
     }
 
     function applyText(observation, key, value) {
@@ -337,6 +392,13 @@ export function createObserve({
         femaleInput.value = positiveOrNull(obs.femaleIndividualCount) ? String(obs.femaleIndividualCount) : "";
         setPressed(movingButtons, "data-moving", obs.movingStatus);
         setPressed(plumageButtons, "data-plumage", obs.birdPlumage || "");
+        observationKeywords = Array.isArray(obs.keywords)
+            ? obs.keywords
+                .filter((keyword) => typeof keyword === "string" && keyword.trim())
+                .map((keyword) => keyword.trim())
+            : [];
+        obsKeywordInput.value = "";
+        renderObsKeywords();
     }
 
     function dismiss() {
@@ -404,8 +466,23 @@ export function createObserve({
         }
     }
 
+    function hasPendingInterpretation() {
+        return sessionObservations.some((row) => row.interpretationState === "pending");
+    }
+
+    function refusePendingEdit() {
+        if (editListDialog.open) {
+            editListDialog.close();
+        }
+        showProblem("session-error", { message: PENDING_EDIT_MESSAGE });
+    }
+
     function openEditObservation(obs) {
         if (isBusy() || !obs) {
+            return;
+        }
+        if (obs.interpretationState === "pending" || hasPendingInterpretation()) {
+            refusePendingEdit();
             return;
         }
         const same = Boolean(editingObservation && editingObservation.id === obs.id);
@@ -423,6 +500,7 @@ export function createObserve({
         }
         setEditingActions(true);
         hideProblem("observe-error");
+        hideProblem("session-error");
         if (!observeDialog.open) {
             observeDialog.showModal();
         }
@@ -562,6 +640,7 @@ export function createObserve({
             if (!keepInterpreted) {
                 writeDetails(observation, fields);
             }
+            writeKeywords(observation);
             await db.addObservation(observation);
             clearPin();
             await refresh();
@@ -613,6 +692,15 @@ export function createObserve({
     observeForm.addEventListener("submit", (event) => {
         event.preventDefault();
         saveObservation();
+    });
+    addObsKeywordButton.addEventListener("click", () => {
+        addObsKeyword();
+    });
+    obsKeywordInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            addObsKeyword();
+        }
     });
     addObsButton.addEventListener("click", () => {
         openObserve();

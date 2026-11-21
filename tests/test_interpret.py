@@ -65,7 +65,11 @@ class InterpretValidatorTest(unittest.TestCase):
         with self.assertRaises(InterpretError):
             validate_interpretation(["ad"])
         with self.assertRaises(InterpretError):
-            interpret_notes("Talitiainen", "laulaa", lambda _text: ["ad"])
+            interpret_notes("laulaa", lambda _text: ["ad"])
+
+    def test_notes_are_lowercased_except_uppercase_a_with_umlaut(self):
+        self.assertEqual(prepare_notes("ÄN ja Laulaa"), "Än ja laulaa")
+        self.assertEqual(prepare_notes("Naaras Puku"), "naaraspuku")
 
     def test_note_replacements_run_in_order_before_the_model(self):
         seen = []
@@ -74,13 +78,13 @@ class InterpretValidatorTest(unittest.TestCase):
             seen.append(user_text)
             return {"birdPlumage": "npuk", "countArray": [1]}
 
-        notes = "yksi naaras puku ja koiras puku sekä juhla puku"
-        result = interpret_notes("Sinisorsa", notes, complete)
+        notes = "Yksi Naaras Puku ja Koiras Puku sekä Juhla Puku"
+        result = interpret_notes(notes, complete)
         self.assertEqual(
             prepare_notes(notes),
             "yksi naaraspuku ja koiraspuku sekä juhlapuku",
         )
-        self.assertEqual(seen, ["Sinisorsa yksi naaraspuku ja koiraspuku sekä juhlapuku"])
+        self.assertEqual(seen, ["yksi naaraspuku ja koiraspuku sekä juhlapuku"])
         self.assertEqual(result, {"count": "1", "birdPlumage": "npuk"})
 
 

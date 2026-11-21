@@ -39,7 +39,8 @@ class InterpretUnavailable(Exception):
 
 
 def prepare_notes(notes: str) -> str:
-    text = notes
+    """Lowercase every character except Ä, then apply the phrase replacements."""
+    text = "".join(ch if ch == "Ä" else ch.lower() for ch in notes)
     for old, new in _NOTE_REPLACEMENTS:
         text = text.replace(old, new)
     return text
@@ -156,12 +157,11 @@ def call_openai(user_text: str) -> dict[str, Any]:
 
 
 def interpret_notes(
-    taxon: str,
     notes: str,
     complete: Optional[Callable[[str], Any]] = None,
 ) -> dict[str, Any]:
-    """Taxon, a space, and the prepared notes. complete replaces the model in tests."""
-    user_text = f"{taxon} {prepare_notes(notes)}"
+    """Prepared notes only. complete replaces the model in tests."""
+    user_text = prepare_notes(notes)
     raw = call_openai(user_text) if complete is None else complete(user_text)
     if not isinstance(raw, dict):
         raise InterpretError("Unusable model output.")

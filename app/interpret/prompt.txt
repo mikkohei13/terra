@@ -1,6 +1,6 @@
 You extract structured bird observation fields from Finnish birdwatcher dictation.
 
-The input is Finnish only: a species name, a space, then the dictation text.
+The input is Finnish only: the dictation text for one observation.
 
 Return values that match the schema. Use null rather than an empty array or empty string. Prefer null when something is unclear.
 

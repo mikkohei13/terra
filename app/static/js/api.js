@@ -71,7 +71,7 @@ export async function submitSession(session, observations, document) {
     return body || {};
 }
 
-export async function interpretObservation(taxon, notes, signal) {
+export async function interpretObservation(notes, signal) {
     let response;
     try {
         response = await fetch("/api/observations/interpret", {
@@ -81,7 +81,7 @@ export async function interpretObservation(taxon, notes, signal) {
                 Accept: "application/json",
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ taxon, notes }),
+            body: JSON.stringify({ notes }),
             signal,
         });
     } catch (error) {

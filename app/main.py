@@ -258,15 +258,12 @@ def interpret_observation_route():
     body = request.get_json(silent=True)
     if not isinstance(body, dict):
         return jsonify({"message": "The observation was empty."}), 400
-    taxon = body.get("taxon")
     notes = body.get("notes")
-    if not isinstance(taxon, str) or not taxon.strip():
-        return jsonify({"message": "A species name is required."}), 400
     if not isinstance(notes, str) or not notes.strip():
         return jsonify({"message": "Notes are required."}), 400
 
     try:
-        result = interpret_notes(taxon.strip(), notes.strip())
+        result = interpret_notes(notes.strip())
     except InterpretUnavailable:
         app.logger.warning("Observation interpretation unavailable")
         return jsonify({"message": "Interpretation is unavailable."}), 503

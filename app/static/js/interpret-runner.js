@@ -1,6 +1,7 @@
 // Sends pending observations one at a time while the map or document step is open.
 
 import * as api from "./api.js";
+import { limits } from "./config.js";
 import * as db from "./db.js";
 
 const TIMEOUT_MS = 20000;
@@ -98,13 +99,12 @@ export function createInterpretRunner({ isActive, onChange }) {
 async function interpretOne(obs) {
     const sent = {
         id: obs.id,
-        taxon: typeof obs.taxon === "string" ? obs.taxon : "",
         notes: typeof obs.notes === "string" ? obs.notes : "",
     };
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
     try {
-        const body = await api.interpretObservation(sent.taxon, sent.notes, controller.signal);
+        const body = await api.interpretObservation(sent.notes, controller.signal);
         return await applyAnswer(sent, body);
     } catch (error) {
         if (error && (error.name === "AbortError" || error.retry)) {
@@ -129,9 +129,8 @@ function stillPending(row, sent) {
     if (!row || row.interpretationState !== "pending") {
         return false;
     }
-    const taxon = typeof row.taxon === "string" ? row.taxon : "";
     const notes = typeof row.notes === "string" ? row.notes : "";
-    return taxon === sent.taxon && notes === sent.notes;
+    return notes === sent.notes;
 }
 
 function copyFields(updated, body) {
@@ -152,6 +151,25 @@ function copyFields(updated, body) {
     }
 }
 
+const LLM_KEYWORD = "llm-interpreted";
+
+function appendLlmKeyword(updated) {
+    const existing = Array.isArray(updated.keywords)
+        ? updated.keywords
+            .filter((item) => typeof item === "string" && item.trim())
+            .map((item) => item.trim())
+        : [];
+    if (existing.includes(LLM_KEYWORD) || existing.length >= limits.keywords) {
+        if (existing.length) {
+            updated.keywords = existing.slice();
+        } else {
+            delete updated.keywords;
+        }
+        return;
+    }
+    updated.keywords = existing.concat(LLM_KEYWORD);
+}
+
 async function applyAnswer(sent, body) {
     const row = await currentRow(sent.id);
     if (!stillPending(row, sent)) {
@@ -159,6 +177,7 @@ async function applyAnswer(sent, body) {
     }
     const updated = { ...row, interpretationState: "done" };
     copyFields(updated, body);
+    appendLlmKeyword(updated);
     await db.addObservation(updated);
     return "updated";
 }

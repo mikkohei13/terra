@@ -14,7 +14,8 @@ A chosen taxon id is sent as unitFact.autocompleteSelectedTaxonID.
 Count is sent as unit.count and notes as unit.notes. Accuracy is sent as the
 unit gathering geometry radius in meters. Male and female counts are integers.
 Moving status keeps the short codes. Plumage becomes one MY.birdPlumage* value.
-interpretationState is ignored. Blank values are left out.
+Optional observation keywords become unit.keywords. interpretationState is ignored.
+Blank values are left out.
 """
 
 from __future__ import annotations
@@ -159,6 +160,8 @@ def _build_unit(obs: dict[str, Any]) -> dict[str, Any]:
     plumage = obs.get("birdPlumage")
     if plumage:
         unit["birdPlumage"] = BIRD_PLUMAGE[plumage]
+    if obs.get("keywords"):
+        unit["keywords"] = list(obs["keywords"])
     taxon_id = obs.get("taxonId")
     if taxon_id:
         unit["unitFact"] = {"autocompleteSelectedTaxonID": taxon_id}
@@ -214,6 +217,29 @@ def _moving_status(value: Any) -> Optional[list[str]]:
         if item not in codes:
             codes.append(item)
     return codes or None
+
+
+def _optional_keywords(value: Any) -> Optional[list[str]]:
+    """Missing or an empty list means the field is absent. No default new."""
+    if value is None:
+        return None
+    if not isinstance(value, list):
+        raise ValueError("Keywords must be a list.")
+    if not value:
+        return None
+    if len(value) > MAX_KEYWORDS:
+        raise ValueError(f"An observation can contain at most {MAX_KEYWORDS} keywords.")
+    keywords: list[str] = []
+    for item in value:
+        if not isinstance(item, str):
+            raise ValueError("A keyword must be text.")
+        text = item.strip()
+        if not text:
+            raise ValueError("A keyword is empty.")
+        if len(text) > MAX_KEYWORD_LENGTH:
+            raise ValueError("A keyword is too long.")
+        keywords.append(text)
+    return keywords or None
 
 
 def _bird_plumage(value: Any) -> Optional[str]:
@@ -291,6 +317,9 @@ def _parse_observation(
     plumage = _bird_plumage(raw.get("birdPlumage"))
     if plumage:
         observation["birdPlumage"] = plumage
+    keywords = _optional_keywords(raw.get("keywords"))
+    if keywords:
+        observation["keywords"] = keywords
     return observation
 
 

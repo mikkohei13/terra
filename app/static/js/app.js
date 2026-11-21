@@ -21,6 +21,8 @@ import {
 import { getSetting } from "./settings.js";
 
 const MAX_KEYWORDS = limits.keywords;
+const PENDING_END_MESSAGE =
+    "Cannot end the session while interpretation is in progress. This will take no more than 20 seconds.";
 
 const viewStart = document.getElementById("view-start");
 const viewSession = document.getElementById("view-session");
@@ -357,11 +359,20 @@ function saveJsonFile(data, filename) {
     URL.revokeObjectURL(url);
 }
 
+async function hasPendingInterpretation() {
+    const observations = await db.listObservations();
+    return observations.some((obs) => obs.interpretationState === "pending");
+}
+
 async function openDocumentView() {
     if (busy) {
         return;
     }
     hideProblem("session-error");
+    if (await hasPendingInterpretation()) {
+        showProblem("session-error", { message: PENDING_END_MESSAGE });
+        return;
+    }
     if (observe.isRelocating()) {
         setRelocateActions(false);
         mapApi.clearDraft();
@@ -374,6 +385,10 @@ async function openDocumentView() {
         if (!sessionIsUsable(session)) {
             show("start");
             showProblem("start-error", { message: "The session is no longer on this phone." });
+            return;
+        }
+        if (await hasPendingInterpretation()) {
+            showProblem("session-error", { message: PENDING_END_MESSAGE });
             return;
         }
         fillDocumentForm(session.document);
@@ -414,6 +429,10 @@ async function submitDocument() {
         showProblem("document-error", {
             message: "Add at least one observation before ending the session.",
         });
+        return;
+    }
+    if (observations.some((obs) => obs.interpretationState === "pending")) {
+        showProblem("document-error", { message: PENDING_END_MESSAGE });
         return;
     }
     setBusy(true, "Submitting…");
@@ -496,6 +515,10 @@ async function sendLater() {
             return;
         }
         const observations = await db.listObservations();
+        if (observations.some((obs) => obs.interpretationState === "pending")) {
+            showProblem("document-error", { message: PENDING_END_MESSAGE });
+            return;
+        }
         const header = readDocumentForm();
         const id = typeof session.unsentId === "string" && session.unsentId
             ? session.unsentId

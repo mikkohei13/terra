@@ -93,11 +93,9 @@ Unknown keys are ignored. New observation fields: `_parse_observation` + `_build
 - Robustness against api.laji.fi errors and downtime.
 - Name and observation visibility. Today every document uses `secureLevel: MX.secureLevelNone` and `legPublic: True` (`document.py`).
 - When app is activated, wait for location to stabilize (max 10 seconds), only then record a location fix.
-- MML maps
-
-## Ideas
-
-- One-click on the observation form to ignore informal taxon groups for that autocomplete only (do not change settings).
+- MML maps.
+- Finnish language.
+- Keyword llm to observations interpreted with AI.
 
 ## Removing devdots
 

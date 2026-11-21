@@ -71,9 +71,13 @@ Unknown keys are ignored. New observation fields: `_parse_observation` + `_build
 ## Todo
 
 - Independent login.
+- Bounding box instead of a path.
+- Edit buttons with species name etc.
+- List to show nearest observations or ordered by entruy time ascending, based on user settings.
 - Robustness against api.laji.fi errors and downtime.
 - Name and observation visibility. Today every document uses `secureLevel: MX.secureLevelNone` and `legPublic: True` (`document.py`).
 - When app is activated, wait for location to stabilize (max 10 seconds), only then record a location fix.
+- MML maps
 
 ## Ideas
 

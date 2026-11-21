@@ -2,6 +2,7 @@
 
 import * as api from "./api.js";
 import * as db from "./db.js";
+import { createInterpretRunner } from "./interpret-runner.js";
 import { createObserve, formatStamp } from "./observe.js";
 import { shouldRecordPoint, suggestedObservationAccuracy } from "./route.js";
 import {
@@ -48,6 +49,7 @@ const unsentList = document.getElementById("unsent-list");
 
 let busy = false;
 let mapSessionKey = null;
+let interpretRunner = null;
 // mapApi callbacks below use observe; createObserve assigns it after createSessionMap.
 let observe;
 let keywords = defaultKeywords.slice();
@@ -84,6 +86,18 @@ function show(view) {
     }
     if (view === "start") {
         renderUnsentList();
+    }
+    syncInterpretRunner();
+}
+
+function syncInterpretRunner() {
+    if (!interpretRunner) {
+        return;
+    }
+    if (!document.hidden && (!viewSession.hidden || !viewDocument.hidden)) {
+        interpretRunner.start();
+    } else {
+        interpretRunner.stop();
     }
 }
 
@@ -694,11 +708,18 @@ anotherButton.addEventListener("click", () => {
 document.addEventListener("visibilitychange", () => {
     if (document.hidden) {
         mapApi.stopWatching();
-        return;
-    }
-    if (!viewSession.hidden) {
+    } else if (!viewSession.hidden) {
         mapApi.startWatching();
     }
+    syncInterpretRunner();
+});
+
+interpretRunner = createInterpretRunner({
+    isActive: () => !document.hidden && (!viewSession.hidden || !viewDocument.hidden),
+    async onChange() {
+        const observations = await db.listObservations();
+        observe.refreshObservations(observations);
+    },
 });
 
 boot();

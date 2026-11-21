@@ -1,0 +1,45 @@
+{
+    "type": "object",
+    "properties": {
+      "countArray": {
+        "type": ["array", "null"],
+        "description": "One integer per countable group of individuals. Do not sum. A bare singular (koiras, naaras, nuori, …) with no number means 1.",
+        "items": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "maleIndividualCount": {
+        "type": ["integer", "null"],
+        "description": "Males (koiras/uros). Bare singular → 1. koiraspukuinen is plumage, not male.",
+        "minimum": 0
+      },
+      "femaleIndividualCount": {
+        "type": ["integer", "null"],
+        "description": "Females (naaras). Bare singular → 1. naaraspukuinen is plumage, not female.",
+        "minimum": 0
+      },
+      "movingStatus": {
+        "type": ["array", "null"],
+        "description": "Observation status codes. Allowed values: p — local, paikallinen; m — migrating, muuttava; kiert — wandering, kiertelevä; Ä — singing or territorial vocalization (heard); ä — vocalizing (heard); Än — seen singing; än — seen vocalizing.",
+        "items": {
+          "type": "string",
+          "enum": ["p", "m", "kiert", "Ä", "ä", "Än", "än"]
+        }
+      },
+      "birdPlumage": {
+        "type": ["string", "null"],
+        "description": "Single plumage string. If the observation contains multiple values, leave this as null. Allowed values: ad — adult, vanha; juv — juvenile, nuori; jp — juhlapukuinen; kpuk — koiraspukuinen; npuk — naaraspukuinen; pull — pullus, untuvikko; subad — esiaikuinen; null.",
+        "enum": ["ad", "juv", "jp", "kpuk", "npuk", "pull", "subad", null]
+      }
+    },
+    "required": [
+      "countArray",
+      "maleIndividualCount",
+      "femaleIndividualCount",
+      "movingStatus",
+      "birdPlumage"
+    ],
+    "additionalProperties": false
+  }
+  

@@ -19,6 +19,7 @@ from flask import (
 
 import config
 from finbif import document as finbif_document
+from interpret import InterpretError, InterpretUnavailable, interpret_notes
 from finbif.client import FinbifError, fetch_person
 from finbif.submit import submit_session
 from finbif.taxon import (
@@ -246,6 +247,37 @@ def submit_session_route():
         )
 
     return jsonify({"documentId": result.get("document_id")})
+
+
+@app.route("/api/observations/interpret", methods=["POST"])
+def interpret_observation_route():
+    """Fill count, sex, moving status, and plumage from notes. Stores nothing."""
+    if not session.get("person_token"):
+        return jsonify({"message": "Log in to continue.", "loginRequired": True}), 401
+
+    body = request.get_json(silent=True)
+    if not isinstance(body, dict):
+        return jsonify({"message": "The observation was empty."}), 400
+    taxon = body.get("taxon")
+    notes = body.get("notes")
+    if not isinstance(taxon, str) or not taxon.strip():
+        return jsonify({"message": "A species name is required."}), 400
+    if not isinstance(notes, str) or not notes.strip():
+        return jsonify({"message": "Notes are required."}), 400
+
+    try:
+        result = interpret_notes(taxon.strip(), notes.strip())
+    except InterpretUnavailable:
+        app.logger.warning("Observation interpretation unavailable")
+        return jsonify({"message": "Interpretation is unavailable."}), 503
+    except InterpretError:
+        app.logger.warning("Observation interpretation failed")
+        return jsonify({"message": "Interpretation failed."}), 502
+    except Exception:
+        app.logger.exception("Observation interpretation failed")
+        return jsonify({"message": "Interpretation failed."}), 502
+
+    return jsonify(result)
 
 
 @app.route("/api/taxa/autocomplete")

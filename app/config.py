@@ -4,6 +4,9 @@ FLASK_SECRET_KEY = os.environ["FLASK_SECRET_KEY"]
 FINBIF_API_TOKEN = os.environ["FINBIF_API_TOKEN"]
 FINBIF_API_BASE = os.environ.get("FINBIF_API_BASE", "https://api.laji.fi").rstrip("/")
 
+# Optional. A missing key leaves the app up; note interpretation answers 503.
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "").strip()
+
 # Logged-out visitors are sent here.
 HAVISTIN_URL = os.environ.get("HAVISTIN_URL", "https://havistin.biomi.org").rstrip("/")
 

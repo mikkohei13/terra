@@ -70,3 +70,43 @@ export async function submitSession(session, observations, document) {
     }
     return body || {};
 }
+
+export async function interpretObservation(taxon, notes, signal) {
+    let response;
+    try {
+        response = await fetch("/api/observations/interpret", {
+            method: "POST",
+            credentials: "same-origin",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ taxon, notes }),
+            signal,
+        });
+    } catch (error) {
+        if (error && error.name === "AbortError") {
+            throw error;
+        }
+        const retry = new Error("Interpretation is unavailable.");
+        retry.retry = true;
+        throw retry;
+    }
+
+    let body = null;
+    try {
+        body = await response.json();
+    } catch (_error) {
+        body = null;
+    }
+
+    if (response.status === 429 || response.status === 503) {
+        const retry = new Error((body && body.message) || "Interpretation is unavailable.");
+        retry.retry = true;
+        throw retry;
+    }
+    if (!response.ok || !body || typeof body !== "object" || Array.isArray(body)) {
+        throw new Error((body && body.message) || "Interpretation failed.");
+    }
+    return body;
+}

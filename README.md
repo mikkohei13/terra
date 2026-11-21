@@ -10,7 +10,7 @@ Local: `make dev` → `http://127.0.0.1:85` (Compose mounts `./app`, gunicorn re
 
 Production: `make deploy` (Cloud Run, port 8080, env from `.env`).
 
-Required: `FINBIF_API_TOKEN`, `FLASK_SECRET_KEY`. See `example.env`. Local also uses `.env.dev`.
+Required: `FINBIF_API_TOKEN`, `FLASK_SECRET_KEY`. See `example.env`. Local also uses `.env.dev`. `OPENAI_API_KEY` is optional; without it note interpretation returns 503.
 
 ## Tests
 
@@ -30,9 +30,23 @@ Local Compose sets `DEV_LOGIN=1`: `http://127.0.0.1:85/dev/login` uses `DEV_PERS
 
 One active session in IndexedDB. Logout leaves local data on the phone.
 
-**Map.** Start takes a GPS fix. Tap places a pin; Add obs opens the observation dialog (taxon, count, notes, accuracy in meters). Accuracy can be suggested from observer→pin distance and is drawn on the map; it is not yet included in the Vihko payload. Route points are thinned on the phone (`route.js`: GPS accuracy cap and `minDistanceM` from settings) while the session screen is open.
+**Map.** Start takes a GPS fix. Tap places a pin; Add obs opens the observation dialog (taxon, count, notes, accuracy in meters, then males, females, moving status, and plumage). Accuracy can be suggested from observer→pin distance, is drawn on the map, and is sent as the unit geometry radius. Route points are thinned on the phone (`route.js`: GPS accuracy cap and `minDistanceM` from settings) while the session screen is open.
 
-**Taxon search.** The letter left of the name cycles A → B → C and is stored with the other browser settings. **A** asks FinBIF with no informal taxon group filter. **B** ranks local birds in `app/static/birds.json` on the phone (`birds.js`): prefix Levenshtein with Finnish QWERTY neighbour substitution costs from `key-neighbours.js` (built from `keys.csv`); returns the 5 cheapest taxa and puts the matched name (Finnish, scientific, abbreviation, or synonym) in the list and the field. **C** asks FinBIF with the groups chosen in Settings. C is the default.
+**Taxon search.** The letter left of the name cycles A → B → C and is stored with the other browser settings. C is the default. Under 2 characters does not search. Input waits 300 ms, and a newer query cancels the one in flight.
+
+**A** and **C** use `GET /api/taxa/autocomplete`. The browser does not call api.laji.fi. A sends no informal taxon group; C sends the groups chosen in Settings. The server calls FinBIF `/autocomplete/taxa` (Finnish, checklist `MR.1`, match types exact/partial/likely) and returns an MX id, a list label, and the matched name written into the field. The same query and group set are cached in IndexedDB for the Settings TTL, and FinBIF is asked at most once a second.
+
+**B** stays on the phone. `birds.js` ranks `app/static/birds.json` with prefix Levenshtein and Finnish QWERTY neighbour costs (`key-neighbours.js`, from `keys.csv`) and keeps the 5 cheapest. The hit may be the Finnish name, scientific name, abbreviation, or synonym. Words after that name are copied into notes.
+
+A chosen id is kept only while the field still shows that name. Free text, or a name the user then edits, is saved with no `taxonId`.
+
+**Note interpretation.** Runs on the first save only, and only when the notes are non-blank and count, males, females, moving status, and plumage are all empty. The phone saves immediately with `interpretationState: "pending"`, closes the dialog, and returns to the map. If any of those fields was filled, it saves the typed values and the list shows a muted **Skipped**. An edit never starts a call. Changing the taxon or the notes, or filling a structured field, while the row is still pending clears the state so the old answer is dropped.
+
+`interpret-runner.js` runs while the map or the document step is on screen, one request at a time: `POST /api/observations/interpret` with `{taxon, notes}` and a 20 s abort. A 200 object is written onto the row and marked done, including an object with no fields. Timeout, network error, 429, and 503 leave the row pending and the runner moves on, waiting 5 s when nothing else is pending. Anything else, including a body that is not an object, is **Not interpreted**. The notes stay visible. Pending adds a muted **Interpreting**. Submit does not wait; a still-pending row is sent without interpreted fields.
+
+`app/interpret/` holds the prompt, the JSON schema, and the validator. It stores nothing. Before the model it rewrites `naaras puku`, `koiras puku`, and `juhla puku` into one word. The user message is the taxon, a space, and those notes. Model `gpt-6-luna`, reasoning effort low, 20 s. Unknown keys are ignored; a bad field is dropped and the rest stay. `countArray` of positive integers becomes text `count` (`1,3`). Sex counts accept an integer or a digit string and drop 0, negatives, and fractions. Moving status keeps `p`, `m`, `kiert`, `Ä`, `Än`, `än`, `ä`. Plumage keeps `ad`, `jp`, `juv`, `kpuk`, `npuk`, `pull`, `subad`. Empty or unusable model output fails the row. A missing `OPENAI_API_KEY` does not stop the app; the route returns 503. The image needs the `openai` package.
+
+On the Vihko unit, sex counts are integers, `movingStatus` is those short codes, and `birdPlumage` is one `MY.birdPlumage*` value (`Ad`, `Jp`, `Juv`, `Kpuk`, `Npuk`, `Pull`, `Subad`). `interpretationState` is not sent.
 
 **Document step.** End session flushes the latest GPS fix, then opens locality + keywords (default `new`). Back to map saves the header on the session. Submit requires ≥1 observation, sets `endedAt`, `POST /api/sessions/submit`, and clears the active session on success.
 
@@ -45,7 +59,7 @@ One active session in IndexedDB. Logout leaves local data on the phone.
 `app/finbif/document.py` is the field contract. It parses the posted draft and builds one Vihko document (collection `HR.1747`, form `JX.519`):
 
 - Gathering geometry = route (LineString, or Point if fewer than two positions; session start if empty).
-- One unit per observation at its pin (session point if missing). Optional count → `unit.count`, notes → `unit.notes`. Chosen taxon id → `unitFact.autocompleteSelectedTaxonID`.
+- One unit per observation at its pin (session point if missing). Optional count → `unit.count`, notes → `unit.notes`. Male and female counts are integers. `movingStatus` keeps the short codes. `birdPlumage` is one `MY.birdPlumage*` value. Chosen taxon id → `unitFact.autocompleteSelectedTaxonID`. `interpretationState` is ignored.
 - Keywords and locality from the optional `document` object. Missing keywords → `new`. Blank locality omitted.
 
 Unknown keys are ignored. New observation fields: `_parse_observation` + `_build_unit`. New document fields: `_parse_header` + `build_document`.
@@ -57,7 +71,8 @@ Unknown keys are ignored. New observation fields: `_parse_observation` + `_build
 - `app/static/js/app.js` — views, start/end, document form, send later, discard, unsent
 - `app/static/js/session.js` — stamps, session bundle fields for park/restore
 - `app/static/js/session-map.js` — map, pin, follow, geolocation
-- `app/static/js/observe.js` — observation dialog and list
+- `app/static/js/observe.js` — observation dialog, list, first-save interpretation rules
+- `app/static/js/interpret-runner.js` — one pending interpretation at a time
 - `app/static/js/route.js` — which GPS fixes become route points
 - `app/static/js/db.js` — IndexedDB (no network)
 - `app/static/js/api.js` — only module that calls Terra’s HTTP API
@@ -65,7 +80,8 @@ Unknown keys are ignored. New observation fields: `_parse_observation` + `_build
 - `app/main.py` — pages, login, JSON routes, `client_config`
 - `app/finbif/document.py` — parse draft, build Vihko document
 - `app/finbif/submit.py` — validate, then create
-- `app/finbif/taxon.py` — autocomplete
+- `app/finbif/taxon.py` — FinBIF autocomplete proxy
+- `app/interpret/` — note interpretation: prompt, schema, validator, OpenAI call
 - `app/config.py` — collection, form, environment
 
 ## Todo

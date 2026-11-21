@@ -12,7 +12,9 @@ read in _parse_header and written in build_document. Locality is the
 gathering's locality. Unknown keys are ignored.
 A chosen taxon id is sent as unitFact.autocompleteSelectedTaxonID.
 Count is sent as unit.count and notes as unit.notes. Accuracy is sent as the
-unit gathering geometry radius in meters. Blank values are left out.
+unit gathering geometry radius in meters. Male and female counts are integers.
+Moving status keeps the short codes. Plumage becomes one MY.birdPlumage* value.
+interpretationState is ignored. Blank values are left out.
 """
 
 from __future__ import annotations
@@ -36,6 +38,16 @@ MAX_KEYWORDS = 30
 MAX_KEYWORD_LENGTH = 100
 MAX_LOCALITY_LENGTH = 64
 DEFAULT_KEYWORDS = ("new",)
+MOVING_STATUS = ("p", "m", "kiert", "Ä", "Än", "än", "ä")
+BIRD_PLUMAGE = {
+    "ad": "MY.birdPlumageAd",
+    "jp": "MY.birdPlumageJp",
+    "juv": "MY.birdPlumageJuv",
+    "kpuk": "MY.birdPlumageKpuk",
+    "npuk": "MY.birdPlumageNpuk",
+    "pull": "MY.birdPlumagePull",
+    "subad": "MY.birdPlumageSubad",
+}
 
 
 def _stamp(value: Any, label: str) -> str:
@@ -138,6 +150,15 @@ def _build_unit(obs: dict[str, Any]) -> dict[str, Any]:
         unit["count"] = obs["count"]
     if obs.get("notes"):
         unit["notes"] = obs["notes"]
+    if obs.get("maleIndividualCount"):
+        unit["maleIndividualCount"] = obs["maleIndividualCount"]
+    if obs.get("femaleIndividualCount"):
+        unit["femaleIndividualCount"] = obs["femaleIndividualCount"]
+    if obs.get("movingStatus"):
+        unit["movingStatus"] = list(obs["movingStatus"])
+    plumage = obs.get("birdPlumage")
+    if plumage:
+        unit["birdPlumage"] = BIRD_PLUMAGE[plumage]
     taxon_id = obs.get("taxonId")
     if taxon_id:
         unit["unitFact"] = {"autocompleteSelectedTaxonID": taxon_id}
@@ -166,6 +187,43 @@ def _accuracy(value: Any) -> Optional[int]:
         raise ValueError("Accuracy must be a whole number of meters.")
     if not 1 <= value <= MAX_ACCURACY_M:
         raise ValueError(f"Accuracy must be between 1 and {MAX_ACCURACY_M} meters.")
+    return value
+
+
+def _positive_count(value: Any, label: str) -> Optional[int]:
+    """Missing means the field is absent. Otherwise a positive integer."""
+    if value is None:
+        return None
+    if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+        raise ValueError(f"{label} must be a whole number.")
+    return value
+
+
+def _moving_status(value: Any) -> Optional[list[str]]:
+    """Missing or an empty list means the field is absent."""
+    if value is None:
+        return None
+    if not isinstance(value, list):
+        raise ValueError("Moving status must be a list.")
+    if not value:
+        return None
+    codes: list[str] = []
+    for item in value:
+        if not isinstance(item, str) or item not in MOVING_STATUS:
+            raise ValueError("Moving status is not valid.")
+        if item not in codes:
+            codes.append(item)
+    return codes or None
+
+
+def _bird_plumage(value: Any) -> Optional[str]:
+    """Missing or blank means the field is absent. Anything else must be a known code."""
+    if value is None:
+        return None
+    if isinstance(value, str) and not value.strip():
+        return None
+    if not isinstance(value, str) or value not in BIRD_PLUMAGE:
+        raise ValueError("Plumage is not valid.")
     return value
 
 
@@ -221,6 +279,18 @@ def _parse_observation(
     accuracy = _accuracy(raw.get("accuracy"))
     if accuracy is not None:
         observation["accuracy"] = accuracy
+    male = _positive_count(raw.get("maleIndividualCount"), "Male count")
+    if male is not None:
+        observation["maleIndividualCount"] = male
+    female = _positive_count(raw.get("femaleIndividualCount"), "Female count")
+    if female is not None:
+        observation["femaleIndividualCount"] = female
+    moving = _moving_status(raw.get("movingStatus"))
+    if moving:
+        observation["movingStatus"] = moving
+    plumage = _bird_plumage(raw.get("birdPlumage"))
+    if plumage:
+        observation["birdPlumage"] = plumage
     return observation
 
 

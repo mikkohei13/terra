@@ -281,6 +281,87 @@ class DocumentPointsTest(unittest.TestCase):
         _session, observations, _header = parse_submission(_body([observation]))
         self.assertEqual(set(observations[0]), {"seq", "taxon", "at", "lat", "lon"})
 
+    def test_interpreted_fields_are_sent_on_the_unit(self):
+        observation = _observation()
+        observation["count"] = "1,3"
+        observation["maleIndividualCount"] = 1
+        observation["femaleIndividualCount"] = 2
+        observation["movingStatus"] = ["p", "m", "p", "Ä"]
+        observation["birdPlumage"] = "kpuk"
+        observation["notes"] = "naaras puku"
+        observation["interpretationState"] = "done"
+        session, observations, header = parse_submission(_body([observation]))
+        document = build_document(session, observations, "MA.1", header)
+        unit = document["gatherings"][0]["units"][0]
+        self.assertEqual(observations[0]["count"], "1,3")
+        self.assertEqual(observations[0]["maleIndividualCount"], 1)
+        self.assertEqual(observations[0]["femaleIndividualCount"], 2)
+        self.assertEqual(observations[0]["movingStatus"], ["p", "m", "Ä"])
+        self.assertEqual(observations[0]["birdPlumage"], "kpuk")
+        self.assertNotIn("interpretationState", observations[0])
+        self.assertEqual(unit["count"], "1,3")
+        self.assertEqual(unit["maleIndividualCount"], 1)
+        self.assertEqual(unit["femaleIndividualCount"], 2)
+        self.assertEqual(unit["movingStatus"], ["p", "m", "Ä"])
+        self.assertEqual(unit["birdPlumage"], "MY.birdPlumageKpuk")
+        self.assertEqual(unit["notes"], "naaras puku")
+        self.assertNotIn("interpretationState", unit)
+
+    def test_each_plumage_code_maps_onto_the_unit(self):
+        codes = {
+            "ad": "MY.birdPlumageAd",
+            "jp": "MY.birdPlumageJp",
+            "juv": "MY.birdPlumageJuv",
+            "kpuk": "MY.birdPlumageKpuk",
+            "npuk": "MY.birdPlumageNpuk",
+            "pull": "MY.birdPlumagePull",
+            "subad": "MY.birdPlumageSubad",
+        }
+        for short, full in codes.items():
+            observation = _observation()
+            observation["birdPlumage"] = short
+            session, observations, header = parse_submission(_body([observation]))
+            document = build_document(session, observations, "MA.1", header)
+            unit = document["gatherings"][0]["units"][0]
+            self.assertEqual(observations[0]["birdPlumage"], short)
+            self.assertEqual(unit["birdPlumage"], full)
+
+    def test_blank_interpreted_fields_are_left_out(self):
+        observation = _observation()
+        observation["maleIndividualCount"] = None
+        observation["femaleIndividualCount"] = None
+        observation["movingStatus"] = []
+        observation["birdPlumage"] = "  "
+        observation["interpretationState"] = "pending"
+        session, observations, header = parse_submission(_body([observation]))
+        document = build_document(session, observations, "MA.1", header)
+        unit = document["gatherings"][0]["units"][0]
+        for key in (
+            "maleIndividualCount",
+            "femaleIndividualCount",
+            "movingStatus",
+            "birdPlumage",
+            "interpretationState",
+        ):
+            self.assertNotIn(key, observations[0])
+            self.assertNotIn(key, unit)
+
+    def test_bad_interpreted_fields_are_rejected(self):
+        for key, value in (
+            ("maleIndividualCount", "2"),
+            ("maleIndividualCount", 0),
+            ("maleIndividualCount", True),
+            ("femaleIndividualCount", 1.5),
+            ("movingStatus", "p"),
+            ("movingStatus", ["p", "flying"]),
+            ("birdPlumage", "adult"),
+            ("birdPlumage", ["npuk"]),
+        ):
+            observation = _observation()
+            observation[key] = value
+            with self.assertRaises(ValueError):
+                parse_submission(_body([observation]))
+
     def test_document_header_must_be_an_object(self):
         body = _body([_observation()])
         body["document"] = ["new"]

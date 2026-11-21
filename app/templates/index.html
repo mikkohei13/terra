@@ -151,10 +151,58 @@
                     step="1"
                     inputmode="numeric"
                     autocomplete="off"
-                    enterkeyhint="done"
+                    enterkeyhint="next"
                     placeholder="Accuracy (radius/m)"
                     aria-label="Accuracy (radius/m)"
                 >
+                <input
+                    id="male-count"
+                    name="maleIndividualCount"
+                    type="number"
+                    min="1"
+                    step="1"
+                    inputmode="numeric"
+                    autocomplete="off"
+                    enterkeyhint="next"
+                    placeholder="Males"
+                    aria-label="Males"
+                >
+                <input
+                    id="female-count"
+                    name="femaleIndividualCount"
+                    type="number"
+                    min="1"
+                    step="1"
+                    inputmode="numeric"
+                    autocomplete="off"
+                    enterkeyhint="done"
+                    placeholder="Females"
+                    aria-label="Females"
+                >
+                <div class="choice-group">
+                    <span class="choice-label" id="moving-label">Moving status</span>
+                    <div id="moving-status" class="choice-row" role="group" aria-labelledby="moving-label">
+                        <button type="button" class="choice" data-moving="p" aria-pressed="false">p</button>
+                        <button type="button" class="choice" data-moving="m" aria-pressed="false">m</button>
+                        <button type="button" class="choice" data-moving="kiert" aria-pressed="false">kiert</button>
+                        <button type="button" class="choice" data-moving="Ä" aria-pressed="false">Ä</button>
+                        <button type="button" class="choice" data-moving="Än" aria-pressed="false">Än</button>
+                        <button type="button" class="choice" data-moving="än" aria-pressed="false">än</button>
+                        <button type="button" class="choice" data-moving="ä" aria-pressed="false">ä</button>
+                    </div>
+                </div>
+                <div class="choice-group">
+                    <span class="choice-label" id="plumage-label">Plumage</span>
+                    <div id="plumage" class="choice-row" role="group" aria-labelledby="plumage-label">
+                        <button type="button" class="choice" data-plumage="ad" aria-pressed="false">ad</button>
+                        <button type="button" class="choice" data-plumage="jp" aria-pressed="false">jp</button>
+                        <button type="button" class="choice" data-plumage="juv" aria-pressed="false">juv</button>
+                        <button type="button" class="choice" data-plumage="kpuk" aria-pressed="false">kpuk</button>
+                        <button type="button" class="choice" data-plumage="npuk" aria-pressed="false">npuk</button>
+                        <button type="button" class="choice" data-plumage="pull" aria-pressed="false">pull</button>
+                        <button type="button" class="choice" data-plumage="subad" aria-pressed="false">subad</button>
+                    </div>
+                </div>
                 <button type="submit" class="primary-action">Save</button>
                 <div id="observe-error" class="error" role="alert" hidden></div>
                 <button type="button" id="change-location" class="blue" hidden>Change location</button>

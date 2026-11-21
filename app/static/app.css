@@ -93,7 +93,8 @@ nav a {
 
 .stack-form input[type="text"],
 .stack-form input[type="password"],
-.stack-form input[type="date"] {
+.stack-form input[type="date"],
+.stack-form input[type="number"] {
     width: 100%;
     padding: 0.65rem 0.7rem;
     border: 1px solid var(--border);
@@ -467,6 +468,8 @@ button:disabled {
     background: var(--card);
     color: var(--fg);
     width: min(32rem, calc(100vw - 2rem));
+    max-height: calc(100vh - 1rem);
+    overflow: auto;
     top: 0;
     bottom: auto;
     margin-top: 0;
@@ -487,6 +490,34 @@ button:disabled {
 #observe-dialog button,
 #edit-list-dialog button {
     width: 100%;
+}
+
+.choice-label {
+    font-weight: 600;
+    margin-top: 0.35rem;
+}
+
+.choice-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+#observe-dialog .choice-row button {
+    width: auto;
+    flex: 1 1 calc(25% - 0.4rem);
+    min-width: 3.2rem;
+    min-height: 2.75rem;
+    padding: 0.4rem 0.5rem;
+    background: transparent;
+    color: var(--fg);
+    border: 1px solid var(--border);
+}
+
+#observe-dialog .choice-row button[aria-pressed="true"] {
+    background: var(--btn-green);
+    color: #ffffff;
+    border-color: var(--btn-green);
 }
 
 .edit-list {

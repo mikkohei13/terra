@@ -37,6 +37,10 @@ export function createObserve({
     const countInput = document.getElementById("count");
     const notesInput = document.getElementById("notes");
     const accuracyInput = document.getElementById("accuracy");
+    const maleInput = document.getElementById("male-count");
+    const femaleInput = document.getElementById("female-count");
+    const movingButtons = [...document.querySelectorAll("#moving-status button")];
+    const plumageButtons = [...document.querySelectorAll("#plumage button")];
     const changeLocationButton = document.getElementById("change-location");
     const deleteObsButton = document.getElementById("delete-obs");
     const observationList = document.getElementById("observation-list");
@@ -65,6 +69,47 @@ export function createObserve({
     let relocating = false;
     let pendingPoint = null;
 
+    function observationName(obs) {
+        const taxon = obs.taxon || "Observation";
+        return obs.count ? `${taxon} · ${obs.count}` : taxon;
+    }
+
+    function positiveOrNull(value) {
+        return Number.isInteger(value) && value > 0 ? value : null;
+    }
+
+    function structuredRecordFilled(obs) {
+        const count = typeof obs.count === "string" && obs.count.trim();
+        const moving = Array.isArray(obs.movingStatus) && obs.movingStatus.length > 0;
+        const plumage = typeof obs.birdPlumage === "string" && obs.birdPlumage.trim();
+        return Boolean(
+            count
+            || positiveOrNull(obs.maleIndividualCount)
+            || positiveOrNull(obs.femaleIndividualCount)
+            || moving
+            || plumage
+        );
+    }
+
+    function interpretationStatus(obs) {
+        if (obs.interpretationState === "pending") {
+            return "Interpreting";
+        }
+        if (obs.interpretationState === "failed") {
+            return "Not interpreted";
+        }
+        if (!obs.interpretationState && structuredRecordFilled(obs)) {
+            return "Skipped";
+        }
+        return "";
+    }
+
+    function observationLabel(obs) {
+        const name = observationName(obs);
+        const status = interpretationStatus(obs);
+        return status ? `${name} · ${status}` : name;
+    }
+
     function renderList(observations) {
         observationList.replaceChildren();
         if (observations.length === 0) {
@@ -80,13 +125,17 @@ export function createObserve({
 
             const name = document.createElement("div");
             name.className = "obs-name";
-            name.textContent = obs.count ? `${obs.taxon} · ${obs.count}` : obs.taxon;
+            name.textContent = observationName(obs);
 
             const meta = document.createElement("div");
             meta.className = "obs-meta";
             const bits = [formatStamp(obs.at)];
             if (obs.notes) {
                 bits.push(obs.notes);
+            }
+            const status = interpretationStatus(obs);
+            if (status) {
+                bits.push(status);
             }
             meta.textContent = bits.join(" · ");
 
@@ -132,10 +181,38 @@ export function createObserve({
         }
     }
 
+    function selectedCodes(buttons, attr) {
+        const codes = [];
+        for (const button of buttons) {
+            if (button.getAttribute("aria-pressed") === "true") {
+                const code = button.getAttribute(attr);
+                if (code) {
+                    codes.push(code);
+                }
+            }
+        }
+        return codes;
+    }
+
+    function setPressed(buttons, attr, selected) {
+        const chosen = new Set(Array.isArray(selected) ? selected : selected ? [selected] : []);
+        for (const button of buttons) {
+            button.setAttribute("aria-pressed", chosen.has(button.getAttribute(attr)) ? "true" : "false");
+        }
+    }
+
+    function clearChoices() {
+        setPressed(movingButtons, "data-moving", []);
+        setPressed(plumageButtons, "data-plumage", []);
+    }
+
     function clearCountNotesAndAccuracy() {
         countInput.value = "";
         notesInput.value = "";
         accuracyInput.value = "";
+        maleInput.value = "";
+        femaleInput.value = "";
+        clearChoices();
     }
 
     function applyText(observation, key, value) {
@@ -158,6 +235,73 @@ export function createObserve({
         if (typeof value === "number" && Number.isInteger(value) && value > 0) {
             accuracyInput.value = String(value);
         }
+    }
+
+    function readPositiveInt(input, label) {
+        if (input.validity && input.validity.badInput) {
+            throw new Error(`${label} must be a whole number.`);
+        }
+        const text = input.value.trim();
+        if (!text) {
+            return null;
+        }
+        if (!/^[1-9]\d*$/.test(text)) {
+            throw new Error(`${label} must be a whole number.`);
+        }
+        return Number(text);
+    }
+
+    function readDetails() {
+        return {
+            count: countInput.value.trim(),
+            notes: notesInput.value.trim(),
+            male: readPositiveInt(maleInput, "Males"),
+            female: readPositiveInt(femaleInput, "Females"),
+            moving: selectedCodes(movingButtons, "data-moving"),
+            plumage: selectedCodes(plumageButtons, "data-plumage")[0] || "",
+        };
+    }
+
+    function structuredFilled(fields) {
+        return Boolean(
+            fields.count
+            || fields.male != null
+            || fields.female != null
+            || fields.moving.length
+            || fields.plumage
+        );
+    }
+
+    function sameStructured(obs, fields) {
+        const count = typeof obs.count === "string" ? obs.count : "";
+        const plumage = typeof obs.birdPlumage === "string" ? obs.birdPlumage : "";
+        const moving = Array.isArray(obs.movingStatus) ? obs.movingStatus.join("\0") : "";
+        return count === fields.count
+            && positiveOrNull(obs.maleIndividualCount) === fields.male
+            && positiveOrNull(obs.femaleIndividualCount) === fields.female
+            && plumage === fields.plumage
+            && moving === fields.moving.join("\0");
+    }
+
+    function applyOptionalInt(observation, key, value) {
+        if (value == null) {
+            delete observation[key];
+        } else {
+            observation[key] = value;
+        }
+    }
+
+    function writeDetails(observation, fields) {
+        applyText(observation, "count", fields.count);
+        applyText(observation, "notes", fields.notes);
+        applyOptionalInt(observation, "maleIndividualCount", fields.male);
+        applyOptionalInt(observation, "femaleIndividualCount", fields.female);
+        if (fields.moving.length) {
+            observation.movingStatus = fields.moving.slice();
+        } else {
+            delete observation.movingStatus;
+        }
+        applyText(observation, "birdPlumage", fields.plumage);
     }
 
     function readAccuracy() {
@@ -189,6 +333,10 @@ export function createObserve({
         accuracyInput.value = typeof obs.accuracy === "number" && Number.isInteger(obs.accuracy) && obs.accuracy > 0
             ? String(obs.accuracy)
             : "";
+        maleInput.value = positiveOrNull(obs.maleIndividualCount) ? String(obs.maleIndividualCount) : "";
+        femaleInput.value = positiveOrNull(obs.femaleIndividualCount) ? String(obs.femaleIndividualCount) : "";
+        setPressed(movingButtons, "data-moving", obs.movingStatus);
+        setPressed(plumageButtons, "data-plumage", obs.birdPlumage || "");
     }
 
     function dismiss() {
@@ -230,24 +378,27 @@ export function createObserve({
         taxonInput.focus();
     }
 
-    function openEditList() {
-        if (isBusy() || nearbyObservations.length === 0) {
-            return;
-        }
+    function renderEditList() {
         editList.replaceChildren();
         for (const obs of nearbyObservations) {
             const item = document.createElement("li");
             const button = document.createElement("button");
             button.type = "button";
             button.className = "blue";
-            const label = obs.taxon || "Observation";
-            button.textContent = obs.count ? `${label} · ${obs.count}` : label;
+            button.textContent = observationLabel(obs);
             button.addEventListener("click", () => {
                 openEditObservation(obs);
             });
             item.append(button);
             editList.append(item);
         }
+    }
+
+    function openEditList() {
+        if (isBusy() || nearbyObservations.length === 0) {
+            return;
+        }
+        renderEditList();
         if (!editListDialog.open) {
             editListDialog.showModal();
         }
@@ -332,6 +483,7 @@ export function createObserve({
         }
         hideProblem("observe-error");
         let accuracy;
+        let fields;
         try {
             accuracy = readAccuracy();
         } catch (error) {
@@ -339,17 +491,48 @@ export function createObserve({
             accuracyInput.focus();
             return;
         }
+        try {
+            fields = readDetails();
+        } catch (error) {
+            showProblem("observe-error", { message: error.message || "Males and females must be whole numbers." });
+            const maleText = maleInput.value.trim();
+            const maleInvalid = (maleInput.validity && maleInput.validity.badInput)
+                || (maleText !== "" && !/^[1-9]\d*$/.test(maleText));
+            (maleInvalid ? maleInput : femaleInput).focus();
+            return;
+        }
         setBusy(true, "Saving…");
         try {
             const taxonId = taxonField.selectedTaxonId();
             let observation;
+            let keepInterpreted = false;
             if (editing) {
-                // Copy first so a field this form does not show stays on the record.
-                observation = { ...editing, taxon };
+                // Copy the latest row so an answer that landed while this dialog was open is not wiped
+                // by a save that did not change the taxon, the notes, or the structured fields.
+                const stored = (await db.listObservations()).find((row) => row.id === editing.id);
+                if (!stored) {
+                    clearPin();
+                    await refresh();
+                    showProblem("session-error", { message: "That observation is no longer on this phone." });
+                    return;
+                }
+                observation = { ...stored, taxon };
                 // A location counts only after Use this point. A leftover Add pin must not move this record.
                 if (moved) {
                     observation.lat = moved.lat;
                     observation.lon = moved.lon;
+                }
+                const openedNotes = typeof editing.notes === "string" ? editing.notes : "";
+                const taxonSame = taxon === (editing.taxon || "");
+                const notesSame = fields.notes === openedNotes;
+                const structuredSame = sameStructured(editing, fields);
+                keepInterpreted = taxonSame && notesSame && structuredSame;
+                if (
+                    !keepInterpreted
+                    && stored.interpretationState === "pending"
+                    && (!taxonSame || !notesSame || structuredFilled(fields))
+                ) {
+                    delete observation.interpretationState;
                 }
             } else {
                 const existing = await db.listObservations();
@@ -362,18 +545,22 @@ export function createObserve({
                     lat: point.lat,
                     lon: point.lon,
                 };
+                if (fields.notes && !structuredFilled(fields)) {
+                    observation.interpretationState = "pending";
+                }
             }
             if (taxonId) {
                 observation.taxonId = taxonId;
             } else {
                 delete observation.taxonId;
             }
-            applyText(observation, "count", countInput.value.trim());
-            applyText(observation, "notes", notesInput.value.trim());
             if (accuracy === null) {
                 delete observation.accuracy;
             } else {
                 observation.accuracy = accuracy;
+            }
+            if (!keepInterpreted) {
+                writeDetails(observation, fields);
             }
             await db.addObservation(observation);
             clearPin();
@@ -406,6 +593,23 @@ export function createObserve({
         }
     }
 
+    for (const button of movingButtons) {
+        button.addEventListener("click", () => {
+            const on = button.getAttribute("aria-pressed") === "true";
+            button.setAttribute("aria-pressed", on ? "false" : "true");
+        });
+    }
+    for (const button of plumageButtons) {
+        button.addEventListener("click", () => {
+            const on = button.getAttribute("aria-pressed") === "true";
+            for (const other of plumageButtons) {
+                other.setAttribute("aria-pressed", "false");
+            }
+            if (!on) {
+                button.setAttribute("aria-pressed", "true");
+            }
+        });
+    }
     observeForm.addEventListener("submit", (event) => {
         event.preventDefault();
         saveObservation();
@@ -448,6 +652,18 @@ export function createObserve({
         },
         setObservations(observations) {
             sessionObservations = observations;
+        },
+        refreshObservations(observations) {
+            sessionObservations = observations;
+            renderList(observations);
+            if (!editListDialog.open) {
+                return;
+            }
+            const byId = new Map(observations.map((obs) => [obs.id, obs]));
+            nearbyObservations = nearbyObservations
+                .map((obs) => byId.get(obs.id))
+                .filter(Boolean);
+            renderEditList();
         },
         renderList,
         updateNearby,

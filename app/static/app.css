@@ -353,6 +353,12 @@ button:disabled {
     gap: 0.4rem;
 }
 
+#observation-list .obs-item button {
+    width: 100%;
+    text-align: left;
+    white-space: normal;
+}
+
 .error p {
     margin: 0;
 }

@@ -100,10 +100,12 @@ Unknown keys are ignored. New observation fields: `_parse_observation` + `_build
 
 - Session view:
     - Observations should be ordered from newest to oldest.
+    - Observation edit button should show taxon name and count instead of generic "Edit". Below that, show only notes.
+    - When user taps on the map and selects edit, if there would be only one observation on the #edit-list-dialog, open the observation modal directly instead of showing the edit list.
 - Observation modal:
-    - First item of the dropdown should be highlighted with ligh yellow background. (Maybe only if it resembles well enough the text entered by the user.)
-    - When open and is scrolled, the underlying session view should not scroll.
-    - Fields should have labels that are always visible.
+    - First item of the dropdown should be highlighted with light yellow background.
+    - When observation modal is open and is scrolled, the underlying session view should not scroll.
+    - Fields should have labels that are always visible instead of just placeholder text.
     - Save button should be always visible, e.g. vertically on the right edge.
 
 ## Removing devdots

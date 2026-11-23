@@ -163,35 +163,26 @@ export function createObserve({
             observationList.append(empty);
             return;
         }
-        for (const obs of observations) {
+        const ordered = observations.slice().sort((a, b) => (b.seq || 0) - (a.seq || 0));
+        for (const obs of ordered) {
             const item = document.createElement("li");
             item.className = "obs-item";
-
-            const name = document.createElement("div");
-            name.className = "obs-name";
-            name.textContent = observationName(obs);
-
-            const meta = document.createElement("div");
-            meta.className = "obs-meta";
-            const bits = [formatStamp(obs.at)];
-            if (obs.notes) {
-                bits.push(obs.notes);
-            }
-            const status = interpretationStatus(obs);
-            if (status) {
-                bits.push(status);
-            }
-            meta.textContent = bits.join(" · ");
 
             const edit = document.createElement("button");
             edit.type = "button";
             edit.className = "blue";
-            edit.textContent = "Edit";
+            edit.textContent = observationName(obs);
             edit.addEventListener("click", () => {
                 openEditObservation(obs);
             });
+            item.append(edit);
 
-            item.append(name, meta, edit);
+            if (obs.notes) {
+                const notes = document.createElement("div");
+                notes.className = "obs-meta";
+                notes.textContent = obs.notes;
+                item.append(notes);
+            }
             observationList.append(item);
         }
     }
@@ -528,6 +519,10 @@ export function createObserve({
 
     function openEditList() {
         if (isBusy() || nearbyObservations.length === 0) {
+            return;
+        }
+        if (nearbyObservations.length === 1) {
+            openEditObservation(nearbyObservations[0]);
             return;
         }
         cancelLoppuTimer();

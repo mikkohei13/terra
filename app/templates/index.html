@@ -19,6 +19,24 @@
 
         <div id="view-session" hidden>
             <div class="map-wrap">
+                <div id="quick-taxon" class="quick-taxon" hidden>
+                    <input
+                        id="quick-taxon-input"
+                        type="text"
+                        maxlength="{{ client_config.limits.taxon }}"
+                        autocomplete="off"
+                        autocapitalize="off"
+                        spellcheck="false"
+                        enterkeyhint="done"
+                        placeholder="Finnish or scientific name"
+                        role="combobox"
+                        aria-autocomplete="list"
+                        aria-expanded="false"
+                        aria-controls="quick-taxon-results"
+                        aria-label="Species"
+                    >
+                    <ul id="quick-taxon-results" class="taxon-results" role="listbox" hidden></ul>
+                </div>
                 <div id="map" role="application" aria-label="Map. Tap to place an observation."></div>
                 <button type="button" id="follow-toggle" class="follow-toggle" aria-pressed="true" aria-label="Stop following">
                     {# Lucide locate / locate-fixed (ISC), also saved under static/images/ #}

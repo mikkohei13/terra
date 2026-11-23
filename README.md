@@ -96,6 +96,16 @@ Unknown keys are ignored. New observation fields: `_parse_observation` + `_build
 - MML maps.
 - Finnish language.
 
+### Usability improvements
+
+- Session view:
+    - Observations should be ordered from newest to oldest.
+- Observation modal:
+    - First item of the dropdown should be highlighted with ligh yellow background. (Maybe only if it resembles well enough the text entered by the user.)
+    - When open and is scrolled, the underlying session view should not scroll.
+    - Fields should have labels that are always visible.
+    - Save button should be always visible, e.g. vertically on the right edge.
+
 ## Removing devdots
 
 Grey dots on the session map mark stored route points (dev only). Remove before public release; the route itself stays.

@@ -374,6 +374,38 @@ button:disabled {
     margin-inline: -1rem;
 }
 
+.quick-taxon {
+    position: absolute;
+    z-index: 1100;
+    left: 0.75rem;
+    right: 0.75rem;
+    top: 0.75rem;
+}
+
+.quick-taxon input[type="text"] {
+    width: 100%;
+    padding: 0.65rem 0.7rem;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    background: var(--card);
+    color: var(--fg);
+    font-size: 1rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+.quick-taxon .taxon-results {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    margin-top: 0.25rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+.map-wrap:has(#quick-taxon:not([hidden])) .leaflet-top {
+    top: 3.75rem;
+}
+
 #map {
     height: min(62dvh, 36rem);
     min-height: 18rem;

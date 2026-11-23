@@ -15,13 +15,29 @@ const SEARCH_MODE_LABEL = {
     C: "Custom groups",
 };
 
-export function attachTaxonField(input, list, dialog, onAdvance, modeButton, onNotes) {
+export function attachTaxonField(input, list, dialog, onAdvance, modeButton, onNotes, options) {
+    const prepareQuery = options && typeof options.prepareQuery === "function"
+        ? options.prepareQuery
+        : null;
+    const optionIdPrefix = options && typeof options.optionIdPrefix === "string" && options.optionIdPrefix
+        ? options.optionIdPrefix
+        : "taxon-option-";
+    const previewOnly = Boolean(options && options.previewOnly);
+
     let timer = null;
     let controller = null;
     let seq = 0;
     let selected = null;
     let lastSentAt = 0;
     let activeIndex = -1;
+
+    function queryText() {
+        const raw = input.value.trim();
+        if (prepareQuery) {
+            return prepareQuery(raw);
+        }
+        return raw;
+    }
 
     function selectedTaxonId() {
         if (!selected) {
@@ -108,7 +124,7 @@ export function attachTaxonField(input, list, dialog, onAdvance, modeButton, onN
             const li = document.createElement("li");
             const button = document.createElement("button");
             button.type = "button";
-            button.id = "taxon-option-" + index;
+            button.id = optionIdPrefix + index;
             button.dataset.id = item.id;
             button.dataset.value = fieldValue(item);
             if (typeof item.notes === "string" && item.notes) {
@@ -120,10 +136,12 @@ export function attachTaxonField(input, list, dialog, onAdvance, modeButton, onN
             button.addEventListener("mousedown", (event) => {
                 event.preventDefault();
             });
-            button.addEventListener("click", () => {
-                selectItem(item);
-                advance();
-            });
+            if (!previewOnly) {
+                button.addEventListener("click", () => {
+                    selectItem(item);
+                    advance();
+                });
+            }
             li.append(button);
             list.append(li);
         });
@@ -143,7 +161,7 @@ export function attachTaxonField(input, list, dialog, onAdvance, modeButton, onN
         seq += 1;
         abortRequest();
         const mySeq = seq;
-        const query = input.value.trim();
+        const query = queryText();
         if (query.length < MIN_QUERY_LENGTH) {
             clearList();
             return;
@@ -154,7 +172,7 @@ export function attachTaxonField(input, list, dialog, onAdvance, modeButton, onN
     }
 
     function stillCurrent(mySeq, query) {
-        return mySeq === seq && input.value.trim() === query;
+        return mySeq === seq && queryText() === query;
     }
 
     async function run(mySeq, query) {
@@ -238,7 +256,7 @@ export function attachTaxonField(input, list, dialog, onAdvance, modeButton, onN
     input.addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
             event.preventDefault();
-            if (!list.hidden && activeIndex >= 0) {
+            if (!previewOnly && !list.hidden && activeIndex >= 0) {
                 const buttons = [...list.querySelectorAll("button")];
                 const button = buttons[activeIndex];
                 if (button) {
@@ -250,7 +268,9 @@ export function attachTaxonField(input, list, dialog, onAdvance, modeButton, onN
                     });
                 }
             }
-            advance();
+            if (!previewOnly) {
+                advance();
+            }
             return;
         }
         if (list.hidden) {

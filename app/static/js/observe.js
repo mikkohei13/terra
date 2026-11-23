@@ -2,13 +2,34 @@
 // The server decides which fields are valid.
 
 import * as db from "./db.js";
+import { searchBirds } from "./birds.js";
 import { limits } from "./config.js";
+import { getSetting } from "./settings.js";
 import { attachTaxonField } from "./taxon-field.js";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const NEARBY_TAP_PX = 48;
+const LOPPU_PAUSE_MS = 500;
 const PENDING_EDIT_MESSAGE =
     "Cannot edit while interpretation is in progress. This will take no more than 20 seconds.";
+
+/** Strip a trailing whole word "loppu" (case-insensitive). */
+function stripTrailingLoppu(text) {
+    const trimmed = String(text || "").trim();
+    if (/^loppu$/i.test(trimmed)) {
+        return "";
+    }
+    const match = /^(.*)\s+loppu$/i.exec(trimmed);
+    if (match) {
+        return match[1].trim();
+    }
+    return trimmed;
+}
+
+function endsWithLoppu(text) {
+    const trimmed = String(text || "").trim();
+    return /(^|\s)loppu$/i.test(trimmed);
+}
 
 export function formatStamp(stamp) {
     const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(stamp || "");
@@ -55,6 +76,8 @@ export function createObserve({
     const obsKeywordList = document.getElementById("obs-keyword-list");
     const obsKeywordInput = document.getElementById("obs-keyword-input");
     const addObsKeywordButton = document.getElementById("add-obs-keyword");
+    const quickTaxon = document.getElementById("quick-taxon");
+    const quickTaxonInput = document.getElementById("quick-taxon-input");
     const taxonField = attachTaxonField(
         taxonInput,
         document.getElementById("taxon-results"),
@@ -67,6 +90,19 @@ export function createObserve({
             notesInput.value = notes;
         },
     );
+    const quickTaxonField = attachTaxonField(
+        quickTaxonInput,
+        document.getElementById("quick-taxon-results"),
+        null,
+        null,
+        null,
+        null,
+        {
+            prepareQuery: stripTrailingLoppu,
+            optionIdPrefix: "quick-taxon-option-",
+            previewOnly: true,
+        },
+    );
 
     let sessionObservations = [];
     let nearbyObservations = [];
@@ -74,6 +110,8 @@ export function createObserve({
     let relocating = false;
     let pendingPoint = null;
     let observationKeywords = [];
+    let loppuTimer = null;
+    let loppuSnapshot = null;
 
     function observationName(obs) {
         const taxon = obs.taxon || "Observation";
@@ -401,11 +439,41 @@ export function createObserve({
         renderObsKeywords();
     }
 
+    function cancelLoppuTimer() {
+        if (loppuTimer !== null) {
+            clearTimeout(loppuTimer);
+            loppuTimer = null;
+        }
+        loppuSnapshot = null;
+    }
+
+    function hideQuickTaxon() {
+        cancelLoppuTimer();
+        quickTaxon.hidden = true;
+        quickTaxonField.clear();
+    }
+
+    function showQuickTaxon({ focus = false, clear = false } = {}) {
+        if (getSetting("taxonSearchMode") !== "B" || relocating) {
+            hideQuickTaxon();
+            return;
+        }
+        cancelLoppuTimer();
+        if (clear) {
+            quickTaxonField.clear();
+        }
+        quickTaxon.hidden = false;
+        if (focus) {
+            quickTaxonInput.focus();
+        }
+    }
+
     function dismiss() {
         relocating = false;
         pendingPoint = null;
         editingObservation = null;
         setEditingActions(false);
+        hideQuickTaxon();
         taxonField.clear();
         clearCountNotesAndAccuracy();
         hideProblem("observe-error");
@@ -429,6 +497,8 @@ export function createObserve({
         relocating = false;
         pendingPoint = null;
         editingObservation = null;
+        cancelLoppuTimer();
+        quickTaxon.hidden = true;
         taxonField.clear();
         clearCountNotesAndAccuracy();
         fillAccuracyIfEmpty(point);
@@ -460,6 +530,8 @@ export function createObserve({
         if (isBusy() || nearbyObservations.length === 0) {
             return;
         }
+        cancelLoppuTimer();
+        quickTaxon.hidden = true;
         renderEditList();
         if (!editListDialog.open) {
             editListDialog.showModal();
@@ -495,6 +567,8 @@ export function createObserve({
             fillForm(obs);
         }
         editingObservation = obs;
+        cancelLoppuTimer();
+        quickTaxon.hidden = true;
         if (editListDialog.open) {
             editListDialog.close();
         }
@@ -516,6 +590,7 @@ export function createObserve({
         // Collapse suggestions, but keep the name and taxon the form already has.
         taxonField.setValue(taxonInput.value.trim(), taxonField.selectedTaxonId());
         relocating = true;
+        hideQuickTaxon();
         const obs = editingObservation;
         const pending = pendingPoint;
         observeDialog.close();
@@ -542,7 +617,7 @@ export function createObserve({
         openEditObservation(editingObservation);
     }
 
-    async function saveObservation() {
+    async function saveObservation({ errorId = "observe-error" } = {}) {
         if (isBusy()) {
             return;
         }
@@ -559,24 +634,28 @@ export function createObserve({
             clearPin();
             return;
         }
-        hideProblem("observe-error");
+        hideProblem(errorId);
         let accuracy;
         let fields;
         try {
             accuracy = readAccuracy();
         } catch (error) {
-            showProblem("observe-error", { message: error.message || "Accuracy must be a whole number of meters." });
-            accuracyInput.focus();
+            showProblem(errorId, { message: error.message || "Accuracy must be a whole number of meters." });
+            if (errorId === "observe-error") {
+                accuracyInput.focus();
+            }
             return;
         }
         try {
             fields = readDetails();
         } catch (error) {
-            showProblem("observe-error", { message: error.message || "Males and females must be whole numbers." });
-            const maleText = maleInput.value.trim();
-            const maleInvalid = (maleInput.validity && maleInput.validity.badInput)
-                || (maleText !== "" && !/^[1-9]\d*$/.test(maleText));
-            (maleInvalid ? maleInput : femaleInput).focus();
+            showProblem(errorId, { message: error.message || "Males and females must be whole numbers." });
+            if (errorId === "observe-error") {
+                const maleText = maleInput.value.trim();
+                const maleInvalid = (maleInput.validity && maleInput.validity.badInput)
+                    || (maleText !== "" && !/^[1-9]\d*$/.test(maleText));
+                (maleInvalid ? maleInput : femaleInput).focus();
+            }
             return;
         }
         setBusy(true, "Saving…");
@@ -645,10 +724,73 @@ export function createObserve({
             clearPin();
             await refresh();
         } catch (error) {
-            showProblem("observe-error", { message: error.message || "Could not save the observation." });
+            showProblem(errorId, { message: error.message || "Could not save the observation." });
         } finally {
             setBusy(false);
         }
+    }
+
+    async function tryQuickSave() {
+        if (isBusy() || relocating || observeDialog.open || editListDialog.open) {
+            return;
+        }
+        const raw = quickTaxonInput.value;
+        if (!endsWithLoppu(raw)) {
+            return;
+        }
+        const point = draftPoint();
+        if (!point) {
+            return;
+        }
+        const prepared = stripTrailingLoppu(raw);
+        if (prepared.length < 2) {
+            return;
+        }
+        let results;
+        try {
+            results = await searchBirds(prepared);
+        } catch (_error) {
+            return;
+        }
+        if (quickTaxonInput.value !== raw || !endsWithLoppu(quickTaxonInput.value)) {
+            return;
+        }
+        if (!Array.isArray(results) || results.length === 0) {
+            return;
+        }
+        const hit = results[0];
+        const name = typeof hit.value === "string" && hit.value
+            ? hit.value
+            : (typeof hit.name === "string" ? hit.name : "");
+        if (!name) {
+            return;
+        }
+        editingObservation = null;
+        pendingPoint = null;
+        taxonField.setValue(name, hit.id || null);
+        clearCountNotesAndAccuracy();
+        if (typeof hit.notes === "string" && hit.notes) {
+            notesInput.value = hit.notes;
+        }
+        fillAccuracyIfEmpty(point);
+        await saveObservation({ errorId: "session-error" });
+    }
+
+    function scheduleLoppuSave() {
+        cancelLoppuTimer();
+        const raw = quickTaxonInput.value;
+        if (!endsWithLoppu(raw)) {
+            return;
+        }
+        loppuSnapshot = raw;
+        loppuTimer = setTimeout(() => {
+            loppuTimer = null;
+            if (quickTaxonInput.value !== loppuSnapshot) {
+                return;
+            }
+            loppuSnapshot = null;
+            tryQuickSave();
+        }, LOPPU_PAUSE_MS);
     }
 
     async function deleteEditingObservation() {
@@ -729,6 +871,20 @@ export function createObserve({
         editingObservation = null;
         pendingPoint = null;
         setEditingActions(false);
+        if (draftPoint() && getSetting("taxonSearchMode") === "B") {
+            showQuickTaxon({ focus: false, clear: false });
+        }
+    });
+    editListDialog.addEventListener("close", () => {
+        if (relocating || observeDialog.open || editingObservation) {
+            return;
+        }
+        if (draftPoint() && getSetting("taxonSearchMode") === "B") {
+            showQuickTaxon({ focus: false, clear: false });
+        }
+    });
+    quickTaxonInput.addEventListener("input", () => {
+        scheduleLoppuSave();
     });
 
     return {
@@ -764,6 +920,7 @@ export function createObserve({
             pendingPoint = null;
             editingObservation = null;
             setEditingActions(false);
+            showQuickTaxon({ focus: true, clear: true });
         },
         dismiss,
     };

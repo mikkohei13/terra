@@ -353,12 +353,6 @@ button:disabled {
     gap: 0.4rem;
 }
 
-#observation-list .obs-item button {
-    width: 100%;
-    text-align: left;
-    white-space: normal;
-}
-
 .error p {
     margin: 0;
 }
@@ -498,11 +492,6 @@ button:disabled {
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
 }
 
-html:has(#observe-dialog[open]),
-body:has(#observe-dialog[open]) {
-    overflow: hidden;
-}
-
 #observe-dialog,
 #edit-list-dialog {
     border: 1px solid var(--border);
@@ -511,52 +500,12 @@ body:has(#observe-dialog[open]) {
     background: var(--card);
     color: var(--fg);
     width: min(32rem, calc(100vw - 2rem));
+    max-height: calc(100vh - 1rem);
+    overflow: auto;
     top: 0;
     bottom: auto;
     margin-top: 0;
     margin-bottom: auto;
-}
-
-#edit-list-dialog {
-    max-height: calc(100vh - 1rem);
-    overflow: auto;
-}
-
-#observe-dialog {
-    max-height: calc(100dvh - 1rem);
-    overflow: hidden;
-}
-
-#observe-dialog[open] {
-    display: flex;
-    flex-direction: column;
-}
-
-#observe-form {
-    display: flex;
-    flex-direction: row;
-    align-items: stretch;
-    min-width: 0;
-    max-height: calc(100dvh - 1rem);
-}
-
-#observe-dialog .observe-fields {
-    flex: 1 1 auto;
-    min-width: 0;
-    max-height: calc(100dvh - 1rem);
-    overflow: auto;
-    overscroll-behavior: contain;
-}
-
-#observe-dialog .observe-save {
-    flex: 0 0 3.25rem;
-    width: 3.25rem;
-    align-self: stretch;
-    margin: 0;
-    padding: 1rem 0;
-    border-radius: 0;
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
 }
 
 #observe-dialog::backdrop,

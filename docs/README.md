@@ -10,7 +10,7 @@ Palautetta voi lähettää osoitteeseen mikko.heikkinen(ät)biomi.org.
 
 ## Kirjautuminen
 
-Avaa Pica <https://pica.biomi.org> ja kirjaudu Havistin-sovelluksen kautta Laji.fi-tunnuksella.
+Avaa Pica (<https://pica.biomi.org>) ja kirjaudu Havistin-sovelluksen kautta Laji.fi-tunnuksella.
 
 Yläreunan Settings-painikkeesta voit säätää sovelluksen asetuksia. Erityisesti kannattaa huomata kolme eri moodia, joilla taksoninimen kirjaaminen toimii:
 

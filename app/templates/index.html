@@ -108,7 +108,7 @@
 
         <div id="view-done" hidden>
             <p id="done-detail"></p>
-            <p>Further edits are done on laji.fi.</p>
+            <p>Further edits are done on Laji.fi/vihko.</p>
             <button type="button" id="another-session" class="primary-action">Start another session</button>
         </div>
 
@@ -252,7 +252,19 @@
         <script type="module" src="{{ url_for('static', filename='js/app.js') }}"></script>
     </div>
     {% else %}
-        <p><a class="button" href="{{ havistin_url }}">Log in via Havistin</a></p>
+        <p>
+            Pica is an observation web app aimed for recording observations quickly. Observations are saved to your Vihko account. The app is under heavy development and may change without an announcement.
+        </p>
+        <p>
+            Log in to Pica using a Laji.fi account, through the Havistin app:
+        </p>
+        <p>
+            <a class="button" href="{{ havistin_url }}">Log in via Havistin</a>
+        </p>
+        <p>
+            Code on GitHub: <a href="https://github.com/mikkohei13/terra">https://github.com/mikkohei13/terra</a>
+        </p>
+
     {% endif %}
 </section>
 {% endblock %}

@@ -4,13 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="referrer" content="no-referrer">
-    <title>{% block title %}Terra{% endblock %}</title>
+    <title>{% block title %}Pica - Record Observations{% endblock %}</title>
     <link rel="icon" href="{{ url_for('favicon') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
 </head>
 <body data-logged-in="{{ 'true' if logged_in else 'false' }}">
     <header class="site-header">
-        <a class="brand" href="{{ url_for('index') }}">Terra</a>
+        <a class="brand" href="{{ url_for('index') }}">Pica</a>
         <nav>
             {% if logged_in %}
                 <span class="user-name">{{ person_name }}</span>

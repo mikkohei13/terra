@@ -1,6 +1,6 @@
-# Terra
+# Terra (Pica observation app)
 
-Mobile-first web app for recording nature observations and submitting them as one FinBIF Vihko document.
+Mobile-first web app for recording nature observations and submitting them as one FinBIF Vihko document. The app is technically called Terra, but for users it is branded as Pica. The production version is at https://pica.biomi.org.
 
 Python/Flask owns business rules and validation. Vanilla JS owns the UI, geolocation, IndexedDB, and browser settings.
 
@@ -22,7 +22,7 @@ docker compose run --rm --entrypoint python -v ./tests:/terra/tests web -m unitt
 
 ## Login
 
-Havistin `POST /login` with form field `personToken`. Terra checks it via FinBIF `/person` and stores token, person id, and name in a signed cookie (`HttpOnly`, `SameSite=Lax`, `Secure` on Cloud Run). Query-string tokens are ignored. `POST /logout` clears the cookie only. Logged-out visitors link to `HAVISTIN_URL`.
+Login happens via a separate app Havistin with `POST /login` with form field `personToken`. Terra checks it via FinBIF `/person` and stores token, person id, and name in a signed cookie (`HttpOnly`, `SameSite=Lax`, `Secure` on Cloud Run). Query-string tokens are ignored. `POST /logout` clears the cookie only. Logged-out visitors link to `HAVISTIN_URL`.
 
 Local Compose sets `DEV_LOGIN=1`: `http://127.0.0.1:85/dev/login` uses `DEV_PERSON_TOKEN` from `.env.dev` (not deployed; non-local hosts get 404).
 

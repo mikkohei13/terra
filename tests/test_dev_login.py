@@ -32,7 +32,7 @@ class DevLoginTest(unittest.TestCase):
             patch.object(main.config, "DEV_PERSON_TOKEN", "person-token"),
             patch.object(main, "fetch_person") as fetch,
         ):
-            response = self.client.get("/dev/login", base_url="http://terra.biomi.org")
+            response = self.client.get("/dev/login", base_url="http://pica.biomi.org")
         self.assertEqual(404, response.status_code)
         fetch.assert_not_called()
 

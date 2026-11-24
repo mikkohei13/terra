@@ -113,26 +113,10 @@ export function createObserve({
     let loppuTimer = null;
     let loppuSnapshot = null;
 
-    function observationName(obs) {
-        const taxon = obs.taxon || "Observation";
-        return obs.count ? `${taxon} · ${obs.count}` : taxon;
-    }
+    let pendingEditNoticeId = null;
 
     function positiveOrNull(value) {
         return Number.isInteger(value) && value > 0 ? value : null;
-    }
-
-    function structuredRecordFilled(obs) {
-        const count = typeof obs.count === "string" && obs.count.trim();
-        const moving = Array.isArray(obs.movingStatus) && obs.movingStatus.length > 0;
-        const plumage = typeof obs.birdPlumage === "string" && obs.birdPlumage.trim();
-        return Boolean(
-            count
-            || positiveOrNull(obs.maleIndividualCount)
-            || positiveOrNull(obs.femaleIndividualCount)
-            || moving
-            || plumage
-        );
     }
 
     function interpretationStatus(obs) {
@@ -142,19 +126,60 @@ export function createObserve({
         if (obs.interpretationState === "failed") {
             return "Not interpreted";
         }
-        if (!obs.interpretationState && structuredRecordFilled(obs)) {
-            return "Skipped";
-        }
         return "";
     }
 
-    function observationLabel(obs) {
-        const name = observationName(obs);
+    function observationDetail(obs) {
+        const parts = [];
+        if (typeof obs.count === "string" && obs.count.trim()) {
+            parts.push(obs.count.trim());
+        }
+        if (Array.isArray(obs.movingStatus) && obs.movingStatus.length > 0) {
+            parts.push(obs.movingStatus.join(", "));
+        }
+        return parts.join(" · ");
+    }
+
+    function fillObservationButton(button, obs) {
+        button.replaceChildren();
+        button.append(obs.taxon || "Observation");
         const status = interpretationStatus(obs);
-        return status ? `${name} · ${status}` : name;
+        if (status) {
+            const pill = document.createElement("span");
+            pill.className = "obs-status";
+            pill.textContent = status;
+            button.append(pill);
+            return;
+        }
+        const detail = observationDetail(obs);
+        if (detail) {
+            button.append(` · ${detail}`);
+        }
+    }
+
+    function syncPendingEditNotice(observations) {
+        if (!pendingEditNoticeId) {
+            return;
+        }
+        const pending = observations.some((row) => row.interpretationState === "pending");
+        const listed = observations.some((row) => row.id === pendingEditNoticeId);
+        if (!pending || !listed) {
+            pendingEditNoticeId = null;
+        }
+    }
+
+    function pendingEditNotice() {
+        const notice = document.createElement("div");
+        notice.className = "error obs-edit-notice";
+        notice.setAttribute("role", "alert");
+        const message = document.createElement("p");
+        message.textContent = PENDING_EDIT_MESSAGE;
+        notice.append(message);
+        return notice;
     }
 
     function renderList(observations) {
+        syncPendingEditNotice(observations);
         observationList.replaceChildren();
         if (observations.length === 0) {
             const empty = document.createElement("li");
@@ -171,11 +196,15 @@ export function createObserve({
             const edit = document.createElement("button");
             edit.type = "button";
             edit.className = "blue";
-            edit.textContent = observationName(obs);
+            fillObservationButton(edit, obs);
             edit.addEventListener("click", () => {
                 openEditObservation(obs);
             });
             item.append(edit);
+
+            if (obs.id && obs.id === pendingEditNoticeId) {
+                item.append(pendingEditNotice());
+            }
 
             if (obs.notes) {
                 const notes = document.createElement("div");
@@ -508,7 +537,7 @@ export function createObserve({
             const button = document.createElement("button");
             button.type = "button";
             button.className = "blue";
-            button.textContent = observationLabel(obs);
+            fillObservationButton(button, obs);
             button.addEventListener("click", () => {
                 openEditObservation(obs);
             });
@@ -537,11 +566,16 @@ export function createObserve({
         return sessionObservations.some((row) => row.interpretationState === "pending");
     }
 
-    function refusePendingEdit() {
+    function refusePendingEdit(obs) {
         if (editListDialog.open) {
             editListDialog.close();
         }
-        showProblem("session-error", { message: PENDING_EDIT_MESSAGE });
+        pendingEditNoticeId = obs && obs.id ? obs.id : null;
+        renderList(sessionObservations);
+        const notice = observationList.querySelector(".obs-edit-notice");
+        if (notice) {
+            notice.scrollIntoView({ block: "nearest" });
+        }
     }
 
     function openEditObservation(obs) {
@@ -549,8 +583,12 @@ export function createObserve({
             return;
         }
         if (obs.interpretationState === "pending" || hasPendingInterpretation()) {
-            refusePendingEdit();
+            refusePendingEdit(obs);
             return;
+        }
+        if (pendingEditNoticeId) {
+            pendingEditNoticeId = null;
+            renderList(sessionObservations);
         }
         const same = Boolean(editingObservation && editingObservation.id === obs.id);
         if (relocating) {

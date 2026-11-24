@@ -359,6 +359,23 @@ button:disabled {
     white-space: normal;
 }
 
+.obs-status {
+    display: inline-block;
+    margin-left: 0.45rem;
+    padding: 0.05rem 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.18);
+    font-size: 0.8em;
+    font-weight: 600;
+    line-height: 1.4;
+    vertical-align: 0.1em;
+}
+
+.obs-edit-notice {
+    margin: 0;
+}
+
 .error p {
     margin: 0;
 }

@@ -1,18 +1,18 @@
-# Development Principles:
+This web app is technically called "Terra", but for users it branded as "Pica", with a production version at https://pica.biomi.org. Login is done via another app called "Havistin".
 
-This web app "Terra" is maintained by a single person. Favor simple solutions.
+# Development guidelines:
+
+The app is maintained by a single person. Favor simple solutions.
 
 The app uses Python/Flask, vanilla JavaScript, and CSS. Implement business rules, server-side validation, and data processing in Python. Use JavaScript for UI behavior, IndexedDB, and browser or device APIs. For other work, default to Python unless running it in the browser provides a concrete benefit, such as offline operation or immediate feedback.
 
 The production app is deployed to Google Cloud Run. See Makefile for details.
 
-Keep e2e and browser testing to minimum. I will do UI testing.
-
 Add unit tests only for the most important parts of the backend code.
 
 The app is still under development, so backwards compatibility e.g with IndexedDB is not a concern.
 
-If something is unclear, ask instead of making assumptions.
+If something is unclear or requires major decisions, ask instead of making assumptions.
 
 # Local run
 

@@ -101,6 +101,9 @@ export function createObserve({
             prepareQuery: stripTrailingLoppu,
             optionIdPrefix: "quick-taxon-option-",
             previewOnly: true,
+            onPick(item) {
+                openObserve(item);
+            },
         },
     );
 
@@ -506,12 +509,26 @@ export function createObserve({
         }
     }
 
-    function openObserve() {
+    function pickedTaxonName(item) {
+        if (item && typeof item.value === "string" && item.value) {
+            return item.value;
+        }
+        if (item && typeof item.name === "string") {
+            return item.name;
+        }
+        return "";
+    }
+
+    function openObserve(prefill) {
         if (isBusy()) {
             return;
         }
         const point = draftPoint();
         if (!point) {
+            return;
+        }
+        const name = pickedTaxonName(prefill);
+        if (prefill && !name) {
             return;
         }
         relocating = false;
@@ -521,13 +538,24 @@ export function createObserve({
         quickTaxon.hidden = true;
         taxonField.clear();
         clearCountNotesAndAccuracy();
+        if (name) {
+            const taxonId = typeof prefill.id === "string" && prefill.id ? prefill.id : null;
+            taxonField.setValue(name, taxonId);
+            if (typeof prefill.notes === "string" && prefill.notes) {
+                notesInput.value = prefill.notes;
+            }
+        }
         fillAccuracyIfEmpty(point);
         setEditingActions(false);
         hideProblem("observe-error");
         if (!observeDialog.open) {
             observeDialog.showModal();
         }
-        taxonInput.focus();
+        if (name) {
+            countInput.focus();
+        } else {
+            taxonInput.focus();
+        }
     }
 
     function renderEditList() {

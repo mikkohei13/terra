@@ -23,6 +23,7 @@ export function attachTaxonField(input, list, dialog, onAdvance, modeButton, onN
         ? options.optionIdPrefix
         : "taxon-option-";
     const previewOnly = Boolean(options && options.previewOnly);
+    const onPick = options && typeof options.onPick === "function" ? options.onPick : null;
 
     let timer = null;
     let controller = null;
@@ -102,6 +103,9 @@ export function attachTaxonField(input, list, dialog, onAdvance, modeButton, onN
         if (typeof item.notes === "string" && item.notes && typeof onNotes === "function") {
             onNotes(item.notes);
         }
+        if (onPick) {
+            onPick(item);
+        }
     }
 
     function advance() {
@@ -136,10 +140,12 @@ export function attachTaxonField(input, list, dialog, onAdvance, modeButton, onN
             button.addEventListener("mousedown", (event) => {
                 event.preventDefault();
             });
-            if (!previewOnly) {
+            if (!previewOnly || onPick) {
                 button.addEventListener("click", () => {
                     selectItem(item);
-                    advance();
+                    if (!previewOnly) {
+                        advance();
+                    }
                 });
             }
             li.append(button);
@@ -256,7 +262,7 @@ export function attachTaxonField(input, list, dialog, onAdvance, modeButton, onN
     input.addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
             event.preventDefault();
-            if (!previewOnly && !list.hidden && activeIndex >= 0) {
+            if ((!previewOnly || onPick) && !list.hidden && activeIndex >= 0) {
                 const buttons = [...list.querySelectorAll("button")];
                 const button = buttons[activeIndex];
                 if (button) {

@@ -33,6 +33,26 @@ export const AUTOCOMPLETE_CACHE_OPTIONS = [
 
 const AUTOCOMPLETE_CACHE_IDS = new Set(AUTOCOMPLETE_CACHE_OPTIONS.map((option) => option.id));
 
+export const TAXON_SEARCH_MODES = [
+    { id: "A", label: "All taxa" },
+    { id: "B", label: "Birds, speed writing" },
+    { id: "C", label: "Custom taxa" },
+];
+
+const TAXON_SEARCH_MODE_IDS = new Set(TAXON_SEARCH_MODES.map((mode) => mode.id));
+
+const settingListeners = new Set();
+
+export function onSettingChange(listener) {
+    settingListeners.add(listener);
+}
+
+function notifySetting(key) {
+    for (const listener of settingListeners) {
+        listener(key);
+    }
+}
+
 function normalizeInformalTaxonGroupIds(value) {
     const raw = Array.isArray(value) ? value : [];
     const picked = new Set(raw.filter((id) => typeof id === "string"));
@@ -73,10 +93,7 @@ export function normalizeAccuracyProportion(value) {
 }
 
 function normalizeTaxonSearchMode(value) {
-    if (value === "A" || value === "B" || value === "C") {
-        return value;
-    }
-    return "C";
+    return TAXON_SEARCH_MODE_IDS.has(value) ? value : "C";
 }
 
 // A later setting is another entry here, plus a section in settings-ui.js.
@@ -155,6 +172,7 @@ export function setSetting(key, value) {
     const document = normalizedDocument(readDocument());
     document[key] = entry.normalize(value);
     writeDocument(document);
+    notifySetting(key);
     return copyValue(document[key]);
 }
 

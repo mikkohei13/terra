@@ -113,134 +113,130 @@
         </div>
 
         <dialog id="observe-dialog" aria-label="Observation">
-            <form id="observe-form" class="stack-form">
-                <div class="taxon-row">
-                    <button
-                        type="button"
-                        id="taxon-scope"
-                        class="taxon-scope"
-                        aria-label="Taxon search: custom groups"
-                    >C</button>
+            <form id="observe-form" class="observe-form">
+                <div class="observe-fields stack-form">
+                    <label for="taxon">Species</label>
+                    <div class="taxon-row">
+                        <button
+                            type="button"
+                            id="taxon-scope"
+                            class="taxon-scope"
+                            aria-label="Taxon search: Custom taxa"
+                        >C</button>
+                        <input
+                            id="taxon"
+                            name="taxon"
+                            type="text"
+                            maxlength="{{ client_config.limits.taxon }}"
+                            autocomplete="off"
+                            autocapitalize="off"
+                            spellcheck="false"
+                            enterkeyhint="next"
+                            role="combobox"
+                            aria-autocomplete="list"
+                            aria-expanded="false"
+                            aria-controls="taxon-results"
+                            required
+                        >
+                    </div>
+                    <ul id="taxon-results" class="taxon-results" role="listbox" hidden></ul>
+                    <label for="count">Count</label>
                     <input
-                        id="taxon"
-                        name="taxon"
+                        id="count"
+                        name="count"
                         type="text"
-                        maxlength="{{ client_config.limits.taxon }}"
+                        maxlength="{{ client_config.limits.count }}"
                         autocomplete="off"
-                        autocapitalize="off"
-                        spellcheck="false"
                         enterkeyhint="next"
-                        placeholder="Finnish or scientific name"
-                        role="combobox"
-                        aria-autocomplete="list"
-                        aria-expanded="false"
-                        aria-controls="taxon-results"
-                        aria-label="Species"
-                        required
                     >
-                </div>
-                <ul id="taxon-results" class="taxon-results" role="listbox" hidden></ul>
-                <input
-                    id="count"
-                    name="count"
-                    type="text"
-                    maxlength="{{ client_config.limits.count }}"
-                    autocomplete="off"
-                    enterkeyhint="next"
-                    placeholder="Count"
-                    aria-label="Count"
-                >
-                <input
-                    id="notes"
-                    name="notes"
-                    type="text"
-                    maxlength="{{ client_config.limits.notes }}"
-                    autocomplete="off"
-                    enterkeyhint="next"
-                    placeholder="Notes"
-                    aria-label="Notes"
-                >
-                <input
-                    id="accuracy"
-                    name="accuracy"
-                    type="number"
-                    min="1"
-                    max="{{ client_config.limits.accuracy }}"
-                    step="1"
-                    inputmode="numeric"
-                    autocomplete="off"
-                    enterkeyhint="next"
-                    placeholder="Accuracy (radius/m)"
-                    aria-label="Accuracy (radius/m)"
-                >
-                <input
-                    id="male-count"
-                    name="maleIndividualCount"
-                    type="number"
-                    min="1"
-                    step="1"
-                    inputmode="numeric"
-                    autocomplete="off"
-                    enterkeyhint="next"
-                    placeholder="Males"
-                    aria-label="Males"
-                >
-                <input
-                    id="female-count"
-                    name="femaleIndividualCount"
-                    type="number"
-                    min="1"
-                    step="1"
-                    inputmode="numeric"
-                    autocomplete="off"
-                    enterkeyhint="done"
-                    placeholder="Females"
-                    aria-label="Females"
-                >
-                <div class="choice-group">
-                    <span class="choice-label" id="moving-label">Moving status</span>
-                    <div id="moving-status" class="choice-row" role="group" aria-labelledby="moving-label">
-                        <button type="button" class="choice" data-moving="p" aria-pressed="false">p</button>
-                        <button type="button" class="choice" data-moving="m" aria-pressed="false">m</button>
-                        <button type="button" class="choice" data-moving="kiert" aria-pressed="false">kiert</button>
-                        <button type="button" class="choice" data-moving="Ä" aria-pressed="false">Ä</button>
-                        <button type="button" class="choice" data-moving="Än" aria-pressed="false">Än</button>
-                        <button type="button" class="choice" data-moving="än" aria-pressed="false">än</button>
-                        <button type="button" class="choice" data-moving="ä" aria-pressed="false">ä</button>
-                    </div>
-                </div>
-                <div class="choice-group">
-                    <span class="choice-label" id="plumage-label">Plumage</span>
-                    <div id="plumage" class="choice-row" role="group" aria-labelledby="plumage-label">
-                        <button type="button" class="choice" data-plumage="ad" aria-pressed="false">ad</button>
-                        <button type="button" class="choice" data-plumage="jp" aria-pressed="false">jp</button>
-                        <button type="button" class="choice" data-plumage="juv" aria-pressed="false">juv</button>
-                        <button type="button" class="choice" data-plumage="kpuk" aria-pressed="false">kpuk</button>
-                        <button type="button" class="choice" data-plumage="npuk" aria-pressed="false">npuk</button>
-                        <button type="button" class="choice" data-plumage="pull" aria-pressed="false">pull</button>
-                        <button type="button" class="choice" data-plumage="subad" aria-pressed="false">subad</button>
-                    </div>
-                </div>
-                <span class="choice-label" id="obs-keyword-label">Keywords</span>
-                <ul id="obs-keyword-list" class="keyword-list" aria-labelledby="obs-keyword-label"></ul>
-                <div class="keyword-add">
+                    <label for="notes">Notes</label>
                     <input
-                        id="obs-keyword-input"
-                        name="obsKeyword"
+                        id="notes"
+                        name="notes"
                         type="text"
-                        maxlength="{{ client_config.limits.keywordLength }}"
+                        maxlength="{{ client_config.limits.notes }}"
+                        autocomplete="off"
+                        enterkeyhint="next"
+                    >
+                    <label for="accuracy">Accuracy (radius/m)</label>
+                    <input
+                        id="accuracy"
+                        name="accuracy"
+                        type="number"
+                        min="1"
+                        max="{{ client_config.limits.accuracy }}"
+                        step="1"
+                        inputmode="numeric"
+                        autocomplete="off"
+                        enterkeyhint="next"
+                    >
+                    <label for="male-count">Males</label>
+                    <input
+                        id="male-count"
+                        name="maleIndividualCount"
+                        type="number"
+                        min="1"
+                        step="1"
+                        inputmode="numeric"
+                        autocomplete="off"
+                        enterkeyhint="next"
+                    >
+                    <label for="female-count">Females</label>
+                    <input
+                        id="female-count"
+                        name="femaleIndividualCount"
+                        type="number"
+                        min="1"
+                        step="1"
+                        inputmode="numeric"
                         autocomplete="off"
                         enterkeyhint="done"
-                        placeholder="Keyword"
-                        aria-label="Observation keyword"
                     >
-                    <button type="button" id="add-obs-keyword">Add</button>
+                    <div class="choice-group">
+                        <span class="choice-label" id="moving-label">Moving status</span>
+                        <div id="moving-status" class="choice-row" role="group" aria-labelledby="moving-label">
+                            <button type="button" class="choice" data-moving="p" aria-pressed="false">p</button>
+                            <button type="button" class="choice" data-moving="m" aria-pressed="false">m</button>
+                            <button type="button" class="choice" data-moving="kiert" aria-pressed="false">kiert</button>
+                            <button type="button" class="choice" data-moving="Ä" aria-pressed="false">Ä</button>
+                            <button type="button" class="choice" data-moving="Än" aria-pressed="false">Än</button>
+                            <button type="button" class="choice" data-moving="än" aria-pressed="false">än</button>
+                            <button type="button" class="choice" data-moving="ä" aria-pressed="false">ä</button>
+                        </div>
+                    </div>
+                    <div class="choice-group">
+                        <span class="choice-label" id="plumage-label">Plumage</span>
+                        <div id="plumage" class="choice-row" role="group" aria-labelledby="plumage-label">
+                            <button type="button" class="choice" data-plumage="ad" aria-pressed="false">ad</button>
+                            <button type="button" class="choice" data-plumage="jp" aria-pressed="false">jp</button>
+                            <button type="button" class="choice" data-plumage="juv" aria-pressed="false">juv</button>
+                            <button type="button" class="choice" data-plumage="kpuk" aria-pressed="false">kpuk</button>
+                            <button type="button" class="choice" data-plumage="npuk" aria-pressed="false">npuk</button>
+                            <button type="button" class="choice" data-plumage="pull" aria-pressed="false">pull</button>
+                            <button type="button" class="choice" data-plumage="subad" aria-pressed="false">subad</button>
+                        </div>
+                    </div>
+                    <span class="choice-label" id="obs-keyword-label">Keywords</span>
+                    <ul id="obs-keyword-list" class="keyword-list" aria-labelledby="obs-keyword-label"></ul>
+                    <div class="keyword-add">
+                        <input
+                            id="obs-keyword-input"
+                            name="obsKeyword"
+                            type="text"
+                            maxlength="{{ client_config.limits.keywordLength }}"
+                            autocomplete="off"
+                            enterkeyhint="done"
+                            placeholder="Keyword"
+                            aria-label="Observation keyword"
+                        >
+                        <button type="button" id="add-obs-keyword">Add</button>
+                    </div>
+                    <div id="observe-error" class="error" role="alert" hidden></div>
+                    <button type="button" id="change-location" class="blue" hidden>Change location</button>
+                    <button type="button" id="delete-obs" class="red" hidden>Delete</button>
+                    <button type="button" id="close-observe" class="white">Close</button>
                 </div>
-                <button type="submit" class="primary-action">Save</button>
-                <div id="observe-error" class="error" role="alert" hidden></div>
-                <button type="button" id="change-location" class="blue" hidden>Change location</button>
-                <button type="button" id="delete-obs" class="red" hidden>Delete</button>
-                <button type="button" id="close-observe" class="white">Close</button>
+                <button type="submit" class="observe-save">Save</button>
             </form>
         </dialog>
 

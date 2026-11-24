@@ -2,18 +2,18 @@
 
 import * as api from "./api.js";
 import { searchBirds } from "./birds.js";
-import { autocompleteCacheMs, getSetting, setSetting } from "./settings.js";
+import { autocompleteCacheMs, getSetting, onSettingChange, setSetting, TAXON_SEARCH_MODES } from "./settings.js";
 import { readAutocomplete, writeAutocomplete } from "./taxon-cache.js";
 
 const DEBOUNCE_MS = 300;
 const MIN_INTERVAL_MS = 1000;
 const MIN_QUERY_LENGTH = 2;
-const SEARCH_MODES = ["A", "B", "C"];
-const SEARCH_MODE_LABEL = {
-    A: "All taxa",
-    B: "Birds",
-    C: "Custom groups",
-};
+const SEARCH_MODES = TAXON_SEARCH_MODES.map((mode) => mode.id);
+
+function searchModeLabel(mode) {
+    const match = TAXON_SEARCH_MODES.find((item) => item.id === mode);
+    return match ? match.label : mode;
+}
 
 export function attachTaxonField(input, list, dialog, onAdvance, modeButton, onNotes, options) {
     const prepareQuery = options && typeof options.prepareQuery === "function"
@@ -295,19 +295,26 @@ export function attachTaxonField(input, list, dialog, onAdvance, modeButton, onN
     }
 
     function paintSearchMode() {
+        if (!modeButton) {
+            return;
+        }
         const mode = getSetting("taxonSearchMode");
         modeButton.textContent = mode;
-        modeButton.setAttribute("aria-label", "Taxon search: " + SEARCH_MODE_LABEL[mode]);
+        modeButton.setAttribute("aria-label", "Taxon search: " + searchModeLabel(mode));
     }
 
     if (modeButton) {
         paintSearchMode();
+        onSettingChange((key) => {
+            if (key === "taxonSearchMode") {
+                paintSearchMode();
+            }
+        });
         modeButton.addEventListener("click", () => {
             const current = getSetting("taxonSearchMode");
             const index = SEARCH_MODES.indexOf(current);
             const next = SEARCH_MODES[(index + 1) % SEARCH_MODES.length];
             setSetting("taxonSearchMode", next);
-            paintSearchMode();
             schedule();
         });
     }

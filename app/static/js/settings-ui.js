@@ -9,6 +9,7 @@ import {
     MIN_DISTANCE_M_MIN,
     getSetting,
     setSetting,
+    TAXON_SEARCH_MODES,
 } from "./settings.js";
 import { clearAutocompleteCache } from "./taxon-cache.js";
 
@@ -17,6 +18,7 @@ const openButton = document.getElementById("open-settings");
 const sectionsRoot = document.getElementById("settings-sections");
 
 const sections = [
+    taxonSearchModeSection,
     taxonGroupSection,
     autocompleteCacheSection,
     minDistanceSection,
@@ -44,6 +46,55 @@ if (dialog && openButton && sectionsRoot) {
             commitAccuracyProportion(false);
         });
     }
+}
+
+function taxonSearchModeSection() {
+    const fieldset = document.createElement("fieldset");
+    fieldset.className = "settings-section";
+    const legend = document.createElement("legend");
+    legend.textContent = "Taxon autocomplete";
+    fieldset.append(legend);
+
+    const group = document.createElement("div");
+    group.className = "settings-modes";
+    group.setAttribute("role", "radiogroup");
+    group.setAttribute("aria-label", "Taxon autocomplete");
+
+    const buttons = TAXON_SEARCH_MODES.map((mode) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "settings-mode";
+        button.setAttribute("role", "radio");
+        button.dataset.mode = mode.id;
+        const letter = document.createElement("span");
+        letter.className = "settings-mode-id";
+        letter.textContent = mode.id;
+        const description = document.createElement("span");
+        description.textContent = mode.label;
+        button.append(letter, description);
+        button.addEventListener("click", () => {
+            try {
+                setSetting("taxonSearchMode", mode.id);
+            } catch (_error) {
+                // Keep the previous mode. paint() reads it back.
+            }
+            paint();
+        });
+        group.append(button);
+        return button;
+    });
+
+    function paint() {
+        const current = getSetting("taxonSearchMode");
+        for (const button of buttons) {
+            const selected = button.dataset.mode === current;
+            button.setAttribute("aria-checked", selected ? "true" : "false");
+        }
+    }
+
+    paint();
+    fieldset.append(group);
+    return fieldset;
 }
 
 function taxonGroupSection() {

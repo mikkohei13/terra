@@ -38,6 +38,8 @@ One active session in IndexedDB. Logout leaves local data on the phone.
 
 **B** stays on the phone. `birds.js` ranks `app/static/birds.json` with prefix Levenshtein and Finnish QWERTY neighbour costs (`key-neighbours.js`, from `keys.csv`) and keeps the 5 cheapest. The hit may be the Finnish name, scientific name, abbreviation, or synonym. Words after that name are copied into notes.
 
+**B quick entry.** On a map tap in mode B, a taxon field appears at the top of the map and is focused. Suggestions use the same bird ranking; picking one does not fill or save. If the text ends with the whole word `loppu` (case-insensitive) and sits still for 500 ms, that word is stripped, the first suggestion is saved like a new observation from the dialog (taxon, id, notes from the rest of the phrase, suggested accuracy; empty structured fields, so note interpretation can run), and the pin clears. No suggestion leaves the typed text. Modes A and C do not show the field. Owned in `observe.js`; the field reuses `taxon-field.js` with a prepared query that drops trailing `loppu`.
+
 A chosen id is kept only while the field still shows that name. Free text, or a name the user then edits, is saved with no `taxonId`.
 
 **Note interpretation.** Runs on the first save only, and only when the notes are non-blank and count, males, females, moving status, and plumage are all empty. The phone saves immediately with `interpretationState: "pending"`, closes the dialog, and returns to the map. If any of those fields was filled, it saves the typed values and the list shows a muted **Skipped**. An edit never starts a call. While any row is pending, Edit, End session, Submit, and Send later are blocked with a short wait message. Discard and Back to map stay available.
@@ -88,25 +90,24 @@ Unknown keys are ignored. New observation fields: `_parse_observation` + `_build
 
 - Independent login.
 - Bounding box instead of a path.
-- Edit buttons with species name etc.
-- List to show nearest observations or ordered by entruy time ascending, based on user settings.
 - Robustness against api.laji.fi errors and downtime.
 - Name and observation visibility. Today every document uses `secureLevel: MX.secureLevelNone` and `legPublic: True` (`document.py`).
-- When app is activated, wait for location to stabilize (max 10 seconds), only then record a location fix.
+- Review GPS location accuracy.
 - MML maps.
 - Finnish language.
+
+### Ideas
+
+- List to show nearest observations or ordered by entruy time ascending, based on user settings.
 
 ### Usability improvements
 
 - Session view:
-    - Observations should be ordered from newest to oldest.
-    - Observation edit button should show taxon name and count instead of generic "Edit". Below that, show only notes.
-    - When user taps on the map and selects edit, if there would be only one observation on the #edit-list-dialog, open the observation modal directly instead of showing the edit list.
+    - Button should show interpretation status (interpreting, failed), or when interpreted, more details, but not more than one row.
+    - When keyboard is opened, it hides edit and add buttons. Move to just below taxon field?
 - Observation modal:
-    - First item of the dropdown should be highlighted with light yellow background.
-    - When observation modal is open and is scrolled, the underlying session view should not scroll.
-    - Fields should have labels that are always visible instead of just placeholder text.
-    - Save button should be always visible, e.g. vertically on the right edge.
+    - First item of the dropdown should be highlighted with light yellow background when it matches well enough the text entered by the user.
+    - Review button positioning on narrow screens.
 
 ## Removing devdots
 
